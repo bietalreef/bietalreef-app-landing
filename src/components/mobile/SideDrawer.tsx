@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { X, ChevronDown, ChevronRight, User } from 'lucide-react';
+import { X, ChevronDown, ChevronRight, User, LogOut } from 'lucide-react';
 import { sectionsTree, MainSection, SubSection } from '../../data/sectionsTree';
-import { IDCopyBox } from './IDCopyBox';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { useUser } from '../../utils/UserContext';
 
 interface SideDrawerProps {
   isOpen: boolean;
@@ -13,6 +13,7 @@ interface SideDrawerProps {
 
 export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDrawerProps) {
   const { t, language } = useTranslation('common');
+  const { profile, logout } = useUser();
   const [expandedSections, setExpandedSections] = useState<string[]>([]);
 
   const toggleSection = (sectionId: string) => {
@@ -37,6 +38,27 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
     onClose();
   };
 
+  const handleLogout = async () => {
+    await logout();
+    onClose();
+    window.location.reload();
+  };
+
+  // Derive display info from actual profile
+  const isLoggedIn = !!profile && !!profile.email;
+  const userEmail = profile?.email || '';
+  const displayName = profile?.full_name || userEmail.split('@')[0] || 'زائر';
+  const userRole = profile?.role;
+  
+  const getRoleBadge = () => {
+    if (!isLoggedIn) return { text: 'مستخدم زائر', bg: 'bg-gray-400', textColor: 'text-white' };
+    if (userRole === 'admin') return { text: 'مدير النظام', bg: 'bg-red-500', textColor: 'text-white' };
+    if (userRole === 'provider') return { text: 'مزود خدمة', bg: 'bg-blue-500', textColor: 'text-white' };
+    return { text: 'عميل', bg: 'bg-[#2AA676]', textColor: 'text-white' };
+  };
+
+  const badge = getRoleBadge();
+
   if (!isOpen) return null;
 
   return (
@@ -47,7 +69,7 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
         onClick={onClose}
       />
 
-      {/* Drawer - 🔥 دائماً RTL بغض النظر عن اللغة */}
+      {/* Drawer */}
       <div 
         className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-hidden flex flex-col"
         dir="rtl"
@@ -67,28 +89,51 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
         </div>
 
         {/* Profile Card */}
-        <div className="bg-gradient-to-br from-purple-100 to-purple-50 p-4 border-b border-purple-200">
+        <div 
+          className="bg-gradient-to-br from-[#F5EEE1] to-[#EDE5D5] p-4 border-b border-[#DDD4C4] cursor-pointer hover:bg-[#EDE5D5] transition-colors"
+          onClick={() => {
+            onNavigate('/profile');
+            onClose();
+          }}
+        >
           <div className="flex items-center gap-3">
             {/* Profile Avatar */}
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center flex-shrink-0 shadow-lg relative">
-              <User className="w-7 h-7 text-white" />
+            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] flex items-center justify-center flex-shrink-0 shadow-lg relative overflow-hidden">
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="" className="w-full h-full object-cover" />
+              ) : (
+                <User className="w-7 h-7 text-white" />
+              )}
               {/* Online Status */}
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+              {isLoggedIn && (
+                <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+              )}
             </div>
             
             {/* User Info */}
-            <div className="flex-1">
-              <h3 className="font-bold text-[#1F3D2B] text-base mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                {t('userName')}
+            <div className="flex-1 min-w-0">
+              {/* Welcome + Name */}
+              <p className="text-[#2AA676] text-[11px] font-medium mb-0.5" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {isLoggedIn ? 'مرحباً بك 👋' : 'مرحباً بك'}
+              </p>
+              <h3 className="font-bold text-[#1F3D2B] text-base truncate" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {displayName}
               </h3>
-              {/* ID Copy Box */}
-              <IDCopyBox id="#USER-12345" />
+              
+              {/* Email display for logged-in users */}
+              {isLoggedIn && userEmail && (
+                <p className="text-gray-500 text-[11px] truncate mt-0.5">{userEmail}</p>
+              )}
+
+              {/* Role badge */}
               <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full font-medium" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  {t('premiumUser')}
+                <span className={`text-xs ${badge.bg} ${badge.textColor} px-2.5 py-0.5 rounded-full font-medium`} style={{ fontFamily: 'Cairo, sans-serif' }}>
+                  {badge.text}
                 </span>
               </div>
             </div>
+
+            <ChevronRight className="w-5 h-5 text-gray-400 flex-shrink-0 rotate-180" />
           </div>
         </div>
 
@@ -147,6 +192,17 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
               </div>
             ))}
           </nav>
+
+          {/* Logout Button */}
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-50 transition-all mt-2"
+            >
+              <LogOut className="w-5 h-5" />
+              <span className="font-medium text-base">تسجيل الخروج</span>
+            </button>
+          )}
         </div>
 
         {/* Footer */}

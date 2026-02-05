@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Hammer, User } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -114,7 +113,6 @@ export function ServiceDetailCraftsmen({ onBack, onNavigate, onOpenSearch }: Ser
           <button className="bg-white text-[#C8A86A] px-10 py-4 rounded-full hover:shadow-2xl transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('bookNow')}</button>
         </div>
       </div>
-      <BottomNav activeTab="services" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

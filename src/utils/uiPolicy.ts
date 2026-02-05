@@ -7,6 +7,10 @@ export interface UserProfile {
   tier: UserTier;
   is_verified: boolean;
   email?: string;
+  full_name?: string;
+  avatar_url?: string;
+  phone?: string;
+  user_metadata?: any;
   created_at?: string;
 }
 

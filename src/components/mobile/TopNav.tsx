@@ -1,5 +1,5 @@
 import image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3 from 'figma:asset/1d3f7ac269fcb8922cef991f788ec0c45ba06aa3.png';
-import { ShoppingCart, Search, Bell, Menu, Mic, Download } from 'lucide-react';
+import { ShoppingCart, Search, Bell, Menu, Mic } from 'lucide-react';
 import { useState } from 'react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { LanguageSwitcher } from '../LanguageSwitcher';
@@ -7,15 +7,12 @@ import { useTranslation } from '../../contexts/LanguageContext';
 import { useSearchStore } from '../../stores/search-store';
 
 interface TopNavProps {
-  activeTab?: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers';
-  onTabChange?: (tab: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers') => void;
   onOpenDrawer?: () => void;
   onOpenNotificationsCenter?: (category?: 'platform' | 'weyaak' | 'crm' | 'user' | 'alerts' | 'offers' | 'all') => void;
-  onInstallClick?: () => void;
-  isInstalled?: boolean;
+  showCart?: boolean;
 }
 
-export function TopNav({ activeTab, onTabChange, onOpenDrawer, onOpenNotificationsCenter, onInstallClick, isInstalled = false }: TopNavProps) {
+export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = false }: TopNavProps) {
   const { t } = useTranslation('common');
   const [showNotifications, setShowNotifications] = useState(false);
   
@@ -97,41 +94,23 @@ export function TopNav({ activeTab, onTabChange, onOpenDrawer, onOpenNotificatio
 
         {/* Left Side (RTL) - Icons */}
         <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
-          {/* INSTALL BUTTON - ONLY IF NOT INSTALLED */}
-          {!isInstalled && onInstallClick && (
-            <button 
-              onClick={onInstallClick}
-              className="hidden md:flex items-center gap-2 bg-blue-600 text-white px-3 py-1.5 rounded-full text-xs font-bold hover:bg-blue-700 transition-colors shadow-sm animate-pulse"
-            >
-               <Download className="w-3 h-3" />
-               <span>تثبيت التطبيق</span>
-            </button>
-          )}
           
-          {/* Mobile Install Icon */}
-          {!isInstalled && onInstallClick && (
-             <button 
-               onClick={onInstallClick} 
-               className="md:hidden p-1.5 text-blue-600 bg-blue-50 rounded-full"
-             >
-                <Download className="w-5 h-5" />
-             </button>
-          )}
-
           {/* Language Switch */}
           <div className="transform scale-90 md:scale-100">
              <LanguageSwitcher variant="compact" />
           </div>
 
-          {/* Cart Icon */}
-          <button className="relative flex-shrink-0 p-1.5 md:p-2">
-            <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-[#1A5490]" />
-            <div className="absolute top-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-md">
-              <span className="text-white text-[8px] md:text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                3
-              </span>
-            </div>
-          </button>
+          {/* Cart Icon - ONLY SHOWN IF showCart IS TRUE */}
+          {showCart && (
+            <button className="relative flex-shrink-0 p-1.5 md:p-2">
+              <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-[#1A5490]" />
+              <div className="absolute top-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-md">
+                <span className="text-white text-[8px] md:text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                  3
+                </span>
+              </div>
+            </button>
+          )}
 
           {/* Notifications */}
           <div className="relative">

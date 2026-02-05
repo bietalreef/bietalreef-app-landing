@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Search, Mic, SlidersHorizontal, Globe } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 
 interface ServiceDetailGuestProps {
@@ -192,11 +191,6 @@ export function ServiceDetailGuest({
         </div>
       </div>
 
-      <ServiceBottomNav
-        activeTab={serviceNavTab}
-        onTabChange={setServiceNavTab}
-        serviceName={serviceName}
-      />
     </div>
   );
 }

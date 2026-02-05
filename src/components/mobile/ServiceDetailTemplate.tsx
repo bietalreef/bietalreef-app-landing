@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowLeft, Star, Heart, Share2, ChevronDown, BookOpen, AlertCircle, Check } from 'lucide-react';
-import { NewBottomNav } from './NewBottomNav';
 import { NewTopHeader } from './NewTopHeader';
 import { IDCopyBox } from './IDCopyBox';
 import { ServiceSEOHead } from '../SEOHead';
@@ -328,14 +327,6 @@ export function ServiceDetailTemplate({
         )}
       </div>
 
-      {/* Bottom Navigation */}
-      <NewBottomNav
-        activeTab="services"
-        onTabChange={(tab) => {
-          if (tab === 'home') onBack();
-          else if (onNavigate) onNavigate(tab);
-        }}
-      />
     </div>
   );
 }

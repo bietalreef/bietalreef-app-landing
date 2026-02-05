@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Search, Mic, SlidersHorizontal, Globe, ChevronLeft, Heart, CheckCircle, Zap, Users, Sparkles, Battery, Lightbulb, BookOpen, Info, Target, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
@@ -935,13 +934,6 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
         )}
 
       </div>
-
-      {/* Service-Specific Bottom Navigation */}
-      <ServiceBottomNav
-        activeTab={serviceNavTab}
-        onTabChange={setServiceNavTab}
-        serviceName="الكهرباء"
-      />
 
     </div>
   );

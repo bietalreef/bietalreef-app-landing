@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Wrench } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -114,7 +113,6 @@ export function ServiceDetailWorkshops({ onBack, onNavigate, onOpenSearch }: Ser
           <button className="bg-white text-[#8E44AD] px-10 py-4 rounded-full hover:shadow-2xl transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('orderNow')}</button>
         </div>
       </div>
-      <BottomNav activeTab="services" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

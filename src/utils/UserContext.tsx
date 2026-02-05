@@ -43,11 +43,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const mergedProfile: UserProfile = {
         id: userId,
         email: user?.email || '',
-        full_name: dbProfile?.full_name || metadata.full_name || user?.email?.split('@')[0] || 'User',
+        full_name: dbProfile?.full_name || metadata.full_name || metadata.name || user?.email?.split('@')[0] || 'User',
         role: (dbProfile?.role || metadata.role || 'client') as UserRole,
         // Since 'tier' column might be missing in DB, we rely on metadata
         tier: (metadata.tier || dbProfile?.plan || 'free') as UserTier,
         is_verified: dbProfile?.is_verified ?? metadata.is_verified ?? false,
+        avatar_url: dbProfile?.avatar_url || metadata.avatar_url || user?.user_metadata?.avatar_url || '',
+        phone: dbProfile?.phone || metadata.phone || '',
+        user_metadata: metadata,
+        created_at: user?.created_at || dbProfile?.created_at || '',
         // Add other fields as necessary based on UserProfile interface
         ...dbProfile
       };

@@ -4,6 +4,7 @@ import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { supabase } from '../../utils/supabase/client';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
 
 interface ServicesContentProps {
   onServiceClick?: (serviceId: string) => void;
@@ -14,6 +15,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
   const { t, dir, language } = useTranslation('services');
   const [activeFilter, setActiveFilter] = useState<'recommended' | 'offers' | 'nearby' | 'cheapest' | 'toprated'>('recommended');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const navigate = useNavigate();
 
   // Real Data State
   const [serviceProviders, setServiceProviders] = useState<any[]>([]);
@@ -131,7 +133,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
           {services.map((service) => (
             <button
               key={service.id}
-              onClick={() => onServiceClick?.(service.id)}
+              onClick={() => navigate(`/services/${service.id}`)}
               className="group relative bg-white rounded-[24px] md:rounded-[28px] overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_32px_rgba(0,0,0,0.15)] transition-all border-2 border-transparent hover:border-[#4A90E2]/20 w-full"
               style={{ aspectRatio: '1/1.2' }}
             >

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ToolPageLayout } from '../ui/ToolPageLayout';
 import { EngineeringToolLayout } from '../ui/EngineeringToolLayout';
 import { RoomPlanner2DLogic } from '../special/RoomPlanner2DLogic'; // Import the new Logic
+import { SmartPlannerWizard } from '../special/SmartPlannerWizard'; // Import the Wizard
 import { RoomBuilder3DLogic } from '../special/RoomBuilder3DLogic'; // Import the 3D Logic
 import { TOOLS_CONTENT } from '../data/ToolContent';
 import { useTranslation } from '../../../../contexts/LanguageContext';
@@ -122,7 +123,7 @@ const createHybridTool = (id: string, CustomLogicComponent?: React.ComponentType
 };
 
 // --- 1. Engineering Tools (Hybrid) ---
-export const RoomPlanner2D = createHybridTool('2d-planner', RoomPlanner2DLogic); // Use the new Logic here
+export const RoomPlanner2D = createHybridTool('2d-planner', SmartPlannerWizard); // Use the Wizard here
 export const RoomBuilder3D = createHybridTool('3d-builder', RoomBuilder3DLogic);
 export const PhotoMeasure = createHybridTool('photo-measure');
 

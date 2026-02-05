@@ -47,13 +47,6 @@ export const sectionsTree: MainSection[] = [
     ],
   },
   {
-    id: 'realestate',
-    nameAr: 'العقارات',
-    nameEn: 'Real Estate',
-    icon: '🏢',
-    route: '/realestate',
-  },
-  {
     id: 'shop',
     nameAr: 'المتجر',
     nameEn: 'Shop',

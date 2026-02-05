@@ -15,7 +15,6 @@ import { MarketplaceGrid } from './MarketplaceGrid';
 import { MarketplaceList } from './MarketplaceList';
 import { MarketplaceItemDetail } from './MarketplaceItemDetail';
 import { TopNav } from './TopNav';
-import { BottomNav } from './BottomNav';
 
 interface ShopScreenNewProps {
   activeTab?: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers';
@@ -176,8 +175,6 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
         </div>
       </div>
 
-      {/* BottomNav */}
-      <BottomNav activeTab={activeTab} onTabChange={onTabChange || (() => {})} />
     </div>
   );
 }

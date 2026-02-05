@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Clipboard, Calculator, Building, Ruler, FileCheck, Users } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -173,12 +172,6 @@ export function ServiceDetailEngineeringConsultation({ onBack, onNavigate, onOpe
           </button>
         </div>
       </div>
-
-      {/* Bottom Navigation */}
-      <BottomNav 
-        activeTab="services" 
-        onTabChange={handleBottomNavChange}
-      />
     </div>
   );
 }

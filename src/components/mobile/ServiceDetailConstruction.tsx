@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Star, Heart, CheckCircle, Users, Sparkles, Building2, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
@@ -925,13 +924,6 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
         )}
 
       </div>
-
-      {/* Service-Specific Bottom Navigation */}
-      <ServiceBottomNav
-        activeTab={serviceNavTab}
-        onTabChange={setServiceNavTab}
-        serviceName="مقاولات البناء"
-      />
 
     </div>
   );

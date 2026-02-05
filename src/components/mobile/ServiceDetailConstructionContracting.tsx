@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Building2, Hammer, Shield, Wrench, FileText, Home as HomeIcon } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -181,12 +180,6 @@ export function ServiceDetailConstructionContracting({ onBack, onNavigate, onOpe
           </button>
         </div>
       </div>
-
-      {/* Bottom Navigation - Using MAIN BottomNav */}
-      <BottomNav 
-        activeTab="services" 
-        onTabChange={handleBottomNavChange}
-      />
     </div>
   );
 }

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Sparkles } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -189,8 +188,6 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
           </button>
         </div>
       </div>
-
-      <BottomNav activeTab="services" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

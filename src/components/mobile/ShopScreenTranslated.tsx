@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { TopNav } from './TopNav';
-import { BottomNav } from './BottomNav';
 
 type ViewMode = 'grid' | 'list';
 type MainTab = 'materials' | 'services' | 'suppliers' | 'deals';
@@ -642,8 +641,6 @@ export function ShopScreen({ activeTab = 'shop', onTabChange, onOpenSearch, onOp
           </motion.button>
         )}
 
-        <BottomNav activeTab={activeTab} onTabChange={onTabChange || (() => {})} />
-      </div>
     </div>
   );
 }

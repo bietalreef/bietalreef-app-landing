@@ -7,6 +7,8 @@ import { useUser } from '../../utils/UserContext';
 import { checkPolicy } from '../../utils/uiPolicy';
 import { toast } from 'sonner';
 import { supabase } from '../../utils/supabase/client';
+import { PackagesSection } from '../marketing/PackagesSection';
+import { CommunityFeed } from '../community/CommunityFeed';
 
 export function NewHomeContent() {
   const { t, dir, language } = useTranslation('home');
@@ -150,14 +152,6 @@ export function NewHomeContent() {
     }
   ];
 
-  const getAvailabilityColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-[#4A90E2]';
-      case 'busy': return 'bg-[#F2994A]';
-      default: return 'bg-[#6B7280]';
-    }
-  };
-
   return (
     <div className="flex-1 bg-gradient-to-b from-[#F5EEE1] to-white overflow-y-auto" dir={dir}>
       
@@ -239,7 +233,57 @@ export function NewHomeContent() {
         </button>
       </div>
 
-      {/* Voice Rooms Integration (NEW) */}
+      {/* Main Action Buttons */}
+      <div className="px-5 py-6">
+        <div className="grid grid-cols-3 gap-3">
+          <button 
+            onClick={() => handleActionClick('quick_rfq')}
+            className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
+          >
+             <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-14 h-14 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
+              <FileText className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
+              {t('requestQuote')}
+            </span>
+          </button>
+
+          <button 
+             onClick={() => handleActionClick('contact_providers')}
+             className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-green-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-14 h-14 bg-gradient-to-br from-[#56CCF2] to-[#4A90E2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
+              <Phone className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
+              {t('callExpert')}
+            </span>
+          </button>
+
+          <button 
+             onClick={() => handleActionClick('create_project')}
+             className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
+          >
+            <div className="absolute inset-0 bg-purple-50 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-14 h-14 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
+              <Camera className="w-7 h-7 text-white" />
+            </div>
+            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
+              {t('uploadPhotos')}
+            </span>
+          </button>
+        </div>
+      </div>
+
+      {/* PACKAGES SECTION (NEW) */}
+      <PackagesSection />
+
+      {/* COMMUNITY FEED (NEW) */}
+      <CommunityFeed />
+
+      {/* Voice Rooms Integration */}
       <div className="px-5 py-6">
         <h2 className="text-[#1A1A1A] mb-4" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '20px' }}>
           الغرف الصوتية المباشرة 🎙️
@@ -301,50 +345,6 @@ export function NewHomeContent() {
                  <span className="text-xs">قريباً</span>
             </div>
 
-        </div>
-      </div>
-
-      {/* MAIN ACTION BUTTONS */}
-      <div className="px-5 py-6">
-        <div className="grid grid-cols-3 gap-3">
-          <button 
-            onClick={() => handleActionClick('quick_rfq')}
-            className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
-          >
-             <div className="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="w-14 h-14 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
-              <FileText className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
-              {t('requestQuote')}
-            </span>
-          </button>
-
-          <button 
-             onClick={() => handleActionClick('contact_providers')}
-             className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-green-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="w-14 h-14 bg-gradient-to-br from-[#56CCF2] to-[#4A90E2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
-              <Phone className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
-              {t('callExpert')}
-            </span>
-          </button>
-
-          <button 
-             onClick={() => handleActionClick('create_project')}
-             className="bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] flex flex-col items-center gap-3 relative overflow-hidden group"
-          >
-            <div className="absolute inset-0 bg-purple-50 opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="w-14 h-14 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[18px] flex items-center justify-center shadow-lg relative z-10">
-              <Camera className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-[#1A1A1A] text-center relative z-10" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px', lineHeight: 1.4 }}>
-              {t('uploadPhotos')}
-            </span>
-          </button>
         </div>
       </div>
 

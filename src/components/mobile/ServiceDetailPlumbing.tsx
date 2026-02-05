@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Star, Heart, CheckCircle, Users, Sparkles, Droplets, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check, Wrench, ShowerHead } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';

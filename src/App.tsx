@@ -1,17 +1,38 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router';
 import { supabase } from './utils/supabase/client';
-import { UserProvider } from './utils/UserContext'; // Import Provider
-import MainApp from './MainApp';
-import LoginApp from './LoginApp';
-import SystemTest from './components/SystemTest'; // New Test Page
+import { SEOHead } from './components/seo/SEOHead';
+import { UserProvider } from './utils/UserContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { Toaster } from './components/ui/sonner';
-import { GoogleMapsProvider } from './components/providers/GoogleMapsLoader';
+import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Layouts
+import { BrowserLayout } from './components/layout/BrowserLayout';
+
+// Screens / Content
+import LoginApp from './LoginApp';
+import { NewHomeContent } from './components/mobile/NewHomeContent';
+import { ServicesContent } from './components/mobile/ServicesContent';
+import { ServiceRouteHandler } from './components/ServiceRouteHandler';
+import { ShopScreen } from './components/mobile/ShopScreen';
+import { ToolsScreen } from './components/mobile/ToolsScreen';
+import { WayakScreen } from './components/mobile/WayakScreen';
+import { ProjectsScreen } from './components/mobile/ProjectsScreen';
+import { ProfileScreen } from './components/mobile/ProfileScreen';
+import { MapsScreen } from './components/mobile/MapsScreen';
+import { RecommendationsScreen } from './components/mobile/RecommendationsScreen';
+import { OffersScreen } from './components/mobile/OffersScreen';
+import { MarketplaceScreen } from './components/mobile/MarketplaceScreen';
+import { RFQScreen } from './components/mobile/RFQScreen';
+import { ProjectDetail } from './components/mobile/ProjectDetail';
+import SystemTest from './components/SystemTest';
 
 export default function App() {
   const [view, setView] = useState<'loading' | 'login' | 'main' | 'test'>('loading');
 
   useEffect(() => {
-    // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         setView('main');
@@ -20,11 +41,6 @@ export default function App() {
       }
     });
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    setView('login');
-  };
 
   if (view === 'loading') {
     return (
@@ -35,26 +51,56 @@ export default function App() {
   }
 
   return (
-    <UserProvider> {/* Wrap everything in UserProvider */}
-      <GoogleMapsProvider>
-        {view === 'login' ? (
-          <LoginApp onComplete={() => setView('main')} />
-        ) : view === 'test' ? (
-          <SystemTest />
-        ) : (
-          <>
-             <MainApp onLogout={handleLogout} />
-             {/* Secret Dev Button to access Test Page */}
-             <button 
-               onClick={() => setView('test')}
-               className="fixed bottom-4 left-4 z-50 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-50 hover:opacity-100"
-             >
-               SYSTEM TEST
-             </button>
-          </>
-        )}
-      </GoogleMapsProvider>
-      <Toaster />
-    </UserProvider>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <LanguageProvider>
+          <SEOHead />
+          <UserProvider>
+            {view === 'login' ? (
+              <LoginApp onComplete={() => setView('main')} />
+            ) : view === 'test' ? (
+              <SystemTest />
+            ) : (
+              <Routes>
+                {/* Main Browser App Layout */}
+                <Route element={<BrowserLayout />}>
+                  <Route path="/" element={<Navigate to="/home" replace />} />
+                  <Route path="/home" element={<NewHomeContent />} />
+                  
+                  {/* Services Routes */}
+                  <Route path="/services" element={<ServicesContent />} />
+                  <Route path="/services/:id" element={<ServiceRouteHandler />} />
+                  <Route path="/services/:id/:city" element={<ServiceRouteHandler />} />
+                  
+                  {/* Other Main Sections */}
+                  <Route path="/yak" element={<WayakScreen onClose={() => window.history.back()} />} />
+                  <Route path="/projects" element={<ProjectsScreen />} />
+                  <Route path="/projects/:id" element={<ProjectDetail onBack={() => window.history.back()} />} />
+                  <Route path="/rfq" element={<RFQScreen onBack={() => window.history.back()} />} />
+                  <Route path="/marketplace" element={<MarketplaceScreen />} />
+                  
+                  {/* Store & Tools */}
+                  <Route path="/shop" element={<ShopScreen />} />
+                  <Route path="/store/*" element={<ShopScreen />} />
+                  <Route path="/tools" element={<ToolsScreen onFullscreenToggle={() => {}} />} />
+                  
+                  {/* User & Maps */}
+                  <Route path="/profile" element={<ProfileScreen />} />
+                  <Route path="/maps" element={<MapsScreen onMenuClick={() => {}} activeTab="maps" onTabChange={() => {}} />} />
+                  
+                  {/* Extras */}
+                  <Route path="/recommendations" element={<RecommendationsScreen />} />
+                  <Route path="/offers" element={<OffersScreen />} />
+                  
+                  {/* Fallback */}
+                  <Route path="*" element={<Navigate to="/home" replace />} />
+                </Route>
+              </Routes>
+            )}
+            <Toaster />
+          </UserProvider>
+        </LanguageProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

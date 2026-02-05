@@ -1,30 +1,37 @@
 export const libraries: ("places" | "geometry" | "drawing" | "visualization")[] = ['places', 'geometry'];
 
-// Helper to safely access import.meta.env
-const getEnvVar = (key: string): string => {
-  try {
-    // Access import.meta.env safely
-    if (typeof import.meta !== 'undefined' && import.meta.env) {
-      const value = import.meta.env[key];
-      if (value) return value as string;
-    }
-  } catch (error) {
-    console.warn(`Unable to access import.meta.env.${key}:`, error);
-  }
-  return '';
-};
-
 export const getGoogleMapsApiKey = (): string => {
-  // Try to get the API key from environment variables
-  const apiKey = getEnvVar('VITE_GOOGLE_MAPS_API_KEY');
-  
-  if (!apiKey) {
-    console.warn(
-      'Google Maps API Key is missing!',
-      'Please ensure VITE_GOOGLE_MAPS_API_KEY is set in your Supabase secrets.',
-      'The secret should be added without the VITE_ prefix in Supabase, and will be automatically prefixed at build time.'
-    );
+  try {
+    let apiKey = '';
+
+    // 1. Try import.meta.env (Standard Vite)
+    if (typeof import.meta !== 'undefined' && import.meta.env) {
+      apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 
+               import.meta.env.GOOGLE_MAPS_API_KEY || 
+               '';
+    }
+
+    // 2. Try process.env (Fallback)
+    if (!apiKey && typeof process !== 'undefined' && process.env) {
+      apiKey = process.env.VITE_GOOGLE_MAPS_API_KEY || 
+               process.env.GOOGLE_MAPS_API_KEY || 
+               '';
+    }
+
+    // 3. Fallback for some specific environments that might inject it differently
+    if (!apiKey && typeof window !== 'undefined') {
+      // @ts-ignore
+      apiKey = window.VITE_GOOGLE_MAPS_API_KEY || window.GOOGLE_MAPS_API_KEY || '';
+    }
+
+    // Debug logging
+    if (!apiKey) {
+      console.warn('⚠️ Google Maps API Key not found. Please ensure VITE_GOOGLE_MAPS_API_KEY is set.');
+    }
+
+    return apiKey;
+  } catch (error) {
+    console.error('❌ Error reading Google Maps API Key:', error);
+    return '';
   }
-  
-  return apiKey;
 };

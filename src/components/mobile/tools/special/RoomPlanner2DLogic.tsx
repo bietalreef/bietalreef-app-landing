@@ -14,7 +14,8 @@ import {
   PaintBucket, Layers, Hammer, Camera, Globe,
   Share2, FolderHeart, Image as ImageIcon,
   Minimize2, Maximize2, AlignCenter, Calculator,
-  Hand, Move, HelpCircle, Plus
+  Hand, Move, HelpCircle, Plus,
+  Armchair, Sofa, Bed, Table, Box
 } from 'lucide-react';
 
 // --- Configuration ---
@@ -25,21 +26,50 @@ const DEFAULT_WALL_THICKNESS = 20;
 // --- Types ---
 type Point = { x: number, y: number };
 type Wall = { id: string, startNodeId: string, endNodeId: string, thickness: number, height: number, length?: number }; // length is just cache
-type WallObject = { id: string, wallId: string, type: 'DOOR' | 'WINDOW', t: number, width: number, height: number, flipX?: boolean, flipY?: boolean };
+type WallObject = { id: string, wallId: string, type: 'DOOR' | 'WINDOW', t: number, width: number, height: number, flipX?: boolean, flipY?: boolean, leafCount?: 1 | 2, sillHeight?: number };
 type Node = { id: string, x: number, y: number };
 type Viewport = { x: number, y: number, zoom: number };
+
+// NEW: Furniture Types
+type FurnitureType = 'BED_SINGLE' | 'BED_DOUBLE' | 'SOFA' | 'TABLE_ROUND' | 'TABLE_RECT' | 'CHAIR' | 'TOILET' | 'SINK' | 'STOVE' | 'FRIDGE' | 'WARDROBE';
+
+interface Furniture {
+  id: string;
+  type: FurnitureType;
+  x: number;
+  y: number;
+  rotation: number; // radians
+  width: number;
+  depth: number;
+}
+
+// Furniture Templates
+const FURNITURE_TEMPLATES: Record<FurnitureType, { width: number, depth: number, labelAr: string, labelEn: string, icon: any }> = {
+  BED_SINGLE: { width: 90, depth: 200, labelAr: 'سرير مفرد', labelEn: 'Single Bed', icon: Bed },
+  BED_DOUBLE: { width: 160, depth: 200, labelAr: 'سرير مزدوج', labelEn: 'Double Bed', icon: Bed },
+  SOFA: { width: 220, depth: 90, labelAr: 'كنبة', labelEn: 'Sofa', icon: Sofa },
+  TABLE_RECT: { width: 150, depth: 90, labelAr: 'طاولة طعام', labelEn: 'Dining Table', icon: Table },
+  TABLE_ROUND: { width: 110, depth: 110, labelAr: 'طاولة دائرية', labelEn: 'Round Table', icon: Table },
+  CHAIR: { width: 50, depth: 50, labelAr: 'كرسي', labelEn: 'Chair', icon: Armchair },
+  WARDROBE: { width: 150, depth: 60, labelAr: 'خزانة ملابس', labelEn: 'Wardrobe', icon: Box },
+  TOILET: { width: 45, depth: 70, labelAr: 'مرحاض', labelEn: 'Toilet', icon: Box },
+  SINK: { width: 60, depth: 50, labelAr: 'مغسلة', labelEn: 'Sink', icon: Box },
+  STOVE: { width: 60, depth: 60, labelAr: 'موقد', labelEn: 'Stove', icon: Box },
+  FRIDGE: { width: 70, depth: 70, labelAr: 'ثلاجة', labelEn: 'Fridge', icon: Box },
+};
 
 // --- Translations ---
 const TRANSLATIONS = {
   AR: {
     title: "مخطط الغرفة الذكي",
-    wallProp: "خصائ������ الجد��ر",
+    wallProp: "خصائص الجدار",
     objProp: "خصائص العنصر",
     nodeProp: "خصائص النقطة",
     length: "طول الجدار",
     thickness: "سماكة الجدار",
     height: "الارتفاع",
     width: "العرض",
+    depth: "العمق",
     saveOptions: "خيارات الحفظ",
     saveFile: "حفظ كملف مشروع",
     saveImg: "حفظ كصورة",
@@ -67,9 +97,11 @@ const TRANSLATIONS = {
     paintCeiling: "دهان السقف",
     doorCount: "عدد الأبواب",
     windowCount: "عدد النوافذ",
-    footer: "هذا التقرير ��ق��يبي ويجب مراجعته ميدانياً.",
+    furnitureCount: "قطع الأثاث",
+    footer: "هذا التقرير تقريبي ويجب مراجعته ميدانياً.",
     sign: "توقيع المهندس",
-    stamp: "الختم"
+    stamp: "الختم",
+    furniture: "الأثاث"
   },
   EN: {
     title: "Smart Room Planner",
@@ -80,6 +112,7 @@ const TRANSLATIONS = {
     thickness: "Thickness",
     height: "Height",
     width: "Width",
+    depth: "Depth",
     saveOptions: "Save Options",
     saveFile: "Save Project File",
     saveImg: "Save as Image",
@@ -107,9 +140,11 @@ const TRANSLATIONS = {
     paintCeiling: "Ceiling Paint",
     doorCount: "Doors Count",
     windowCount: "Windows Count",
+    furnitureCount: "Furniture Items",
     footer: "This report is approximate and must be verified on site.",
     sign: "Engineer Sign",
-    stamp: "Stamp"
+    stamp: "Stamp",
+    furniture: "Furniture"
   }
 };
 
@@ -127,22 +162,11 @@ const COLORS = {
   dimLineInactive: '#475569',
   dimLineActive: '#2563eb',
   dimText: '#0f172a', 
-  dimTextBg: '#ffffff'
+  dimTextBg: '#ffffff',
+  furnitureFill: '#e0e7ff', // Indigo 100
+  furnitureStroke: '#4338ca', // Indigo 700
+  furnitureSelected: '#ef4444'
 };
-
-// Updated Interface
-interface WallObject {
-  id: string;
-  wallId: string;
-  t: number; // 0 to 1 position on wall
-  width: number;
-  type: 'DOOR' | 'WINDOW';
-  flipX: boolean;
-  flipY: boolean;
-  // New Properties
-  leafCount?: 1 | 2; // For Doors
-  sillHeight?: number; // For Windows (cm)
-}
 
 export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void, initialData?: any }) {
   // --- State ---
@@ -152,9 +176,12 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   const [nodes, setNodes] = useState<Node[]>(initialData?.nodes || []);
   const [walls, setWalls] = useState<Wall[]>(initialData?.walls || []);
   const [objects, setObjects] = useState<WallObject[]>(initialData?.objects || []);
+  // NEW: Furniture State
+  const [furniture, setFurniture] = useState<Furniture[]>(initialData?.furniture || []);
+  
   const [viewport, setViewport] = useState<Viewport>({ x: 0, y: 0, zoom: 1 });
-  const [mode, setMode] = useState<'SELECT' | 'DRAW' | 'PAN' | 'RECT' | 'ROTATE'>('DRAW');
-  const [selectedId, setSelectedId] = useState<{ type: 'WALL' | 'OBJECT' | 'NODE', id: string } | null>(null);
+  const [mode, setMode] = useState<'SELECT' | 'DRAW' | 'PAN' | 'RECT' | 'ROTATE' | 'FURNITURE'>('DRAW');
+  const [selectedId, setSelectedId] = useState<{ type: 'WALL' | 'OBJECT' | 'NODE' | 'FURNITURE', id: string } | null>(null);
   const [history, setHistory] = useState<string[]>([]);
   const [showSaveMenu, setShowSaveMenu] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
@@ -164,6 +191,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   const [reportFilter, setReportFilter] = useState<'GENERAL'|'PAINT'|'FLOOR'>('GENERAL');
   const [planSnapshot, setPlanSnapshot] = useState<string | null>(null);
   const [cursorPos, setCursorPos] = useState<Point | null>(null); // For architectural guides
+  const [showFurnitureMenu, setShowFurnitureMenu] = useState(false); // New menu state
   
   // Export state
   const isExportingRef = useRef(false);
@@ -189,7 +217,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
 
   // --- History ---
   const saveHistory = () => {
-    const state = JSON.stringify({ nodes, walls, objects });
+    const state = JSON.stringify({ nodes, walls, objects, furniture });
     if (history[history.length - 1] !== state) {
       setHistory(h => [...h.slice(-10), state]);
     }
@@ -199,6 +227,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       const prev = history[history.length - 1];
       const data = JSON.parse(prev);
       setNodes(data.nodes); setWalls(data.walls); setObjects(data.objects);
+      if (data.furniture) setFurniture(data.furniture); // Handle furniture undo
       setHistory(h => h.slice(0, -1));
     }
   };
@@ -218,22 +247,17 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   const findNodeAt = (p: Point, radius = 10) => nodes.find(n => dist(n, p) < radius / viewport.zoom);
   
   const calculateStats = () => {
-     // Simplified logic for demo
      let floorAreaM2 = 0;
      let wallLengthM = 0;
      let doorCount = 0;
      let windowCount = 0;
      
-     // Very rough area approximation (Polygon area)
-     // Only works for closed loops, here we just sum lengths for walls
      walls.forEach(w => {
         const n1 = nodes.find(n => n.id === w.startNodeId);
         const n2 = nodes.find(n => n.id === w.endNodeId);
         if(n1 && n2) wallLengthM += dist(n1, n2);
      });
      
-     // Calculate floor area using shoelace formula for closed loop of outer walls
-     // For now, just a placeholder based on bounding box to show something
      if (nodes.length > 2) {
          let area = 0;
          for (let i = 0; i < nodes.length; i++) {
@@ -246,9 +270,10 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
 
      doorCount = objects.filter(o => o.type === 'DOOR').length;
      windowCount = objects.filter(o => o.type === 'WINDOW').length;
+     const furnitureCount = furniture.length;
      
      const wallAreaM2 = (wallLengthM * 2.8) / 100; // Assume 2.8m height
-     const netPaintAreaM2 = wallAreaM2 - (doorCount * 2 + windowCount * 1.5); // Deduct openings roughly
+     const netPaintAreaM2 = wallAreaM2 - (doorCount * 2 + windowCount * 1.5); 
 
      return { 
          floorAreaM2: floorAreaM2.toFixed(2), 
@@ -256,12 +281,13 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
          ceilingAreaM2: floorAreaM2.toFixed(2),
          netPaintAreaM2: netPaintAreaM2.toFixed(2),
          doorCount, 
-         windowCount 
+         windowCount,
+         furnitureCount
      };
   };
 
   const handleSaveToFiles = () => {
-      const data = JSON.stringify({ nodes, walls, objects, version: '1.0' });
+      const data = JSON.stringify({ nodes, walls, objects, furniture, version: '1.1' });
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = `plan-${new Date().toISOString().slice(0,10)}.json`;
@@ -269,15 +295,12 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   };
 
   const handleSaveImage = () => {
-      // Temporarily hide grid for clean export
       isExportingRef.current = true;
       draw(); 
-      
       const link = document.createElement('a');
       link.download = `room-plan-${Date.now()}.png`;
       link.href = canvasRef.current!.toDataURL();
       link.click();
-      
       isExportingRef.current = false;
       draw();
       setShowSaveMenu(false);
@@ -286,7 +309,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   const handleShare = async () => {
      if (navigator.share) {
         try {
-            const file = new File([JSON.stringify({ nodes, walls, objects })], 'plan.json', { type: 'application/json' });
+            const file = new File([JSON.stringify({ nodes, walls, objects, furniture })], 'plan.json', { type: 'application/json' });
             await navigator.share({ title: 'My Room Plan', text: 'Check out my room plan!', files: [file] });
         } catch (e) { console.log('Share failed', e); }
      } else { alert('Sharing not supported on this device'); }
@@ -294,8 +317,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
 
   const openReport = () => {
      document.title = reportData.clientName ? `Report_${reportData.clientName}` : "Engineering_Report";
-
-     // 1. Auto-Zoom to Fit Content
      if (nodes.length > 0 && canvasRef.current) {
          const minX = Math.min(...nodes.map(n => n.x));
          const maxX = Math.max(...nodes.map(n => n.x));
@@ -320,13 +341,32 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
          
          setViewport({ x: newVx, y: newVy, zoom: clampedZoom });
          
-         // Trigger Snapshot in next render cycle (handled in useEffect loop)
          isExportingRef.current = true;
          snapshotPendingRef.current = true;
      } else {
-         // If no nodes, just open report
          setShowReport(true);
      }
+  };
+
+  const addFurniture = (type: FurnitureType) => {
+      // Add to center of screen
+      const center = toWorld(canvasRef.current!.width / 2, canvasRef.current!.height / 2);
+      const tmpl = FURNITURE_TEMPLATES[type];
+      const newFurn: Furniture = {
+          id: Math.random().toString(),
+          type: type,
+          x: center.x,
+          y: center.y,
+          rotation: 0,
+          width: tmpl.width,
+          depth: tmpl.depth
+      };
+      setFurniture(prev => [...prev, newFurn]);
+      setMode('SELECT');
+      setSelectedId({ type: 'FURNITURE', id: newFurn.id });
+      setShowFurnitureMenu(false);
+      setShowProps(true);
+      saveHistory();
   };
 
   // --- Input Handlers ---
@@ -334,15 +374,19 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
     const pos = getMousePos(e);
     const wPos = toWorld(pos.x, pos.y);
     
-    // Hit Test for Rotation Handle
-    const rotHandle = getRotationHandlePos();
-    if (rotHandle) {
-       const sHandle = toScreen(rotHandle.x, rotHandle.y);
-       if (Math.hypot(pos.x - sHandle.x, pos.y - sHandle.y) < 20) {
-          rotationRef.current = { active: true, startAngle: Math.atan2(wPos.y - rotHandle.y, wPos.x - rotHandle.x), center: getSelectionCenter()! }; // Fix center logic later
-          // For simplicity, handle rotation differently or skip for now
-          return;
-       }
+    // NEW: Hit test for Furniture
+    // We need to account for rotation to check hit accurately, but for simplicity we'll use a bounding circle radius check first
+    for (let i = furniture.length - 1; i >= 0; i--) {
+        const f = furniture[i];
+        const radius = Math.max(f.width, f.depth) / 2;
+        if (dist(wPos, {x: f.x, y: f.y}) < radius) {
+            setSelectedId({ type: 'FURNITURE', id: f.id });
+            activeObjRef.current = f.id;
+            isDraggingRef.current = true;
+            dragStartRef.current = pos; // Screen pos for drag delta
+            setShowProps(true);
+            return;
+        }
     }
 
     const clickedNode = findNodeAt(wPos);
@@ -353,7 +397,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       return;
     }
     
-    // FIX: Hit test for Objects (Doors/Windows) to enable dragging
     const clickedObj = objects.find(o => {
        const wall = walls.find(w => w.id === o.wallId);
        if (!wall) return false;
@@ -362,13 +405,13 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
        if (!n1 || !n2) return false;
        const cx = n1.x + (n2.x - n1.x) * o.t;
        const cy = n1.y + (n2.y - n1.y) * o.t;
-       return dist(wPos, {x: cx, y: cy}) < (o.width/2 + 10); // Hit box
+       return dist(wPos, {x: cx, y: cy}) < (o.width/2 + 10);
     });
     
     if (clickedObj) {
        setSelectedId({ type: 'OBJECT', id: clickedObj.id });
        if (mode === 'SELECT') { 
-          activeObjRef.current = clickedObj.id; // Enable Dragging
+          activeObjRef.current = clickedObj.id; 
           setShowProps(true); 
        }
        isDraggingRef.current = true; dragStartRef.current = pos;
@@ -381,13 +424,9 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
        return;
     }
     if (mode === 'RECT') {
-        // Start Rectangle Drag
         activeObjRef.current = 'RECT';
         isDraggingRef.current = true;
         dragStartRef.current = pos; 
-        // We use dragStartRef to store the SCREEN position, but for the rect we need World Pos.
-        // We can just recalculate world pos in Move/Up from dragStartRef or store it differently.
-        // For consistency with PAN, dragStartRef is Screen Pos.
         return;
     }
 
@@ -412,12 +451,10 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
     if (clickedWall) {
       setSelectedId({ type: 'WALL', id: clickedWall.id });
       if (mode === 'SELECT') { 
-          // ENABLE WALL DRAG
           activeObjRef.current = clickedWall.id;
           isDraggingRef.current = true; 
           dragStartRef.current = pos;
-
-          const n1 = nodes.find(n => n.id === clickedWall.startNodeId)!; const n2 = nodes.find(n => n.id === clickedWall.endNodeId)!; const s = toScreen((n1.x+n2.x)/2, (n1.y+n2.y)/2); setContextMenuPos(s); setShowProps(true); 
+          setShowProps(true); 
       }
       return;
     }
@@ -428,7 +465,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       drawingStartNodeRef.current = newNodeId;
       setStartNodePreview({ x: wPos.x, y: wPos.y });
       setTempWallEnd(wPos);
-    } else { setSelectedId(null); activeObjRef.current = 'PAN'; }
+    } else { setSelectedId(null); activeObjRef.current = 'PAN'; isDraggingRef.current = true; dragStartRef.current = pos; } // Default to PAN if click empty space
   };
 
   const handlePointerMove = (e: any) => {
@@ -437,27 +474,16 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
 
     if (!isDraggingRef.current) {
        if (mode === 'DRAW') {
-          // Snap logic for guide lines
           const snapNode = findNodeAt(wPos, SNAP_DISTANCE);
           if (snapNode) setCursorPos({x: snapNode.x, y: snapNode.y});
           else setCursorPos(wPos);
        } else {
-          setCursorPos(wPos); // Track for smart node visibility
+          setCursorPos(wPos);
        }
     }
 
     if (!isDraggingRef.current || showReport || showSaveMenu) return;
-    if (rotationRef.current.active) {
-      const currentAngle = Math.atan2(wPos.y - rotationRef.current.center.y, wPos.x - rotationRef.current.center.x);
-      const delta = currentAngle - rotationRef.current.startAngle;
-      const cos = Math.cos(delta);
-      const sin = Math.sin(delta);
-      const cx = rotationRef.current.center.x;
-      const cy = rotationRef.current.center.y;
-      setNodes(prev => prev.map(n => ({ ...n, x: cx + (n.x - cx) * cos - (n.y - cy) * sin, y: cy + (n.x - cx) * sin + (n.y - cy) * cos })));
-      rotationRef.current.startAngle = currentAngle; 
-      return;
-    }
+
     if (activeObjRef.current === 'PAN') {
       const dx = pos.x - dragStartRef.current.x;
       const dy = pos.y - dragStartRef.current.y;
@@ -465,14 +491,24 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       dragStartRef.current = pos;
       return;
     }
+    
+    // Furniture Move
+    if (selectedId?.type === 'FURNITURE' && activeObjRef.current === selectedId.id) {
+         const prevWPos = toWorld(dragStartRef.current.x, dragStartRef.current.y);
+         const dx = wPos.x - prevWPos.x;
+         const dy = wPos.y - prevWPos.y;
+         
+         setFurniture(prev => prev.map(f => f.id === selectedId.id ? { ...f, x: f.x + dx, y: f.y + dy } : f));
+         dragStartRef.current = pos;
+         return;
+    }
+
     if (activeObjRef.current === 'RECT') {
-        // Update Temp Rect End
         setTempRectEnd(wPos);
         return;
     }
     
     if (activeObjRef.current === 'ROTATE_PLAN') {
-        // Calculate Center of Plan
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
         if (nodes.length === 0) return;
         nodes.forEach(n => {
@@ -484,7 +520,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         
         const sCenter = toScreen(cx, cy);
         
-        // Calculate Angles
         const prevAngle = Math.atan2(dragStartRef.current.y - sCenter.y, dragStartRef.current.x - sCenter.x);
         const curAngle = Math.atan2(pos.y - sCenter.y, pos.x - sCenter.x);
         const delta = curAngle - prevAngle;
@@ -503,9 +538,18 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
                 };
             }));
             
-            // Update Drag Start to avoid accumulation errors (though delta is small)
-            // However, rotating nodes changes the center? No, center of rotation is invariant if we rotate around it.
-            // But we need to update dragStartRef to current pos for next frame's delta.
+            // Also rotate furniture
+            setFurniture(prev => prev.map(f => {
+                const nx = f.x - cx;
+                const ny = f.y - cy;
+                return {
+                    ...f,
+                    x: cx + (nx * cos - ny * sin),
+                    y: cy + (nx * sin + ny * cos),
+                    rotation: f.rotation + delta
+                };
+            }));
+
             dragStartRef.current = pos;
         }
         return;
@@ -523,7 +567,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       const snapNode = findNodeAt(target, SNAP_DISTANCE);
       if (snapNode && snapNode.id !== drawingStartNodeRef.current) { target = { x: snapNode.x, y: snapNode.y }; }
       
-      // Constraint: Max Wall Length 800cm
       if (startNode) {
           const dist = Math.hypot(target.x - startNode.x, target.y - startNode.y);
           if (dist > 800) {
@@ -558,7 +601,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       return;
     }
     
-    // HANDLE WALL DRAG
     if (mode === 'SELECT' && activeObjRef.current && walls.find(w => w.id === activeObjRef.current)) {
         const wId = activeObjRef.current;
         const draggingWall = walls.find(w => w.id === wId);
@@ -567,15 +609,12 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
              const dx = wPos.x - prevWPos.x;
              const dy = wPos.y - prevWPos.y;
 
-             // Update both nodes of the wall
              setNodes(prev => prev.map(n => {
                  if (n.id === draggingWall.startNodeId || n.id === draggingWall.endNodeId) {
                      return { ...n, x: n.x + dx, y: n.y + dy };
                  }
                  return n;
              }));
-             
-             // Update drag start to current pos for next frame (Incremental)
              dragStartRef.current = pos;
         }
         return;
@@ -583,7 +622,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   };
 
   const handlePointerUp = () => {
-    // Handle Rectangle Creation on Up
     if (activeObjRef.current === 'RECT' && tempRectEnd) {
         const startPos = toWorld(dragStartRef.current.x, dragStartRef.current.y);
         const endPos = tempRectEnd;
@@ -592,13 +630,11 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         const height = Math.abs(endPos.y - startPos.y);
         
         if (width > 50 && height > 50) {
-            // Create 4 Nodes
-            const n1 = { id: Math.random().toString(), x: startPos.x, y: startPos.y }; // Top-Left
-            const n2 = { id: Math.random().toString(), x: endPos.x, y: startPos.y };   // Top-Right
-            const n3 = { id: Math.random().toString(), x: endPos.x, y: endPos.y };     // Bottom-Right
-            const n4 = { id: Math.random().toString(), x: startPos.x, y: endPos.y };   // Bottom-Left
+            const n1 = { id: Math.random().toString(), x: startPos.x, y: startPos.y };
+            const n2 = { id: Math.random().toString(), x: endPos.x, y: startPos.y };
+            const n3 = { id: Math.random().toString(), x: endPos.x, y: endPos.y };
+            const n4 = { id: Math.random().toString(), x: startPos.x, y: endPos.y };
             
-            // Create 4 Walls
             const w1 = { id: Math.random().toString(), startNodeId: n1.id, endNodeId: n2.id, thickness: DEFAULT_WALL_THICKNESS, height: 280 };
             const w2 = { id: Math.random().toString(), startNodeId: n2.id, endNodeId: n3.id, thickness: DEFAULT_WALL_THICKNESS, height: 280 };
             const w3 = { id: Math.random().toString(), startNodeId: n3.id, endNodeId: n4.id, thickness: DEFAULT_WALL_THICKNESS, height: 280 };
@@ -612,7 +648,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         setTempRectEnd(null);
         activeObjRef.current = null;
         isDraggingRef.current = false;
-        setMode('SELECT'); // Switch back to select after creating room
+        setMode('SELECT'); 
         return;
     }
 
@@ -621,10 +657,8 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       let endNodeId = ''; const snapNode = findNodeAt(tempWallEnd, SNAP_DISTANCE);
       if (snapNode) { endNodeId = snapNode.id; } 
       else { 
-          // CHECK MIN LENGTH FOR NEW NODE WALL
           const dist = Math.hypot(tempWallEnd.x - startNodePreview!.x, tempWallEnd.y - startNodePreview!.y);
           if (dist < 50) {
-              // Cancel if too short
               setTempWallEnd(null); setStartNodePreview(null); drawingStartNodeRef.current = null;
               return;
           }
@@ -632,16 +666,14 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       }
       
       if (drawingStartNodeRef.current !== endNodeId) {
-        // Check Length again even for snapped nodes
         const startNode = nodes.find(n => n.id === drawingStartNodeRef.current);
-        const endNode = nodes.find(n => n.id === endNodeId) || { x: tempWallEnd.x, y: tempWallEnd.y }; // Approximation if new node
+        const endNode = nodes.find(n => n.id === endNodeId) || { x: tempWallEnd.x, y: tempWallEnd.y };
         if(startNode) {
              const dist = Math.hypot(endNode.x - startNode.x, endNode.y - startNode.y);
              if (dist > 50) {
                  const newWall: Wall = { id: Math.random().toString(), startNodeId: drawingStartNodeRef.current, endNodeId: endNodeId, thickness: DEFAULT_WALL_THICKNESS, height: 280 };
                  setWalls(prev => [...prev, newWall]); saveHistory(); drawingStartNodeRef.current = endNodeId; setStartNodePreview({ x: tempWallEnd.x, y: tempWallEnd.y });
              } else {
-                 // Too short, just move preview
                  if (!snapNode) drawingStartNodeRef.current = null; 
              }
         }
@@ -653,7 +685,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
   const draw = useCallback(() => {
     const cvs = canvasRef.current; if (!cvs) return; const ctx = cvs.getContext('2d'); if (!ctx) return;
     
-    // EXPORT MODE: Use white background, no grid
     if (isExportingRef.current) {
         ctx.fillStyle = '#ffffff'; 
         ctx.fillRect(0, 0, cvs.width, cvs.height);
@@ -661,7 +692,6 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         ctx.fillStyle = COLORS.bg; 
         ctx.fillRect(0, 0, cvs.width, cvs.height);
         
-        // Draw Grid only if NOT exporting
         ctx.beginPath(); ctx.strokeStyle = COLORS.grid; ctx.lineWidth = 1;
         const sx = Math.floor(toWorld(0,0).x / GRID_SIZE) * GRID_SIZE; const ex = Math.floor(toWorld(cvs.width,0).x / GRID_SIZE) * GRID_SIZE;
         const sy = Math.floor(toWorld(0,0).y / GRID_SIZE) * GRID_SIZE; const ey = Math.floor(toWorld(0,cvs.height).y / GRID_SIZE) * GRID_SIZE;
@@ -672,16 +702,15 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
     
     const zoom = viewport.zoom;
 
+    // 1. Draw Walls
     walls.forEach(w => {
       const n1 = nodes.find(n => n.id === w.startNodeId); const n2 = nodes.find(n => n.id === w.endNodeId); if (!n1 || !n2) return;
       const s1 = toScreen(n1.x, n1.y); const s2 = toScreen(n2.x, n2.y);
       const isSel = selectedId?.type === 'WALL' && selectedId.id === w.id; const th = w.thickness * zoom;
       
-      // Draw Wall Body
-      ctx.lineCap = 'butt'; // Use butt for cleaner corners geometrically
+      ctx.lineCap = 'butt'; 
       ctx.beginPath(); ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y);
       ctx.lineWidth = th; ctx.strokeStyle = isSel ? COLORS.wallSelected : COLORS.wallFill; ctx.stroke();
-      // Outline
       if (!isSel) {
           const dx = s2.x - s1.x; const dy = s2.y - s1.y; const len = Math.hypot(dx, dy);
           const nx = -dy/len; const ny = dx/len;
@@ -693,36 +722,27 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       }
 
       const dx = s2.x - s1.x; const dy = s2.y - s1.y; const len = Math.hypot(dx, dy); const nx = -dy/len; const ny = dx/len; 
-      const offset = th + 25; const innerOffset = -(th + 25);
       const wallObjs = objects.filter(o => o.wallId === w.id).sort((a,b) => a.t - b.t); const wallLenWorld = Math.hypot(n2.x-n1.x, n2.y-n1.y);
       
-      // Determine active dimension mode for this wall
       const isWallSelected = selectedId?.type === 'WALL' && selectedId.id === w.id;
       const activeMode = isWallSelected ? measureMode : null; 
 
-      // ENGINEERING DIMENSIONS CALCULATIONS
-      // Calculate face points for extension lines to start from
-      // Outer Face Point Start/End
       const p1Outer = { x: s1.x + nx * (th/2), y: s1.y + ny * (th/2) };
       const p2Outer = { x: s2.x + nx * (th/2), y: s2.y + ny * (th/2) };
-      // Inner Face Point Start/End
       const p1Inner = { x: s1.x - nx * (th/2), y: s1.y - ny * (th/2) };
       const p2Inner = { x: s2.x - nx * (th/2), y: s2.y - ny * (th/2) };
 
       if (wallObjs.length === 0) { 
-          // Draw Outer
           drawDimension(ctx, p1Outer, p2Outer, nx, ny, 25, wallLenWorld + w.thickness, 'OUTER', activeMode === 'OUTER'); 
       } else {
         let currentT = 0;
         wallObjs.forEach(obj => {
             const objHalfWidthT = (obj.width / 2) / wallLenWorld; const objStartT = obj.t - objHalfWidthT; const objEndT = obj.t + objHalfWidthT;
             if (objStartT > currentT) { 
-                // Segment from currentT to objStartT
                 const pStart = { x: p1Outer.x + dx*currentT, y: p1Outer.y + dy*currentT }; 
                 const pEnd = { x: p1Outer.x + dx*objStartT, y: p1Outer.y + dy*objStartT }; 
                 drawDimension(ctx, pStart, pEnd, nx, ny, 25, (objStartT - currentT) * wallLenWorld, 'OUTER', false); 
             }
-            // Object Dimension
             const pObjStart = { x: p1Outer.x + dx*objStartT, y: p1Outer.y + dy*objStartT }; 
             const pObjEnd = { x: p1Outer.x + dx*objEndT, y: p1Outer.y + dy*objEndT }; 
             drawDimension(ctx, pObjStart, pObjEnd, nx, ny, 25, obj.width, 'OUTER', false); currentT = objEndT;
@@ -731,24 +751,18 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
             const pStart = { x: p1Outer.x + dx*currentT, y: p1Outer.y + dy*currentT }; 
             drawDimension(ctx, pStart, p2Outer, nx, ny, 25, (1.0 - currentT) * wallLenWorld, 'OUTER', false); 
         }
-        
-        // DRAW TOTAL OUTER IF SELECTED
         if (isWallSelected && activeMode === 'OUTER') {
              drawDimension(ctx, p1Outer, p2Outer, nx, ny, 45, wallLenWorld + w.thickness, 'OUTER', true);
         }
       }
-      
-      // Draw Inner
       const innerLen = Math.max(0, wallLenWorld - w.thickness); 
-      // We flip nx, ny for inner side direction
       drawDimension(ctx, p1Inner, p2Inner, -nx, -ny, 25, innerLen, 'INNER', activeMode === 'INNER');
-      
-      // Draw Center (Only if active)
       if (activeMode === 'CENTER') {
           drawDimension(ctx, s1, s2, nx, ny, 0, wallLenWorld, 'CENTER', true);
       }
-
     });
+
+    // 2. Draw Objects (Doors/Windows)
     objects.forEach(obj => {
       const wall = walls.find(w => w.id === obj.wallId); if (!wall) return; const n1 = nodes.find(n => n.id === wall.startNodeId); const n2 = nodes.find(n => n.id === wall.endNodeId); if (!n1 || !n2) return;
       const s1 = toScreen(n1.x, n1.y); const s2 = toScreen(n2.x, n2.y); const dx = s2.x - s1.x; const dy = s2.y - s1.y; const cx = s1.x + dx * obj.t; const cy = s1.y + dy * obj.t;
@@ -756,117 +770,54 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
       ctx.save(); ctx.translate(cx, cy); ctx.rotate(angle); ctx.globalCompositeOperation = 'source-over'; 
       ctx.fillStyle = COLORS.bg; ctx.fillRect(-width/2, -th/2-2, width, th+4);
       if (obj.type === 'DOOR') {
-        const flipX = obj.flipX ? -1 : 1; 
-        const flipY = obj.flipY ? -1 : 1;
-        
-        // Draw frames (Jambs)
-        ctx.fillStyle = COLORS.wallStroke; 
-        ctx.fillRect(-width/2, -th/2, 4, th); // Left Jamb
-        ctx.fillRect(width/2 - 4, -th/2, 4, th); // Right Jamb
-        
-        // Check Leaf Count
+        const flipX = obj.flipX ? -1 : 1; const flipY = obj.flipY ? -1 : 1;
+        ctx.fillStyle = COLORS.wallStroke; ctx.fillRect(-width/2, -th/2, 4, th); ctx.fillRect(width/2 - 4, -th/2, 4, th);
         const isDouble = obj.leafCount === 2;
-        
         if (!isDouble) {
-            // SINGLE LEAF LOGIC (Existing)
-            const hingeX = (width/2) * flipX; 
-            const hingeY = (th/2) * flipY; 
-            ctx.save();
-            ctx.translate(hingeX, hingeY); 
-            const swingDir = flipX * flipY; 
-            const startAngle = flipX === 1 ? Math.PI : 0;
-            const endAngle = startAngle + (Math.PI/2 * swingDir * -1); 
-            
-            ctx.beginPath(); ctx.moveTo(0,0);
-            ctx.lineTo(Math.cos(endAngle)*width, Math.sin(endAngle)*width);
+            const hingeX = (width/2) * flipX; const hingeY = (th/2) * flipY; 
+            ctx.save(); ctx.translate(hingeX, hingeY); 
+            const swingDir = flipX * flipY; const startAngle = flipX === 1 ? Math.PI : 0; const endAngle = startAngle + (Math.PI/2 * swingDir * -1); 
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(endAngle)*width, Math.sin(endAngle)*width);
             ctx.lineWidth = 2; ctx.strokeStyle = isSel ? COLORS.wallSelected : COLORS.doorStroke; ctx.stroke();
-            
             ctx.beginPath(); ctx.arc(0, 0, width, startAngle, endAngle, swingDir > 0);
             ctx.setLineDash([5, 3]); ctx.lineWidth = 1; ctx.strokeStyle = '#ef4444'; ctx.stroke(); ctx.setLineDash([]);
             ctx.restore();
         } else {
-            // DOUBLE LEAF LOGIC
             const leafWidth = width / 2;
-            // Left Leaf (Hinge at -width/2)
-            // Right Leaf (Hinge at width/2)
-            // Both swing OUT or IN based on flipY
-            
-            // Left Hinge
-            ctx.save();
-            ctx.translate(-width/2, (th/2) * flipY);
-            const swingDirL = -1 * flipY; // Left hinge swings opposite to flipY logic usually? Let's trace:
-            // If flipY is 1 (Bottom), Left hinge needs to swing DOWN-RIGHT (0 to PI/2) -> Positive Swing
-            // If flipY is -1 (Top), Left hinge needs to swing UP-RIGHT (0 to -PI/2) -> Negative Swing
-            // Standard Left Hinge (flipX=-1) logic: 0 start.
-            const startAngleL = 0;
-            const endAngleL = startAngleL + (Math.PI/2 * swingDirL * -1); // -1 for canvas Y flip fix if needed, but standard canvas: +Y is down.
-            // Let's stick to visual logic:
-            // Hinge Left, Swing In (Up) -> Arc from 0 to -90.
-            // Hinge Left, Swing Out (Down) -> Arc from 0 to 90.
-            const swingL = flipY === 1 ? 1 : -1; // 1 = Down (0 to PI/2), -1 = Up (0 to -PI/2)
-            
-            ctx.beginPath(); ctx.moveTo(0,0);
-            ctx.lineTo(Math.cos(swingL * Math.PI/2)*leafWidth, Math.sin(swingL * Math.PI/2)*leafWidth);
+            ctx.save(); ctx.translate(-width/2, (th/2) * flipY);
+            const swingL = flipY === 1 ? 1 : -1; 
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(swingL * Math.PI/2)*leafWidth, Math.sin(swingL * Math.PI/2)*leafWidth);
             ctx.lineWidth = 2; ctx.strokeStyle = isSel ? COLORS.wallSelected : COLORS.doorStroke; ctx.stroke();
             ctx.beginPath(); ctx.arc(0, 0, leafWidth, 0, swingL * Math.PI/2, swingL > 0);
             ctx.setLineDash([5, 3]); ctx.lineWidth = 1; ctx.strokeStyle = '#ef4444'; ctx.stroke(); ctx.setLineDash([]);
             ctx.restore();
-
-            // Right Hinge
-            ctx.save();
-            ctx.translate(width/2, (th/2) * flipY);
-            // Hinge Right, Swing In (Up) -> Arc from 180 to 270 (-90).
-            // Hinge Right, Swing Out (Down) -> Arc from 180 to 90.
-            const startAngleR = Math.PI;
-            const swingR = flipY === 1 ? 1 : -1; // 1 = Down (PI to PI/2), -1 = Up (PI to 3PI/2)
-            
-            ctx.beginPath(); ctx.moveTo(0,0);
-            ctx.lineTo(Math.cos(Math.PI + swingR * Math.PI/2)*leafWidth, Math.sin(Math.PI + swingR * Math.PI/2)*leafWidth);
+            ctx.save(); ctx.translate(width/2, (th/2) * flipY);
+            const swingR = flipY === 1 ? 1 : -1; 
+            ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(Math.PI + swingR * Math.PI/2)*leafWidth, Math.sin(Math.PI + swingR * Math.PI/2)*leafWidth);
             ctx.lineWidth = 2; ctx.strokeStyle = isSel ? COLORS.wallSelected : COLORS.doorStroke; ctx.stroke();
-            
-            // Arc direction:
-            // If Swing Down (1): Start PI, End PI/2 (CW -> false)
-            // If Swing Up (-1): Start PI, End 3PI/2 (CCW -> true) ?? No.
-            // PI to PI/2 is CCW? No, PI=180, PI/2=90. 180->90 is CCW (Antibiotic). Wait. 0 is Right. 90 is Down.
-            // 180 to 90 is Counter-Clockwise (-90 change).
-            // 180 to 270 is Clockwise (+90 change).
-            ctx.beginPath(); 
-            ctx.arc(0, 0, leafWidth, Math.PI, Math.PI + (swingR * Math.PI/2), swingR > 0);
+            ctx.beginPath(); ctx.arc(0, 0, leafWidth, Math.PI, Math.PI + (swingR * Math.PI/2), swingR > 0);
             ctx.setLineDash([5, 3]); ctx.lineWidth = 1; ctx.strokeStyle = '#ef4444'; ctx.stroke(); ctx.setLineDash([]);
             ctx.restore();
         }
-
       } else {
         ctx.fillStyle = 'white'; ctx.fillRect(-width/2, -th/2, width, th); ctx.strokeStyle = '#888'; ctx.strokeRect(-width/2, -th/2, width, th); ctx.fillStyle = COLORS.windowGlass; ctx.fillRect(-width/2, -2, width, 4);
       }
       if (isSel) { ctx.fillStyle = COLORS.handle; ctx.fillRect(-15, th/2 + 5, 30, 4); ctx.strokeRect(-25, th/2+5, 50, 4); }
       ctx.restore();
     });
+
+    // 3. Draw Nodes
     nodes.forEach(n => {
         const s = toScreen(n.x, n.y); 
-        
-        // 1. DRAW JOINT (Geometric Fix for Corners)
         const connectedWalls = walls.filter(w => w.startNodeId === n.id || w.endNodeId === n.id);
         if (connectedWalls.length > 0) {
             const maxTh = Math.max(...connectedWalls.map(w => w.thickness));
-            ctx.beginPath(); 
-            ctx.arc(s.x, s.y, (maxTh/2) * zoom, 0, Math.PI*2);
-            ctx.fillStyle = COLORS.wallFill; 
-            ctx.fill();
-            
-            // FIX: Hide corner joint strokes during export to avoid "Circle" artifacts
-            if (!isExportingRef.current) {
-                ctx.lineWidth = 1; 
-                ctx.strokeStyle = COLORS.wallStroke; 
-                ctx.stroke();
-            }
+            ctx.beginPath(); ctx.arc(s.x, s.y, (maxTh/2) * zoom, 0, Math.PI*2); ctx.fillStyle = COLORS.wallFill; ctx.fill();
+            if (!isExportingRef.current) { ctx.lineWidth = 1; ctx.strokeStyle = COLORS.wallStroke; ctx.stroke(); }
         }
-
-        // 2. DRAW INTERACTIVE HANDLE (Smart Visibility)
         if (!isExportingRef.current) {
             const isSel = selectedId?.type === 'NODE' && selectedId.id === n.id;
             const isHover = cursorPos && Math.hypot(n.x - cursorPos.x, n.y - cursorPos.y) < (SNAP_DISTANCE + 10) / viewport.zoom;
-            
             if (isSel || isHover || mode === 'DRAW') {
                 ctx.beginPath(); ctx.arc(s.x, s.y, (isSel || isHover ? 6 : 4) * zoom, 0, Math.PI*2); 
                 ctx.fillStyle = COLORS.node; ctx.fill(); 
@@ -875,310 +826,206 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         }
     });
 
-    // Architectural Guides (Red Crosshairs)
+    // 4. Draw Furniture
+    furniture.forEach(f => {
+       const s = toScreen(f.x, f.y);
+       const isSel = selectedId?.type === 'FURNITURE' && selectedId.id === f.id;
+       const width = f.width * zoom;
+       const depth = f.depth * zoom;
+       
+       ctx.save();
+       ctx.translate(s.x, s.y);
+       ctx.rotate(f.rotation);
+       
+       // Draw Shadow
+       ctx.shadowColor = 'rgba(0,0,0,0.1)';
+       ctx.shadowBlur = 10;
+       ctx.shadowOffsetY = 5;
+
+       // Base Shape
+       ctx.fillStyle = COLORS.furnitureFill;
+       ctx.strokeStyle = isSel ? COLORS.furnitureSelected : COLORS.furnitureStroke;
+       ctx.lineWidth = isSel ? 2 : 1;
+       
+       // Different Shapes per Type
+       if (f.type.includes('ROUND') || f.type === 'TOILET') {
+           ctx.beginPath();
+           ctx.ellipse(0, 0, width/2, depth/2, 0, 0, Math.PI * 2);
+           ctx.fill();
+           ctx.stroke();
+       } else {
+           ctx.fillRect(-width/2, -depth/2, width, depth);
+           ctx.strokeRect(-width/2, -depth/2, width, depth);
+       }
+       
+       // Details
+       ctx.shadowColor = 'transparent';
+       ctx.fillStyle = COLORS.furnitureStroke;
+       ctx.globalAlpha = 0.5;
+       
+       if (f.type.includes('BED')) {
+           // Pillows
+           const pillowSize = Math.min(width, depth) * 0.3;
+           ctx.fillRect(-width/2 + 5, -depth/2 + 5, pillowSize, pillowSize*0.6);
+           if (f.type === 'BED_DOUBLE') {
+               ctx.fillRect(width/2 - 5 - pillowSize, -depth/2 + 5, pillowSize, pillowSize*0.6);
+           }
+           // Blanket line
+           ctx.beginPath();
+           ctx.moveTo(-width/2, 0); ctx.lineTo(width/2, 0);
+           ctx.stroke();
+       }
+       else if (f.type.includes('TABLE')) {
+           // Center
+           ctx.beginPath();
+           ctx.arc(0,0, 2, 0, Math.PI*2);
+           ctx.fill();
+       }
+       else if (f.type === 'TOILET') {
+           // Tank
+           ctx.fillRect(-width/2, -depth/2, width, depth*0.3);
+       }
+
+       ctx.globalAlpha = 1;
+       ctx.restore();
+       
+       // Selection Box
+       if (isSel) {
+           ctx.save();
+           ctx.translate(s.x, s.y);
+           ctx.rotate(f.rotation);
+           ctx.strokeStyle = '#ef4444';
+           ctx.lineWidth = 1;
+           ctx.setLineDash([5, 3]);
+           ctx.strokeRect(-width/2 - 5, -depth/2 - 5, width + 10, depth + 10);
+           ctx.setLineDash([]);
+           // Rotation Handle
+           ctx.beginPath();
+           ctx.arc(0, -depth/2 - 20, 5, 0, Math.PI*2);
+           ctx.fillStyle = '#ef4444';
+           ctx.fill();
+           ctx.moveTo(0, -depth/2 - 5); ctx.lineTo(0, -depth/2 - 20); ctx.stroke();
+           ctx.restore();
+       }
+    });
+
     if (mode === 'DRAW' && cursorPos) {
        const s = toScreen(cursorPos.x, cursorPos.y);
-       ctx.beginPath();
-       ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)'; // Red, semi-transparent
-       ctx.lineWidth = 1;
-       ctx.setLineDash([10, 5]); // Dashed line for architectural look
-       // Full Vertical Line
-       ctx.moveTo(s.x, 0); ctx.lineTo(s.x, cvs.height);
-       // Full Horizontal Line
-       ctx.moveTo(0, s.y); ctx.lineTo(cvs.width, s.y);
-       ctx.stroke();
-       ctx.setLineDash([]);
-
-       // Architectural Cursor (Target Reticle / "Four Arrows")
-       // Drawing a small geometric target at the intersection
-       ctx.beginPath();
-       ctx.strokeStyle = '#ef4444'; // Red
-       ctx.lineWidth = 2;
+       ctx.beginPath(); ctx.strokeStyle = 'rgba(255, 0, 0, 0.6)'; ctx.lineWidth = 1; ctx.setLineDash([10, 5]); 
+       ctx.moveTo(s.x, 0); ctx.lineTo(s.x, cvs.height); ctx.moveTo(0, s.y); ctx.lineTo(cvs.width, s.y); ctx.stroke(); ctx.setLineDash([]);
+       ctx.beginPath(); ctx.strokeStyle = '#ef4444'; ctx.lineWidth = 2;
        const size = 10;
-       // Top corner
        ctx.moveTo(s.x - size, s.y - size/2); ctx.lineTo(s.x - size, s.y - size); ctx.lineTo(s.x - size/2, s.y - size);
-       // Top Right
        ctx.moveTo(s.x + size/2, s.y - size); ctx.lineTo(s.x + size, s.y - size); ctx.lineTo(s.x + size, s.y - size/2);
-       // Bottom Right
        ctx.moveTo(s.x + size, s.y + size/2); ctx.lineTo(s.x + size, s.y + size); ctx.lineTo(s.x + size/2, s.y + size);
-       // Bottom Left
        ctx.moveTo(s.x - size/2, s.y + size); ctx.lineTo(s.x - size, s.y + size); ctx.lineTo(s.x - size, s.y + size/2);
-       
-       // Center Cross
-       ctx.moveTo(s.x - 4, s.y); ctx.lineTo(s.x + 4, s.y);
-       ctx.moveTo(s.x, s.y - 4); ctx.lineTo(s.x, s.y + 4);
-       
-       ctx.stroke();
+       ctx.moveTo(s.x - 4, s.y); ctx.lineTo(s.x + 4, s.y); ctx.moveTo(s.x, s.y - 4); ctx.lineTo(s.x, s.y + 4); ctx.stroke();
     }
     
-    // LIVE DIMENSIONS (DRAW MODE)
     if (mode === 'DRAW' && drawingStartNodeRef.current && tempWallEnd) {
         const startNode = nodes.find(n => n.id === drawingStartNodeRef.current) || startNodePreview;
         if (startNode) {
-             // Calculate screen points
-             const s1 = toScreen(startNode.x, startNode.y);
-             const s2 = toScreen(tempWallEnd.x, tempWallEnd.y);
-             
-             const dx = s2.x - s1.x;
-             const dy = s2.y - s1.y;
-             const len = Math.hypot(dx, dy);
-             
+             const s1 = toScreen(startNode.x, startNode.y); const s2 = toScreen(tempWallEnd.x, tempWallEnd.y);
+             const dx = s2.x - s1.x; const dy = s2.y - s1.y; const len = Math.hypot(dx, dy);
              if (len > 5) {
-                 const nx = -dy / len;
-                 const ny = dx / len;
-                 const worldLen = len / zoom;
-                 
-                 // Draw live dimension line
+                 const nx = -dy / len; const ny = dx / len; const worldLen = len / zoom;
                  drawDimension(ctx, s1, s2, nx, ny, 25, worldLen, 'CENTER', true);
              }
         }
     }
 
-    // RECTANGLE PREVIEW
     if (activeObjRef.current === 'RECT' && tempRectEnd) {
-        const startPos = toWorld(dragStartRef.current.x, dragStartRef.current.y);
-        const endPos = tempRectEnd;
-        
-        const s1 = toScreen(startPos.x, startPos.y);
-        const s2 = toScreen(endPos.x, startPos.y);
-        const s3 = toScreen(endPos.x, endPos.y);
-        const s4 = toScreen(startPos.x, endPos.y);
-        
-        ctx.beginPath();
-        ctx.strokeStyle = '#2563eb';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([5, 5]);
-        ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.lineTo(s3.x, s3.y); ctx.lineTo(s4.x, s4.y); ctx.closePath();
-        ctx.stroke();
-        ctx.setLineDash([]);
-        
-        // Dimensions for Rect
-        const width = Math.abs(endPos.x - startPos.x);
-        const height = Math.abs(endPos.y - startPos.y);
-        
-        // Top Dim
-        drawDimension(ctx, s1, s2, 0, -1, 20, width, 'CENTER', true);
-        // Right Dim
-        drawDimension(ctx, s2, s3, 1, 0, 20, height, 'CENTER', true);
+        const startPos = toWorld(dragStartRef.current.x, dragStartRef.current.y); const endPos = tempRectEnd;
+        const s1 = toScreen(startPos.x, startPos.y); const s2 = toScreen(endPos.x, startPos.y); const s3 = toScreen(endPos.x, endPos.y); const s4 = toScreen(startPos.x, endPos.y);
+        ctx.beginPath(); ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 2; ctx.setLineDash([5, 5]);
+        ctx.moveTo(s1.x, s1.y); ctx.lineTo(s2.x, s2.y); ctx.lineTo(s3.x, s3.y); ctx.lineTo(s4.x, s4.y); ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+        const width = Math.abs(endPos.x - startPos.x); const height = Math.abs(endPos.y - startPos.y);
+        drawDimension(ctx, s1, s2, 0, -1, 20, width, 'CENTER', true); drawDimension(ctx, s2, s3, 1, 0, 20, height, 'CENTER', true);
     }
     
-    // ROTATION VISUALS
     if (mode === 'ROTATE' && nodes.length > 0) {
         let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-        nodes.forEach(n => {
-            if(n.x < minX) minX = n.x; if(n.x > maxX) maxX = n.x;
-            if(n.y < minY) minY = n.y; if(n.y > maxY) maxY = n.y;
-        });
-        const cx = (minX + maxX) / 2;
-        const cy = (minY + maxY) / 2;
-        const sCenter = toScreen(cx, cy);
-        
-        // Draw Center Point
-        ctx.beginPath();
-        ctx.fillStyle = '#2563eb';
-        ctx.arc(sCenter.x, sCenter.y, 5, 0, Math.PI*2);
-        ctx.fill();
-        
-        // Draw Line to Cursor
+        nodes.forEach(n => { if(n.x < minX) minX = n.x; if(n.x > maxX) maxX = n.x; if(n.y < minY) minY = n.y; if(n.y > maxY) maxY = n.y; });
+        const cx = (minX + maxX) / 2; const cy = (minY + maxY) / 2; const sCenter = toScreen(cx, cy);
+        ctx.beginPath(); ctx.fillStyle = '#2563eb'; ctx.arc(sCenter.x, sCenter.y, 5, 0, Math.PI*2); ctx.fill();
         if (isDraggingRef.current) {
-             const pos = dragStartRef.current; // This is actually last pos, but good enough
-             ctx.beginPath();
-             ctx.strokeStyle = '#2563eb';
-             ctx.setLineDash([5, 5]);
-             ctx.moveTo(sCenter.x, sCenter.y);
-             // Use current mouse pos if available? We don't track mouse pos in state for draw, only in event. 
-             // But we can use dragStartRef (which is updated in move).
-             ctx.lineTo(dragStartRef.current.x, dragStartRef.current.y);
-             ctx.stroke();
-             ctx.setLineDash([]);
-             
-             // Draw Angle Arc (Subtle)
-             // const rad = Math.hypot(dragStartRef.current.x - sCenter.x, dragStartRef.current.y - sCenter.y);
-             // ctx.beginPath(); ctx.arc(sCenter.x, sCenter.y, rad, 0, Math.PI*2); ctx.strokeStyle = 'rgba(37, 99, 235, 0.1)'; ctx.stroke();
+             ctx.beginPath(); ctx.strokeStyle = '#2563eb'; ctx.setLineDash([5, 5]); ctx.moveTo(sCenter.x, sCenter.y);
+             ctx.lineTo(dragStartRef.current.x, dragStartRef.current.y); ctx.stroke(); ctx.setLineDash([]);
         }
     }
 
-  }, [nodes, walls, objects, viewport, selectedId, tempWallEnd, startNodePreview, cursorPos, mode, tempRectEnd]);
+  }, [nodes, walls, objects, furniture, viewport, selectedId, tempWallEnd, startNodePreview, cursorPos, mode, tempRectEnd]);
 
   const drawDimension = (ctx: CanvasRenderingContext2D, p1: Point, p2: Point, nx: number, ny: number, offset: number, val: number, type: 'INNER'|'OUTER'|'CENTER', isActive: boolean) => {
-     // ENGINEERING STYLE DIMENSIONS
-     // Gap from wall: 10px
      const gap = 10;
-     
-     // Calculate actual start points for extension lines (offset from wall face)
-     const extStart1 = { x: p1.x + nx * gap, y: p1.y + ny * gap };
-     const extStart2 = { x: p2.x + nx * gap, y: p2.y + ny * gap };
-     
-     // End points for extension lines (where the dim line crosses)
-     // Extend slightly past the dim line (by 5px)
-     const extEnd1 = { x: p1.x + nx * (offset + 5), y: p1.y + ny * (offset + 5) };
-     const extEnd2 = { x: p2.x + nx * (offset + 5), y: p2.y + ny * (offset + 5) };
-     
-     // Dimension Line Points
-     const dimP1 = { x: p1.x + nx * offset, y: p1.y + ny * offset };
-     const dimP2 = { x: p2.x + nx * offset, y: p2.y + ny * offset };
-
-     ctx.beginPath(); 
-     ctx.strokeStyle = isActive ? COLORS.dimLineActive : COLORS.dimLineInactive; 
-     ctx.lineWidth = isActive ? 2 : 1; 
-     
-     // Draw Dimension Line
+     const extStart1 = { x: p1.x + nx * gap, y: p1.y + ny * gap }; const extStart2 = { x: p2.x + nx * gap, y: p2.y + ny * gap };
+     const extEnd1 = { x: p1.x + nx * (offset + 5), y: p1.y + ny * (offset + 5) }; const extEnd2 = { x: p2.x + nx * (offset + 5), y: p2.y + ny * (offset + 5) };
+     const dimP1 = { x: p1.x + nx * offset, y: p1.y + ny * offset }; const dimP2 = { x: p2.x + nx * offset, y: p2.y + ny * offset };
+     ctx.beginPath(); ctx.strokeStyle = isActive ? COLORS.dimLineActive : COLORS.dimLineInactive; ctx.lineWidth = isActive ? 2 : 1; 
      ctx.moveTo(dimP1.x, dimP1.y); ctx.lineTo(dimP2.x, dimP2.y); 
-     
-     // Draw Extension Lines (With gap)
-     if (type !== 'CENTER') {
-         // Use a lighter color for extensions if not active, or same as dim line
-         ctx.moveTo(extStart1.x, extStart1.y); ctx.lineTo(extEnd1.x, extEnd1.y);
-         ctx.moveTo(extStart2.x, extStart2.y); ctx.lineTo(extEnd2.x, extEnd2.y);
-     }
+     if (type !== 'CENTER') { ctx.moveTo(extStart1.x, extStart1.y); ctx.lineTo(extEnd1.x, extEnd1.y); ctx.moveTo(extStart2.x, extStart2.y); ctx.lineTo(extEnd2.x, extEnd2.y); }
      ctx.stroke();
-
-     // Draw Ticks (Oblique Slashes - Architectural Style)
-     const tickSize = 4; // Size of the slash
-     // Vector for the slash (45 degrees approx). 
-     // We can use the wall direction (ny, -nx) + normal (nx, ny) mix? 
-     // Simplest is just screen 45deg, but rotating with wall looks best.
-     // Let's do "Screen 45" relative to the line angle.
-     // Line angle is perpendicular to normal.
-     // Line Vector: (-ny, nx)
-     
-     const slx = -ny; const sly = nx; // Vector along the dimension line
-     // Slash vector: Combination of Normal and Tangent
-     const slashDx = (slx + nx) * tickSize;
-     const slashDy = (sly + ny) * tickSize;
-     
-     ctx.beginPath();
-     ctx.lineWidth = 2;
-     ctx.strokeStyle = isActive ? COLORS.dimLineActive : COLORS.dimLineInactive; 
-     
-     // Tick 1
-     ctx.moveTo(dimP1.x - slashDx, dimP1.y - slashDy);
-     ctx.lineTo(dimP1.x + slashDx, dimP1.y + slashDy);
-     
-     // Tick 2
-     ctx.moveTo(dimP2.x - slashDx, dimP2.y - slashDy);
-     ctx.lineTo(dimP2.x + slashDx, dimP2.y + slashDy);
-     
-     ctx.stroke();
-
-
-
-
-
-
+     const tickSize = 4; const slx = -ny; const sly = nx; const slashDx = (slx + nx) * tickSize; const slashDy = (sly + ny) * tickSize;
+     ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle = isActive ? COLORS.dimLineActive : COLORS.dimLineInactive; 
+     ctx.moveTo(dimP1.x - slashDx, dimP1.y - slashDy); ctx.lineTo(dimP1.x + slashDx, dimP1.y + slashDy);
+     ctx.moveTo(dimP2.x - slashDx, dimP2.y - slashDy); ctx.lineTo(dimP2.x + slashDx, dimP2.y + slashDy); ctx.stroke();
      const mid = { x: (dimP1.x+dimP2.x)/2, y: (dimP1.y+dimP2.y)/2 }; 
-     ctx.save(); 
-     ctx.translate(mid.x, mid.y);
+     ctx.save(); ctx.translate(mid.x, mid.y);
      const angle = Math.atan2(dimP2.y - dimP1.y, dimP2.x - dimP1.x); 
      ctx.rotate((angle > Math.PI/2 || angle < -Math.PI/2) ? angle + Math.PI : angle);
-     
-     // Background Pill
-     const text = `${(val/100).toFixed(2)}m`;
-     const textMetrics = ctx.measureText(text);
-     const bgWidth = textMetrics.width + 16;
-     const bgHeight = 20;
-     
-     ctx.fillStyle = isActive ? COLORS.dimLineActive : COLORS.dimTextBg; // Blue bg if active? No, White is better contrast. Border blue.
-     ctx.strokeStyle = isActive ? COLORS.dimLineActive : '#e2e8f0';
-     ctx.lineWidth = isActive ? 2 : 1;
-     
-     // Always show pill for clarity
-     ctx.beginPath();
-     ctx.roundRect(-bgWidth/2, -bgHeight/2, bgWidth, bgHeight, 4);
-     ctx.fillStyle = 'white';
-     ctx.fill();
-     ctx.lineWidth = isActive ? 2 : 1;
-     ctx.strokeStyle = isActive ? COLORS.dimLineActive : '#e2e8f0';
-     ctx.stroke();
-
-     ctx.fillStyle = isActive ? COLORS.dimLineActive : COLORS.dimText; 
-     ctx.font = isActive ? 'bold 14px sans-serif' : '12px sans-serif';
-     ctx.textAlign = 'center'; 
-     ctx.textBaseline = 'middle'; 
-     ctx.fillText(text, 0, 0); 
-     ctx.restore();
+     const text = `${(val/100).toFixed(2)}m`; const textMetrics = ctx.measureText(text); const bgWidth = textMetrics.width + 16; const bgHeight = 20;
+     ctx.beginPath(); ctx.roundRect(-bgWidth/2, -bgHeight/2, bgWidth, bgHeight, 4); ctx.fillStyle = 'white'; ctx.fill();
+     ctx.lineWidth = isActive ? 2 : 1; ctx.strokeStyle = isActive ? COLORS.dimLineActive : '#e2e8f0'; ctx.stroke();
+     ctx.fillStyle = isActive ? COLORS.dimLineActive : COLORS.dimText; ctx.font = isActive ? 'bold 14px sans-serif' : '12px sans-serif';
+     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(text, 0, 0); ctx.restore();
   };
 
   useEffect(() => { 
       let frame = requestAnimationFrame(function loop() { 
           draw(); 
-          
-          // Snapshot Logic (Auto-Fit Result)
           if (snapshotPendingRef.current && canvasRef.current) {
               try {
-                  const data = canvasRef.current.toDataURL();
-                  setPlanSnapshot(data);
-                  setShowReport(true);
-              } catch (e) {
-                  console.error("Snapshot failed", e);
-              }
-              snapshotPendingRef.current = false;
-              isExportingRef.current = false;
+                  const data = canvasRef.current.toDataURL(); setPlanSnapshot(data); setShowReport(true);
+              } catch (e) { console.error("Snapshot failed", e); }
+              snapshotPendingRef.current = false; isExportingRef.current = false;
           }
-          
           frame = requestAnimationFrame(loop); 
       }); 
       return () => cancelAnimationFrame(frame); 
   }, [draw]);
   
-  // RESIZE OBSERVER TO FIX CUTOFF ISSUES
   useEffect(() => {
-      const handleResize = () => {
-          if(containerRef.current && canvasRef.current) {
-              // Set canvas dimensions to exactly match the container
-              // This ensures toDataURL captures exactly what is visible without offset/cutoff
-              canvasRef.current.width = containerRef.current.clientWidth;
-              canvasRef.current.height = containerRef.current.clientHeight;
-              draw(); // Force redraw
-          }
-      };
-      window.addEventListener('resize', handleResize);
-      handleResize(); // Initial set
-      return () => window.removeEventListener('resize', handleResize);
+      const handleResize = () => { if(containerRef.current && canvasRef.current) { canvasRef.current.width = containerRef.current.clientWidth; canvasRef.current.height = containerRef.current.clientHeight; draw(); } };
+      window.addEventListener('resize', handleResize); handleResize(); return () => window.removeEventListener('resize', handleResize);
   }, [draw]);
 
   const deleteSelected = () => {
     if (!selectedId) return;
-    if (selectedId.type === 'WALL') { setWalls(walls.filter(w => w.id !== selectedId.id)); setObjects(objects.filter(o => o.wallId !== selectedId.id)); } else if (selectedId.type === 'OBJECT') { setObjects(objects.filter(o => o.id !== selectedId.id)); }
+    if (selectedId.type === 'WALL') { setWalls(walls.filter(w => w.id !== selectedId.id)); setObjects(objects.filter(o => o.wallId !== selectedId.id)); } 
+    else if (selectedId.type === 'OBJECT') { setObjects(objects.filter(o => o.id !== selectedId.id)); }
+    else if (selectedId.type === 'FURNITURE') { setFurniture(furniture.filter(f => f.id !== selectedId.id)); }
     setSelectedId(null); setContextMenuPos(null); setShowProps(false); saveHistory();
   };
 
-  // Helper to get display length based on mode
   const getDisplayLength = (wallId: string) => {
-      const w = walls.find(wa => wa.id === wallId);
-      if (!w) return 0;
-      const n1 = nodes.find(n => n.id === w.startNodeId);
-      const n2 = nodes.find(n => n.id === w.endNodeId);
-      if (!n1 || !n2) return 0;
+      const w = walls.find(wa => wa.id === wallId); if (!w) return 0;
+      const n1 = nodes.find(n => n.id === w.startNodeId); const n2 = nodes.find(n => n.id === w.endNodeId); if (!n1 || !n2) return 0;
       const centerLen = Math.hypot(n2.x - n1.x, n2.y - n1.y);
-      
-      if (measureMode === 'OUTER') return centerLen + w.thickness;
-      if (measureMode === 'INNER') return Math.max(0, centerLen - w.thickness);
-      return centerLen;
+      if (measureMode === 'OUTER') return centerLen + w.thickness; if (measureMode === 'INNER') return Math.max(0, centerLen - w.thickness); return centerLen;
   };
 
   const updateProp = (key: string, val: number) => {
     if (!selectedId) return;
     if (selectedId.type === 'WALL') {
         if (key === 'length') {
-            // Limit Wall Length to 800cm
             if (val > 800) val = 800;
             const w = walls.find(wa => wa.id === selectedId.id);
             if (w) {
                 const n1 = nodes.find(n => n.id === w.startNodeId); const n2 = nodes.find(n => n.id === w.endNodeId);
                 if (n1 && n2) {
-                    // Calculate Target Center Length based on Mode
-                    let targetCenterLen = val;
-                    if (measureMode === 'OUTER') targetCenterLen = val - w.thickness;
-                    if (measureMode === 'INNER') targetCenterLen = val + w.thickness;
-
+                    let targetCenterLen = val; if (measureMode === 'OUTER') targetCenterLen = val - w.thickness; if (measureMode === 'INNER') targetCenterLen = val + w.thickness;
                     const currentLen = Math.hypot(n2.x - n1.x, n2.y - n1.y);
-                    if (currentLen > 0) { 
-                        const ratio = targetCenterLen / currentLen; 
-                        const newX = n1.x + (n2.x - n1.x) * ratio; 
-                        const newY = n1.y + (n2.y - n1.y) * ratio; 
-                        setNodes(prev => prev.map(n => n.id === n2.id ? { ...n, x: newX, y: newY } : n)); 
-                    }
+                    if (currentLen > 0) { const ratio = targetCenterLen / currentLen; const newX = n1.x + (n2.x - n1.x) * ratio; const newY = n1.y + (n2.y - n1.y) * ratio; setNodes(prev => prev.map(n => n.id === n2.id ? { ...n, x: newX, y: newY } : n)); }
                 }
             }
         } else { setWalls(walls.map(w => w.id === selectedId.id ? {...w, [key]: val} : w)); }
@@ -1186,142 +1033,50 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
     if (selectedId.type === 'OBJECT') setObjects(objects.map(o => o.id === selectedId.id ? {...o, [key]: val} : o));
     saveHistory();
   };
-  const toggleFlip = (axis: 'X' | 'Y') => { if (selectedId?.type === 'OBJECT') { setObjects(objects.map(o => o.id === selectedId.id ? {...o, [axis === 'X' ? 'flipX' : 'flipY']: !o[axis === 'X' ? 'flipX' : 'flipY']} : o)); saveHistory(); } };
+  const toggleFlip = (axis: 'X' | 'Y') => { 
+      if (selectedId?.type === 'OBJECT') { setObjects(objects.map(o => o.id === selectedId.id ? {...o, [axis === 'X' ? 'flipX' : 'flipY']: !o[axis === 'X' ? 'flipX' : 'flipY']} : o)); saveHistory(); } 
+      if (selectedId?.type === 'FURNITURE') { setFurniture(furniture.map(f => f.id === selectedId.id ? {...f, rotation: f.rotation + Math.PI/2} : f)); saveHistory(); }
+  };
   const getSelectedWallLength = () => { if (selectedId?.type === 'WALL') return getDisplayLength(selectedId.id); return 0; };
-  const getRotationHandlePos = () => { 
-      // DISABLED BY REQUEST ("Useless circle... do not rotate design ever")
-      return null;
-  };
+  const getRotationHandlePos = () => null;
 
-  const getSelectionCenter = () => { 
-      // Global Center for PAN mode
-      if (mode === 'PAN' && nodes.length > 0) {
-          const minX = Math.min(...nodes.map(n => n.x));
-          const maxX = Math.max(...nodes.map(n => n.x));
-          const minY = Math.min(...nodes.map(n => n.y));
-          const maxY = Math.max(...nodes.map(n => n.y));
-          return { x: (minX + maxX) / 2, y: (minY + maxY) / 2 };
-      }
-      
-      // Wall Center (for other logic if needed, though rotation is disabled)
-      if (selectedId?.type === 'WALL') { 
-          const w = walls.find(wa => wa.id === selectedId.id); if(!w) return null; 
-          const n1 = nodes.find(n => n.id === w.startNodeId); const n2 = nodes.find(n => n.id === w.endNodeId); 
-          if(!n1 || !n2) return null; 
-          return { x: (n1.x+n2.x)/2, y: (n1.y+n2.y)/2 }; 
-      } 
-      return null; 
-  };
-
-  // --- RENDER: MAIN APP (No Gatekeeper Here) ---
   const handleSavePDF = async () => {
       const element = document.getElementById('print-template');
       if(!element) return;
-      
       const btn = document.getElementById('save-pdf-btn');
-      if(btn) {
-          btn.innerText = "جاري المعالجة...";
-          btn.style.opacity = '0.7';
-          btn.style.pointerEvents = 'none';
-      }
-      
+      if(btn) { btn.innerText = "جاري المعالجة..."; btn.style.opacity = '0.7'; btn.style.pointerEvents = 'none'; }
       try {
-          const canvas = await html2canvas(element, {
-              scale: 2, // High quality
-              useCORS: true,
-              allowTaint: true,
-              backgroundColor: '#ffffff',
-              logging: false,
-              windowWidth: 794, // A4 width in px at 96 DPI (approx)
-              height: element.scrollHeight,
-              windowHeight: element.scrollHeight,
+          const canvas = await html2canvas(element, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff', logging: false, windowWidth: 794, height: element.scrollHeight, windowHeight: element.scrollHeight,
               onclone: (clonedDoc) => {
-                  // 1. Remove all stylesheets to prevent Tailwind v4 oklch colors from breaking html2canvas
-                  // This forces the browser to rely ONLY on the inline styles we provided.
-                  const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]');
-                  links.forEach(l => l.remove());
-                  const styles = clonedDoc.querySelectorAll('style');
-                  styles.forEach(s => s.remove());
-
-                  // 2. Failsafe: Scan for any inline oklch styles and replace them
-                  const allElements = clonedDoc.querySelectorAll('*');
-                  allElements.forEach((el: any) => {
-                      const inlineStyle = el.getAttribute('style');
-                      if (inlineStyle && inlineStyle.includes('oklch')) {
-                          // Replace any oklch(...) with black to prevent crash
-                          el.setAttribute('style', inlineStyle.replace(/oklch\([^)]+\)/gi, '#000000'));
-                      }
-                  });
+                  const links = clonedDoc.querySelectorAll('link[rel="stylesheet"]'); links.forEach(l => l.remove());
+                  const styles = clonedDoc.querySelectorAll('style'); styles.forEach(s => s.remove());
+                  const allElements = clonedDoc.querySelectorAll('*'); allElements.forEach((el: any) => { const inlineStyle = el.getAttribute('style'); if (inlineStyle && inlineStyle.includes('oklch')) { el.setAttribute('style', inlineStyle.replace(/oklch\([^)]+\)/gi, '#000000')); } });
               }
           });
-          
           const imgData = canvas.toDataURL('image/jpeg', 0.95);
           const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const pdfWidth = pdf.internal.pageSize.getWidth(); const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgWidth = canvas.width; const imgHeight = canvas.height; const ratio = pdfWidth / imgWidth; const scaledHeight = imgHeight * ratio;
           
-          const imgWidth = canvas.width;
-          const imgHeight = canvas.height;
-          const ratio = pdfWidth / imgWidth;
-          const scaledHeight = imgHeight * ratio;
-          
-          // Smart Pagination
-          if (scaledHeight <= pdfHeight) {
-              pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
-          } else {
-              let heightLeft = scaledHeight;
-              let page = 1;
-              pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight);
-              heightLeft -= pdfHeight;
-              while (heightLeft > 0) {
-                  pdf.addPage();
-                  pdf.addImage(imgData, 'JPEG', 0, -(pdfHeight * page), pdfWidth, scaledHeight); 
-                  heightLeft -= pdfHeight;
-                  page++;
-              }
-          }
-
+          if (scaledHeight <= pdfHeight) { pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight); } else { let heightLeft = scaledHeight; let page = 1; pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, scaledHeight); heightLeft -= pdfHeight; while (heightLeft > 0) { pdf.addPage(); pdf.addImage(imgData, 'JPEG', 0, -(pdfHeight * page), pdfWidth, scaledHeight); heightLeft -= pdfHeight; page++; } }
           pdf.save(`${reportData.clientName || 'Report'}.pdf`);
-          
-      } catch (err) {
-          console.error("PDF Error:", err);
-          alert("حدث خطأ أثناء الحفظ");
-      } finally {
-          if(btn) {
-              btn.innerText = "حفظ الملف (PDF)";
-              btn.style.opacity = '1';
-              btn.style.pointerEvents = 'auto';
-          }
-      }
+      } catch (err) { console.error("PDF Error:", err); alert("حدث خطأ أثناء الحفظ"); } finally { if(btn) { btn.innerText = "حفظ الملف (PDF)"; btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; } }
   };
 
   if (showReport) {
     const stats = calculateStats();
-    // Generate Report ID once (or retrieve if stored)
     const reportDate = new Date();
     const reportID = `RP-${reportDate.getFullYear()}${(reportDate.getMonth()+1).toString().padStart(2,'0')}-${reportDate.getDate().toString().padStart(2,'0')}-${reportDate.getHours()}${reportDate.getMinutes()}`;
     
     return (
       <div className="fixed inset-0 z-[60] overflow-auto font-sans" dir="rtl" style={{backgroundColor: '#ffffff'}}>
          <button onClick={() => setShowReport(false)} className="fixed top-4 left-4 p-2 bg-black text-white rounded-full shadow-lg z-50 no-print"><X className="w-6 h-6" /></button>
-         
-         {/* Combined Print/Share Button */}
-         <button id="save-pdf-btn" onClick={handleSavePDF} className="fixed top-4 left-16 p-2 px-4 rounded-full shadow-lg z-50 no-print hover:bg-blue-700 flex items-center gap-2 font-bold" style={{backgroundColor: '#2563eb', color: '#ffffff'}}>
-             <Save className="w-5 h-5" />
-             <span>حفظ الملف (PDF)</span>
-         </button>
+         <button id="save-pdf-btn" onClick={handleSavePDF} className="fixed top-4 left-16 p-2 px-4 rounded-full shadow-lg z-50 no-print hover:bg-blue-700 flex items-center gap-2 font-bold" style={{backgroundColor: '#2563eb', color: '#ffffff'}}><Save className="w-5 h-5" /><span>حفظ الملف (PDF)</span></button>
 
          <div id="report-content" className="w-[210mm] mx-auto min-h-screen p-8 my-8 bg-white shadow-sm" style={{backgroundColor: '#ffffff', border: '1px solid #e5e7eb', boxSizing: 'border-box'}}>
              <div className="pb-6 mb-8" style={{borderBottom: '4px solid #2563eb'}}>
                 <div className="flex justify-between items-start">
-                   <div>
-                       <h1 className="text-3xl font-black mb-2" style={{color: '#111827'}}>{t.reportTitle}</h1>
-                       <div className="flex items-center gap-2 font-mono text-sm" style={{color: '#6b7280'}}>
-                           <span className="font-bold">ID:</span>
-                           <span className="px-2 py-0.5 rounded" style={{backgroundColor: '#f3f4f6'}}>{reportID}</span>
-                       </div>
-                       <p className="text-xs mt-1" style={{color: '#9ca3af'}}>{reportDate.toLocaleDateString('en-GB')} {reportDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p>
-                   </div>
+                   <div><h1 className="text-3xl font-black mb-2" style={{color: '#111827'}}>{t.reportTitle}</h1><div className="flex items-center gap-2 font-mono text-sm" style={{color: '#6b7280'}}><span className="font-bold">ID:</span><span className="px-2 py-0.5 rounded" style={{backgroundColor: '#f3f4f6'}}>{reportID}</span></div><p className="text-xs mt-1" style={{color: '#9ca3af'}}>{reportDate.toLocaleDateString('en-GB')} {reportDate.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}</p></div>
                    <div className="text-left"><h2 className="text-xl font-bold" style={{color: '#1e40af'}}>Room Planner Pro</h2><p className="text-xs" style={{color: '#9ca3af'}}>{t.reportSub}</p></div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6 p-4 rounded-xl" style={{backgroundColor: '#f9fafb', border: '1px solid #f3f4f6'}}>
@@ -1339,277 +1094,65 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
                {planSnapshot ? <img src={planSnapshot} className="w-full h-full object-contain" alt="Plan" /> : <p style={{color: '#9ca3af'}}>{t.loading}</p>}
             </div>
 
-            {reportFilter !== 'FLOOR' && (
-            <div className="mb-8 rounded-xl border border-gray-200 overflow-hidden bg-white" style={{borderColor: '#e5e7eb', borderWidth: '1px', borderStyle: 'solid'}}>
-                 {/* Elevations Header inside box */}
-                 <div className="p-4 border-b border-gray-200 bg-gray-50 flex items-center gap-2" style={{backgroundColor: '#f9fafb', borderBottom: '1px solid #e5e7eb'}}>
-                     <Maximize2 className="w-5 h-5" style={{color: '#2563eb'}} />
-                     <h3 className="text-lg font-bold" style={{color: '#111827'}}>{t.elevations}</h3>
-                 </div>
-
-                 <div className="grid grid-cols-4 bg-white" style={{display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))'}}>
-                   {walls.slice(0, 4).map((wall, idx) => {
-                       const n1 = nodes.find(n => n.id === wall.startNodeId);
-                       const n2 = nodes.find(n => n.id === wall.endNodeId);
-                       if(!n1 || !n2) return null;
-                       const len = Math.hypot(n2.x - n1.x, n2.y - n1.y);
-                       const wallObjs = objects.filter(o => o.wallId === wall.id);
-                       const isLast = idx === 3;
-
-                       return (
-                         <div key={wall.id} className="p-4" style={{borderLeft: isLast ? 'none' : '1px solid #e5e7eb'}}>
-                            <div className="flex justify-between mb-4 pb-2" style={{borderBottom: '1px solid #e5e7eb'}}>
-                               <span className="font-bold flex items-center gap-2" style={{color: '#1e3a8a'}}>
-                                   <span className="px-2 py-0.5 rounded text-xs" style={{backgroundColor: '#dbeafe', color: '#1d4ed8'}}>#{idx + 1}</span>
-                                   {t.wall}
-                               </span>
-                               <span className="text-xs font-mono" dir="ltr" style={{color: '#6b7280'}}>{(len/100).toFixed(2)}m</span>
-                            </div>
-                            <div className="h-40 relative" style={{backgroundColor: '#f9fafb', borderBottom: '1px solid #d1d5db'}}>
-                               <svg width="100%" height="100%" viewBox={`0 0 ${len} ${wall.height}`} preserveAspectRatio="none" className="absolute top-0 left-0 pointer-events-none">
-                                  {/* Grid Background */}
-                                  <defs>
-                                     <pattern id={`grid-${wall.id}`} width="50" height="50" patternUnits="userSpaceOnUse">
-                                         <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
-                                     </pattern>
-                                  </defs>
-                                  <rect width="100%" height="100%" fill={`url(#grid-${wall.id})`} />
-                                  
-                                  <line x1="0" y1="0" x2={len} y2="0" stroke="#e5e7eb" strokeWidth="2" />
-                                   {wallObjs.map(obj => {
-                                     const objLeft = (obj.t * len) - (obj.width / 2);
-                                     const objBottom = obj.type === 'DOOR' ? 0 : (obj.sillHeight || 150); 
-                                     const objY = wall.height - obj.height - objBottom;
-                                     const dimX = objLeft + obj.width + 15; 
-                                     
-                                     return (
-                                        <g key={obj.id}>
-                                           {obj.type === 'DOOR' ? (
-                                             <g>
-                                                 {/* Frame */}
-                                                 <rect x={objLeft} y={objY} width={obj.width} height={obj.height} fill="#ffffff" stroke="#7f1d1d" strokeWidth="2" />
-                                                 
-                                                 {obj.leafCount === 2 ? (
-                                                     <g>
-                                                         {/* Double Leaf */}
-                                                         <rect x={objLeft + 2} y={objY + 2} width={obj.width/2 - 2} height={obj.height - 4} fill="#fef2f2" stroke="#ef4444" strokeWidth="1" />
-                                                         <rect x={objLeft + obj.width/2} y={objY + 2} width={obj.width/2 - 2} height={obj.height - 4} fill="#fef2f2" stroke="#ef4444" strokeWidth="1" />
-                                                         {/* Handles */}
-                                                         <circle cx={objLeft + obj.width/2 - 6} cy={objY + obj.height / 2} r="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" />
-                                                         <circle cx={objLeft + obj.width/2 + 6} cy={objY + obj.height / 2} r="2" fill="#fbbf24" stroke="#b45309" strokeWidth="1" />
-                                                         {/* Swing Diagonals (Subtle) */}
-                                                         <path d={`M ${objLeft} ${objY} L ${objLeft + obj.width/2} ${objY + obj.height/2} L ${objLeft} ${objY + obj.height}`} stroke="#ef4444" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.4" fill="none"/>
-                                                         <path d={`M ${objLeft + obj.width} ${objY} L ${objLeft + obj.width/2} ${objY + obj.height/2} L ${objLeft + obj.width} ${objY + obj.height}`} stroke="#ef4444" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.4" fill="none"/>
-                                                     </g>
-                                                 ) : (
-                                                     <g>
-                                                         {/* Single Leaf */}
-                                                         <rect x={objLeft + 4} y={objY + 4} width={obj.width - 8} height={obj.height - 8} fill="#fef2f2" stroke="#ef4444" strokeWidth="1" />
-                                                         <circle cx={objLeft + obj.width - 12} cy={objY + obj.height / 2} r="3" fill="#fbbf24" stroke="#b45309" strokeWidth="1" />
-                                                         <path d={`M ${objLeft} ${objY} L ${objLeft + obj.width} ${objY + obj.height/2} L ${objLeft} ${objY + obj.height}`} stroke="#ef4444" strokeWidth="0.5" strokeDasharray="3,3" opacity="0.4" fill="none"/>
-                                                     </g>
-                                                 )}
-                                             </g>
-                                           ) : (
-                                             <g>
-                                                 <rect x={objLeft} y={objY} width={obj.width} height={obj.height} fill="#dbeafe" stroke="#1e40af" strokeWidth="2" />
-                                                 <line x1={objLeft} y1={objY + obj.height/2} x2={objLeft + obj.width} y2={objY + obj.height/2} stroke="#93c5fd" strokeWidth="1" />
-                                                 <line x1={objLeft + obj.width/2} y1={objY} x2={objLeft + obj.width/2} y2={objY + obj.height} stroke="#93c5fd" strokeWidth="1" />
-                                             </g>
-                                           )}
-                                           
-                                           {/* Dimensions - EXPLICIT LABELS */}
-                                           <text x={objLeft + obj.width/2} y={objY + obj.height/2 - 10} textAnchor="middle" fill="#000000" fontWeight="bold" fontSize="14">W: {(obj.width/100).toFixed(2)}</text>
-                                           <text x={objLeft + obj.width/2} y={objY + obj.height/2 + 15} textAnchor="middle" fill="#000000" fontWeight="bold" fontSize="14">H: {(obj.height/100).toFixed(2)}</text>
-                                           
-                                           {/* Vertical Sill Line & Text */}
-                                           {objBottom > 0 && (
-                                               <>
-                                                 <line x1={dimX} y1={objY + obj.height} x2={dimX} y2={wall.height} stroke="#ef4444" strokeWidth="1"/>
-                                                 <line x1={dimX - 3} y1={objY + obj.height} x2={dimX + 3} y2={objY + obj.height} stroke="#ef4444" strokeWidth="1"/>
-                                                 <line x1={dimX - 3} y1={wall.height} x2={dimX + 3} y2={wall.height} stroke="#ef4444" strokeWidth="1"/>
-                                                 <text x={dimX + 6} y={wall.height - (objBottom / 2)} textAnchor="start" fill="#ef4444" fontSize="12" fontWeight="bold">Sill: {(objBottom/100).toFixed(2)}</text>
-                                               </>
-                                           )}
-                                        </g>
-                                     );
-                                  })}
-                               </svg>
-                            </div>
-                         </div>
-                       );
-                   })}
-                </div>
-             </div>
-             )}
-             
-             {/* Force Page Break Spacer */}
-             <div style={{height: '100px', width: '100%'}}></div>
-             
              <div className="mb-8 break-inside-avoid">
                <h3 className="text-lg font-bold pr-3 mb-4 flex items-center gap-2" style={{borderRight: '4px solid #2563eb'}}>
                    <Calculator className="w-5 h-5" style={{color: '#2563eb'}} />
                    {reportFilter === 'GENERAL' ? t.summary : reportFilter === 'PAINT' ? t.summaryPaint : t.summaryFloor}
                </h3>
                <table className="w-full border-collapse text-sm rounded-xl overflow-hidden" style={{border: '1px solid #e5e7eb'}}>
-                  <thead>
-                     <tr style={{backgroundColor: '#f3f4f6', color: '#374151', borderBottom: '1px solid #e5e7eb'}}><th className="p-3 text-right">{t.item}</th><th className="p-3 text-center">{t.unit}</th><th className="p-3 text-center">{t.qty}</th><th className="p-3 text-right">{t.notes}</th></tr>
-                  </thead>
+                  <thead><tr style={{backgroundColor: '#f3f4f6', color: '#374151', borderBottom: '1px solid #e5e7eb'}}><th className="p-3 text-right">{t.item}</th><th className="p-3 text-center">{t.unit}</th><th className="p-3 text-center">{t.qty}</th><th className="p-3 text-right">{t.notes}</th></tr></thead>
                   <tbody style={{borderColor: '#f3f4f6'}}>
                      {(reportFilter === 'GENERAL' || reportFilter === 'FLOOR') && (<><tr style={{borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-bold" style={{color: '#1e3a8a'}}>{t.floorArea}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>م²</td><td className="p-3 text-center font-black text-lg">{stats.floorAreaM2}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>صافي المساحة الداخلية</td></tr><tr style={{borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-medium">{t.skirting}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>م.ط</td><td className="p-3 text-center font-bold">{stats.wallLengthM}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>محيط الغرفة</td></tr></>)}
                      {(reportFilter === 'GENERAL' || reportFilter === 'PAINT') && (<><tr style={{borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-bold" style={{color: '#1e3a8a'}}>{t.paintWall}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>م²</td><td className="p-3 text-center font-black text-lg">{stats.netPaintAreaM2}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>بدون فتحات</td></tr><tr style={{borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-medium">{t.paintCeiling}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>م²</td><td className="p-3 text-center font-bold">{stats.ceilingAreaM2}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>مساحة السقف</td></tr></>)}
                      {reportFilter === 'GENERAL' && (<><tr style={{backgroundColor: 'rgba(249, 250, 251, 0.5)', borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-medium">{t.doorCount}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>عدد</td><td className="p-3 text-center font-bold">{stats.doorCount}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>-</td></tr><tr style={{backgroundColor: 'rgba(249, 250, 251, 0.5)', borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-medium">{t.windowCount}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>عدد</td><td className="p-3 text-center font-bold">{stats.windowCount}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>-</td></tr></>)}
+                     {reportFilter === 'GENERAL' && (<tr style={{backgroundColor: 'rgba(249, 250, 251, 0.5)', borderBottom: '1px solid #f3f4f6'}}><td className="p-3 font-medium">{t.furnitureCount}</td><td className="p-3 text-center" style={{backgroundColor: '#f9fafb'}}>عدد</td><td className="p-3 text-center font-bold">{stats.furnitureCount}</td><td className="p-3 text-xs" style={{color: '#6b7280'}}>قطع</td></tr>)}
                   </tbody>
                </table>
             </div>
 
             <div className="pt-8 mt-12 flex flex-col gap-6" style={{borderTop: '2px solid #f3f4f6'}}>
                 <div className="flex justify-between items-end text-sm" style={{color: '#6b7280'}}>
-                    <div className="text-center">
-                        <p className="mb-4 font-bold">{t.sign}</p>
-                        <div className="w-40" style={{borderBottom: '1px dashed #d1d5db'}}></div>
-                    </div>
-                    <div className="text-center">
-                        <p className="mb-4 font-bold">{t.stamp}</p>
-                        <div className="w-40" style={{borderBottom: '1px dashed #d1d5db'}}></div>
-                    </div>
+                    <div className="text-center"><p className="mb-4 font-bold">{t.sign}</p><div className="w-40" style={{borderBottom: '1px dashed #d1d5db'}}></div></div>
+                    <div className="text-center"><p className="mb-4 font-bold">{t.stamp}</p><div className="w-40" style={{borderBottom: '1px dashed #d1d5db'}}></div></div>
                 </div>
-                
-                {/* Custom Footer as requested */}
                 <div className="rounded-xl p-4 text-center mt-4" style={{backgroundColor: '#f9fafb'}}>
-                    <p className="font-bold text-sm md:text-base" style={{color: '#1e3a8a'}}>
-                        تم إنشاء هذا التقرير تلقائيا بواسطة بيت الريف منصتك الذكية دائما وياك
-                    </p>
+                    <p className="font-bold text-sm md:text-base" style={{color: '#1e3a8a'}}>تم إنشاء هذا التقرير تلقائيا بواسطة بيت الريف منصتك الذكية دائما وياك</p>
                     <p className="text-[10px] mt-1 font-mono" style={{color: '#9ca3af'}}>Generated by Biet Alreef Smart Platform</p>
                 </div>
             </div>
          </div>
-        {/* Hidden Print Template (Always Rendered when ShowReport is true, but off-screen) */}
-       <div id="print-template" style={{
-          position: 'absolute', 
-          top: 0, 
-          left: '-9999px', 
-          width: '210mm', 
-          minHeight: '297mm', 
-          backgroundColor: 'white', 
-          padding: '10mm',
-          direction: 'rtl',
-          zIndex: -10,
-          fontFamily: 'system-ui, -apple-system, sans-serif'
-       }}>
-            {/* Stats Calculation for Print Template */}
-            {(() => {
-               // 1. Prepare detailed lists for openings
-               const groupItems = (items: any[]) => {
-                   const map = new Map();
-                   items.forEach(item => {
-                        const label = `${item.width}×${item.height}`;
-                        if(!map.has(label)) map.set(label, { count: 0, label, w: item.width, h: item.height });
-                        map.get(label).count++;
-                   });
-                   return Array.from(map.values());
-               };
-               
-               const doors = objects.filter(o => o.type === 'DOOR');
-               const windows = objects.filter(o => o.type === 'WINDOW');
-               const doorGroups = groupItems(doors);
-               const windowGroups = groupItems(windows);
-               const wallHeight = walls.length > 0 ? (walls[0].height / 100).toFixed(2) : '2.80';
-
-               return (
-                  <div className="print-content-wrapper">
-                      {/* Header */}
-                      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #2563eb', paddingBottom: '10px'}}>
-                          <div>
-                              <h1 style={{fontSize: '24px', fontWeight: '900', color: '#111827', marginBottom: '4px'}}>{t.reportTitle}</h1>
-                              <p style={{fontSize: '12px', color: '#6b7280'}}>{t.reportSub}</p>
-                          </div>
-                          <div style={{textAlign: 'left'}}>
-                              <div style={{fontSize: '14px', fontWeight: 'bold', color: '#111827'}}>ID: {reportID}</div>
-                              <div style={{fontSize: '12px', color: '#6b7280'}}>{reportDate.toLocaleDateString('en-GB')}</div>
-                          </div>
-                      </div>
-
-                      {/* Client Info Grid */}
-                      <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px', backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
-                          <div>
-                              <label style={{fontSize: '10px', color: '#6b7280', display: 'block', marginBottom: '4px'}}>{t.client}</label>
-                              <div style={{fontWeight: 'bold', fontSize: '14px', color: '#111827'}}>{reportData.clientName || '-'}</div>
-                          </div>
-                          <div>
-                              <label style={{fontSize: '10px', color: '#6b7280', display: 'block', marginBottom: '4px'}}>{t.contractor}</label>
-                              <div style={{fontWeight: 'bold', fontSize: '14px', color: '#111827'}}>{reportData.contractorName || '-'}</div>
-                          </div>
-                      </div>
-
-                      {/* Plan Snapshot */}
-                      <div style={{marginBottom: '20px', height: '300px', border: '1px solid #e5e7eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#fff'}}>
-                          {planSnapshot ? <img src={planSnapshot} style={{maxHeight: '100%', maxWidth: '100%', objectFit: 'contain'}} /> : null}
-                      </div>
-
-                      {/* Elevations Strip REMOVED by user request */}
-                      {/*
-                      <div style={{marginBottom: '20px', breakInside: 'avoid'}}>
-                          ...
-                      </div>
-                      */}
-
-                      {/* Tables Side by Side */}
-                      <div style={{display: 'flex', gap: '20px', alignItems: 'flex-start'}}>
-                          {/* Summary Table */}
-                          <div style={{flex: 1}}>
-                              <h3 style={{fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', color: '#111827'}}>{t.summary}</h3>
-                              <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
-                                  <thead>
-                                      <tr style={{backgroundColor: '#f3f4f6', borderBottom: '1px solid #e5e7eb', color: '#374151'}}>
-                                          <th style={{padding: '6px', textAlign: 'right'}}>{t.item}</th>
-                                          <th style={{padding: '6px', textAlign: 'center'}}>{t.qty}</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>المساحة الاجمالية</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold', dir: 'ltr'}}>{stats.floorAreaM2} m²</td></tr>
-                                      <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>ارتفاع الجدار</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold', dir: 'ltr'}}>{wallHeight} m</td></tr>
-                                      <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>مساحة الحوائط</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold', dir: 'ltr'}}>{stats.netPaintAreaM2} m²</td></tr>
-                                  </tbody>
-                              </table>
-                          </div>
-                          
-                          {/* Objects Table */}
-                          <div style={{flex: 1}}>
-                              <h3 style={{fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', color: '#111827'}}>الفتحات</h3>
-                              <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
-                                  <thead>
-                                      <tr style={{backgroundColor: '#f3f4f6', borderBottom: '1px solid #e5e7eb', color: '#374151'}}>
-                                          <th style={{padding: '6px', textAlign: 'right'}}>النوع</th>
-                                          <th style={{padding: '6px', textAlign: 'center'}}>المقاس (سم)</th>
-                                          <th style={{padding: '6px', textAlign: 'center'}}>العدد</th>
-                                      </tr>
-                                  </thead>
-                                  <tbody>
-                                      {doorGroups.length > 0 ? doorGroups.map((g, i) => (
-                                          <tr key={'d'+i}><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>باب</td><td style={{padding: '6px', textAlign: 'center', dir:'ltr'}}>{g.w} × {g.h}</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold'}}>{g.count}</td></tr>
-                                      )) : (
-                                          <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>أبواب</td><td style={{padding: '6px', textAlign: 'center'}}>-</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold'}}>0</td></tr>
-                                      )}
-                                      
-                                      {windowGroups.length > 0 ? windowGroups.map((g, i) => (
-                                          <tr key={'w'+i}><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>نافذة</td><td style={{padding: '6px', textAlign: 'center', dir:'ltr'}}>{g.w} × {g.h}</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold'}}>{g.count}</td></tr>
-                                      )) : (
-                                          <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>نوافذ</td><td style={{padding: '6px', textAlign: 'center'}}>-</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold'}}>0</td></tr>
-                                      )}
-                                  </tbody>
-                              </table>
-                          </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div style={{marginTop: '30px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb', textAlign: 'center', fontSize: '10px', color: '#9ca3af'}}>
-                          <p style={{marginBottom: '4px'}}>تم إنشاء هذا التقرير بواسطة منصة بيت الريف الذكية</p>
-                          <p style={{fontFamily: 'monospace'}}>Generated by Biet Alreef Smart Platform</p>
+       {/* Print Template Hidden */}
+       <div id="print-template" style={{ position: 'absolute', top: 0, left: '-9999px', width: '210mm', minHeight: '297mm', backgroundColor: 'white', padding: '10mm', direction: 'rtl', zIndex: -10, fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+            <div className="print-content-wrapper">
+                  <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '2px solid #2563eb', paddingBottom: '10px'}}>
+                      <div><h1 style={{fontSize: '24px', fontWeight: '900', color: '#111827', marginBottom: '4px'}}>{t.reportTitle}</h1><p style={{fontSize: '12px', color: '#6b7280'}}>{t.reportSub}</p></div>
+                      <div style={{textAlign: 'left'}}><div style={{fontSize: '14px', fontWeight: 'bold', color: '#111827'}}>ID: {reportID}</div><div style={{fontSize: '12px', color: '#6b7280'}}>{reportDate.toLocaleDateString('en-GB')}</div></div>
+                  </div>
+                  <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px', backgroundColor: '#f9fafb', padding: '15px', borderRadius: '8px', border: '1px solid #e5e7eb'}}>
+                      <div><label style={{fontSize: '10px', color: '#6b7280', display: 'block', marginBottom: '4px'}}>{t.client}</label><div style={{fontWeight: 'bold', fontSize: '14px', color: '#111827'}}>{reportData.clientName || '-'}</div></div>
+                      <div><label style={{fontSize: '10px', color: '#6b7280', display: 'block', marginBottom: '4px'}}>{t.contractor}</label><div style={{fontWeight: 'bold', fontSize: '14px', color: '#111827'}}>{reportData.contractorName || '-'}</div></div>
+                  </div>
+                  <div style={{marginBottom: '20px', height: '300px', border: '1px solid #e5e7eb', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', backgroundColor: '#fff'}}>
+                      {planSnapshot ? <img src={planSnapshot} style={{maxHeight: '100%', maxWidth: '100%', objectFit: 'contain'}} /> : null}
+                  </div>
+                  <div style={{display: 'flex', gap: '20px', alignItems: 'flex-start'}}>
+                      <div style={{flex: 1}}>
+                          <h3 style={{fontSize: '14px', fontWeight: 'bold', marginBottom: '8px', color: '#111827'}}>{t.summary}</h3>
+                          <table style={{width: '100%', borderCollapse: 'collapse', fontSize: '12px'}}>
+                              <thead><tr style={{backgroundColor: '#f3f4f6', borderBottom: '1px solid #e5e7eb', color: '#374151'}}><th style={{padding: '6px', textAlign: 'right'}}>{t.item}</th><th style={{padding: '6px', textAlign: 'center'}}>{t.qty}</th></tr></thead>
+                              <tbody>
+                                  <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>المساحة الاجمالية</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold', dir: 'ltr'}}>{stats.floorAreaM2} m²</td></tr>
+                                  <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>مساحة الحوائط</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold', dir: 'ltr'}}>{stats.netPaintAreaM2} m²</td></tr>
+                                  <tr><td style={{padding: '6px', borderBottom: '1px solid #f3f4f6'}}>قطع الأثاث</td><td style={{padding: '6px', textAlign: 'center', fontWeight: 'bold'}}>{stats.furnitureCount}</td></tr>
+                              </tbody>
+                          </table>
                       </div>
                   </div>
-               );
-            })()}
+                  <div style={{marginTop: '30px', paddingTop: '10px', borderTop: '1px dashed #e5e7eb', textAlign: 'center', fontSize: '10px', color: '#9ca3af'}}>
+                      <p style={{marginBottom: '4px'}}>تم إنشاء هذا التقرير بواسطة منصة بيت الريف الذكية</p>
+                      <p style={{fontFamily: 'monospace'}}>Generated by Biet Alreef Smart Platform</p>
+                  </div>
+              </div>
        </div>
 
      </div>
@@ -1642,14 +1185,7 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
           onMouseDown={handlePointerDown} onMouseMove={handlePointerMove} onMouseUp={handlePointerUp}
           onTouchStart={handlePointerDown} onTouchMove={handlePointerMove} onTouchEnd={handlePointerUp}
         />
-        {/* Handle appears if wall selected regardless of mode now, but strictly usually only in SELECT. Since we added Toolbar, let's keep consistent UX: Only show if user intent is SELECT or if we allow manipulation. The check mode==='SELECT' was removed from getRotationHandlePos, so here we just check return value. */}
-        {getRotationHandlePos() && (<div className="absolute p-2 bg-white rounded-full shadow-md border border-blue-200 text-blue-600 pointer-events-none transform -translate-x-1/2 -translate-y-1/2" style={{ left: toScreen(getRotationHandlePos()!.x, getRotationHandlePos()!.y).x, top: toScreen(getRotationHandlePos()!.x, getRotationHandlePos()!.y).y }}><RotateCw className="w-5 h-5" /></div>)}
         
-        {/* Restore Toolbar (OLD - REMOVED to avoid duplication) */}
-        {/* <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-4 bg-white p-2 px-4 rounded-full shadow-xl border border-gray-100 z-50 transition-all hover:shadow-2xl">
-           ...
-        </div> */}
-
         <div className="absolute bottom-32 left-4 flex flex-col gap-2">
           <button onClick={() => setViewport(v => ({...v, zoom: v.zoom * 1.1}))} className="bg-white p-2.5 rounded-full shadow-md text-gray-600 border border-gray-200"><ZoomIn className="w-5 h-5"/></button>
           <button onClick={() => setViewport(v => ({...v, zoom: v.zoom / 1.1}))} className="bg-white p-2.5 rounded-full shadow-md text-gray-600 border border-gray-200"><ZoomOut className="w-5 h-5"/></button>
@@ -1657,272 +1193,114 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
         
         {showProps && selectedId && (
           <div className="fixed bottom-28 left-4 right-4 md:w-auto md:left-1/2 md:-translate-x-1/2 bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[60] animate-in slide-in-from-bottom-5 fade-in duration-300">
-            {/* COMPACT SMART BAR */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-1">
-                
-                {/* 1. Close Button (Small X) */}
-                <button onClick={() => setShowProps(false)} className="flex-shrink-0 w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500">
-                    <X className="w-4 h-4"/>
-                </button>
-
+                <button onClick={() => setShowProps(false)} className="flex-shrink-0 w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500"><X className="w-4 h-4"/></button>
                 <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
 
-                {/* 2. Context Specific Controls */}
                 {selectedId.type === 'WALL' && (
                     <>
-                        {/* Wall Length with Mode Toggle */}
                         <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-1 flex-shrink-0">
                              <div className="flex flex-col items-center mx-1">
                                 <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">وضع القياس</span>
                                 <div className="relative bg-white rounded shadow-sm border border-gray-200 flex items-center pr-1 pl-2 h-6">
                                     {measureMode === 'INNER' ? <Minimize2 className="w-3 h-3 text-blue-600 ml-1"/> : measureMode === 'OUTER' ? <Maximize2 className="w-3 h-3 text-blue-600 ml-1"/> : <AlignCenter className="w-3 h-3 text-blue-600 ml-1"/>}
-                                    <select 
-                                        value={measureMode} 
-                                        onChange={(e) => setMeasureMode(e.target.value as any)}
-                                        className="text-[10px] font-bold text-gray-700 bg-transparent outline-none appearance-none w-16"
-                                        dir="rtl"
-                                    >
-                                        <option value="INNER">من الداخل</option>
-                                        <option value="CENTER">من المنتصف</option>
-                                        <option value="OUTER">من الخارج</option>
+                                    <select value={measureMode} onChange={(e) => setMeasureMode(e.target.value as any)} className="text-[10px] font-bold text-gray-700 bg-transparent outline-none appearance-none w-16" dir="rtl">
+                                        <option value="INNER">من الداخل</option><option value="CENTER">من المنتصف</option><option value="OUTER">من الخارج</option>
                                     </select>
                                     <ChevronDown className="w-3 h-3 text-gray-400 absolute left-0.5 pointer-events-none"/>
                                 </div>
                              </div>
-                             
                              <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
-
                              <div className="flex flex-col items-center w-14">
                                 <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">الطول</span>
-                                <input 
-                                    type="number" 
-                                    className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" 
-                                    value={getSelectedWallLength().toFixed(0)} 
-                                    onChange={(e) => updateProp('length', Number(e.target.value))} 
-                                />
+                                <input type="number" className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" value={getSelectedWallLength().toFixed(0)} onChange={(e) => updateProp('length', Number(e.target.value))} />
                              </div>
                         </div>
-
-                        {/* Thickness */}
-                        <div className="flex flex-col items-center w-10 bg-gray-50 rounded-lg p-1 flex-shrink-0">
-                            <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">سمك</span>
-                            <input type="number" className="w-full bg-transparent text-center text-xs font-bold text-gray-600 outline-none p-0 border-none h-4" value={walls.find(w => w.id === selectedId.id)?.thickness || 20} onChange={(e) => updateProp('thickness', Number(e.target.value))} />
-                        </div>
-
+                        <div className="flex flex-col items-center w-10 bg-gray-50 rounded-lg p-1 flex-shrink-0"><span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">سمك</span><input type="number" className="w-full bg-transparent text-center text-xs font-bold text-gray-600 outline-none p-0 border-none h-4" value={walls.find(w => w.id === selectedId.id)?.thickness || 20} onChange={(e) => updateProp('thickness', Number(e.target.value))} /></div>
                         <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
-
-                        {/* Actions: Add Door/Window */}
-                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'DOOR', t: 0.5, width: 90, height: 210, leafCount: 1 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="باب مفرد">
-                            <DoorOpen className="w-5 h-5"/>
-                            <span className="text-[8px] font-bold">مفرد</span>
-                        </button>
-                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'DOOR', t: 0.5, width: 160, height: 210, leafCount: 2 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="باب مزدوج">
-                            <div className="relative">
-                                <DoorOpen className="w-5 h-5"/>
-                                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[8px] w-3 h-3 rounded-full flex items-center justify-center">2</span>
-                            </div>
-                            <span className="text-[8px] font-bold">مزدوج</span>
-                        </button>
-                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'WINDOW', t: 0.5, width: 100, height: 120, sillHeight: 150 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5">
-                            <Grid3X3 className="w-5 h-5"/>
-                        </button>
+                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'DOOR', t: 0.5, width: 90, height: 210, leafCount: 1 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="باب مفرد"><DoorOpen className="w-5 h-5"/><span className="text-[8px] font-bold">مفرد</span></button>
+                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'DOOR', t: 0.5, width: 160, height: 210, leafCount: 2 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="باب مزدوج"><div className="relative"><DoorOpen className="w-5 h-5"/><span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[8px] w-3 h-3 rounded-full flex items-center justify-center">2</span></div><span className="text-[8px] font-bold">مزدوج</span></button>
+                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setObjects([...objects, { id: Math.random().toString(), wallId: w.id, type: 'WINDOW', t: 0.5, width: 100, height: 120, sillHeight: 150 }]); saveHistory(); } }} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-xl flex flex-col items-center gap-0.5"><Grid3X3 className="w-5 h-5"/></button>
+                        <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
+                        <button onClick={() => { const w = walls.find(wa => wa.id === selectedId.id); if(w) { setMode('DRAW'); drawingStartNodeRef.current = w.endNodeId; setStartNodePreview(nodes.find(n => n.id === w.endNodeId) || null); setShowProps(false); } }} className="flex-shrink-0 p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="إضافة جدار"><Plus className="w-5 h-5"/><span className="text-[8px] font-bold">إضافة</span></button>
                     </>
                 )}
 
                 {selectedId.type === 'OBJECT' && (
                     <>
-                        {/* Width / Height */}
                         <div className="flex items-center gap-1 bg-gray-50 rounded-lg p-1 flex-shrink-0">
-                             <div className="flex flex-col items-center w-12 border-r border-gray-200 pr-1">
-                                <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">عرض</span>
-                                <input type="number" className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" value={objects.find(o => o.id === selectedId.id)?.width || 90} onChange={(e) => updateProp('width', Number(e.target.value))} />
-                             </div>
-                             <div className="flex flex-col items-center w-12 pl-1">
-                                <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">ارتفاع</span>
-                                <input type="number" className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" value={objects.find(o => o.id === selectedId.id)?.height || 210} onChange={(e) => updateProp('height', Number(e.target.value))} />
-                             </div>
+                             <div className="flex flex-col items-center w-12 border-r border-gray-200 pr-1"><span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">عرض</span><input type="number" className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" value={objects.find(o => o.id === selectedId.id)?.width || 90} onChange={(e) => updateProp('width', Number(e.target.value))} /></div>
+                             <div className="flex flex-col items-center w-12 pl-1"><span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">ارتفاع</span><input type="number" className="w-full bg-transparent text-center text-xs font-black text-gray-700 outline-none p-0 border-none h-4" value={objects.find(o => o.id === selectedId.id)?.height || 210} onChange={(e) => updateProp('height', Number(e.target.value))} /></div>
                         </div>
-
-                        {/* Specific Props: Sill Height or Leaf Count */}
-                         {(() => {
-                            const obj = objects.find(o => o.id === selectedId.id);
-                            if (obj?.type === 'WINDOW') return (
-                                <div className="flex flex-col items-center w-12 bg-gray-50 rounded-lg p-1 flex-shrink-0 ml-1">
-                                    <span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">جلسة</span>
-                                    <input type="number" className="w-full bg-transparent text-center text-xs font-bold text-blue-600 outline-none p-0 border-none h-4" value={obj.sillHeight || 150} onChange={(e) => updateProp('sillHeight', Number(e.target.value))} />
-                                </div>
-                            );
-                            if (obj?.type === 'DOOR') return (
-                                <div className="flex items-center bg-gray-100 rounded-lg p-1 h-8 ml-1">
-                                    <button onClick={() => updateProp('leafCount', 1)} className={`px-3 h-full rounded-md text-xs font-bold transition-all ${obj.leafCount !== 2 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>مفرد</button>
-                                    <button onClick={() => updateProp('leafCount', 2)} className={`px-3 h-full rounded-md text-xs font-bold transition-all ${obj.leafCount === 2 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>مزدوج</button>
-                                </div>
-                            );
-                            return null;
-                        })()}
-
+                         {(() => { const obj = objects.find(o => o.id === selectedId.id); if (obj?.type === 'WINDOW') return (<div className="flex flex-col items-center w-12 bg-gray-50 rounded-lg p-1 flex-shrink-0 ml-1"><span className="text-[8px] text-gray-400 font-bold leading-none mb-0.5">جلسة</span><input type="number" className="w-full bg-transparent text-center text-xs font-bold text-blue-600 outline-none p-0 border-none h-4" value={obj.sillHeight || 150} onChange={(e) => updateProp('sillHeight', Number(e.target.value))} /></div>); if (obj?.type === 'DOOR') return (<div className="flex items-center bg-gray-100 rounded-lg p-1 h-8 ml-1"><button onClick={() => updateProp('leafCount', 1)} className={`px-3 h-full rounded-md text-xs font-bold transition-all ${obj.leafCount !== 2 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>مفرد</button><button onClick={() => updateProp('leafCount', 2)} className={`px-3 h-full rounded-md text-xs font-bold transition-all ${obj.leafCount === 2 ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}>مزدوج</button></div>); return null; })()}
                         <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
-
-                        {/* Flips */}
-                        <button onClick={() => toggleFlip('X')} className="flex-shrink-0 p-2 hover:bg-blue-50 text-gray-600 rounded-lg" title="عكس اتجاه">
-                            <ArrowRightLeft className="w-4 h-4"/>
-                        </button>
-                        <button onClick={() => toggleFlip('Y')} className="flex-shrink-0 p-2 hover:bg-blue-50 text-gray-600 rounded-lg" title="عكس فتح">
-                            <ArrowUpDown className="w-4 h-4"/>
-                        </button>
+                        <button onClick={() => toggleFlip('X')} className="flex-shrink-0 p-2 hover:bg-blue-50 text-gray-600 rounded-lg" title="عكس اتجاه"><ArrowRightLeft className="w-4 h-4"/></button>
+                        <button onClick={() => toggleFlip('Y')} className="flex-shrink-0 p-2 hover:bg-blue-50 text-gray-600 rounded-lg" title="عكس فتح"><ArrowUpDown className="w-4 h-4"/></button>
                     </>
                 )}
-                
-                <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
 
-                {/* Add Wall Button (Before Delete) */}
-                <button onClick={() => {
-                    const w = walls.find(wa => wa.id === selectedId.id);
-                    if(w) {
-                        setMode('DRAW');
-                        drawingStartNodeRef.current = w.endNodeId;
-                        setStartNodePreview(nodes.find(n => n.id === w.endNodeId) || null);
-                        setShowProps(false);
-                    }
-                }} className="flex-shrink-0 p-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl flex flex-col items-center gap-0.5" title="إضافة جدار">
-                     <Plus className="w-5 h-5"/>
-                     <span className="text-[8px] font-bold">إضافة</span>
-                </button>
+                {selectedId.type === 'FURNITURE' && (
+                    <>
+                        <div className="flex items-center gap-2">
+                             <span className="text-xs font-bold text-gray-700">{FURNITURE_TEMPLATES[furniture.find(f => f.id === selectedId.id)?.type as FurnitureType]?.labelAr}</span>
+                        </div>
+                        <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
+                        <button onClick={() => toggleFlip('Y')} className="flex-shrink-0 p-2 hover:bg-blue-50 text-blue-600 rounded-lg flex flex-col items-center" title="تدوير"><RotateCw className="w-5 h-5"/><span className="text-[8px] font-bold">تدوير</span></button>
+                    </>
+                )}
 
                 <div className="w-[1px] h-6 bg-gray-200 mx-1 flex-shrink-0"></div>
-
-                {/* Delete Button (Always last) */}
-                <button onClick={deleteSelected} className="flex-shrink-0 p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl">
-                    <Trash2 className="w-5 h-5"/>
-                </button>
-
+                <button onClick={deleteSelected} className="flex-shrink-0 p-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl"><Trash2 className="w-5 h-5"/></button>
             </div>
           </div>
         )}
 
-      {/* HELP MODAL */}
       {showHelp && (
         <div className="fixed inset-0 z-[80] bg-black/50 flex items-center justify-center p-4 animate-in fade-in duration-200">
            <div className="bg-white w-full max-w-2xl max-h-[85vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-                 <h2 className="font-black text-lg text-gray-800 flex items-center gap-2">
-                    <HelpCircle className="w-5 h-5 text-blue-600"/>
-                    دليل استخدام مخطط الغرف الذكي
-                 </h2>
-                 <button onClick={() => setShowHelp(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-5 h-5 text-gray-500"/></button>
-              </div>
+              <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50"><h2 className="font-black text-lg text-gray-800 flex items-center gap-2"><HelpCircle className="w-5 h-5 text-blue-600"/>دليل الاستخدام</h2><button onClick={() => setShowHelp(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors"><X className="w-5 h-5 text-gray-500"/></button></div>
               <div className="overflow-y-auto p-6 space-y-8 text-right" dir="rtl">
-                 
-                 {/* Section 1 */}
-                 <section>
-                    <h3 className="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">1</span>
-                        أدوات الرسم والبناء
-                    </h3>
-                    <div className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100">
-                        <div className="flex gap-3">
-                            <div className="mt-1"><PenTool className="w-5 h-5 text-gray-700"/></div>
-                            <div>
-                                <h4 className="font-bold text-gray-900 mb-1">رسم جدار (Draw Wall)</h4>
-                                <p className="text-sm text-gray-600 leading-relaxed">اضغط نقرة واحدة لتحديد البداية، حرك المؤشر لتحديد الطول والاتجاه، ثم اضغط مجدداً للتثبيت. الأداة تساعد�� في ضبط الزوايا القائمة (0°، 90°) تلقائياً.</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-3">
-                            <div className="mt-1"><DoorOpen className="w-5 h-5 text-gray-700"/></div>
-                            <div>
-                                <h4 className="font-bold text-gray-900 mb-1">إضافة الفتحات (أبواب ونوافذ)</h4>
-                                <p className="text-sm text-gray-600 leading-relaxed">حدد الجدار المطلوب ثم اختر "إضافة باب" أو "نافذة" من شريط الخصائص. يتم حساب خصم المساحات تلقائياً في التقارير.</p>
-                            </div>
-                        </div>
-                    </div>
-                 </section>
-
-                 {/* Section 2 */}
-                 <section>
-                    <h3 className="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">2</span>
-                        أدوات التحكم والتعديل
-                    </h3>
-                    <ul className="space-y-3 text-sm text-gray-600 list-disc list-inside marker:text-blue-400">
-                        <li><span className="font-bold text-gray-800">التحديد (Select):</span> اضغط على أي جدار أو فتحة لتعديل خصائصها (الطول، العرض، السمك) بدقة من الشريط السفلي.</li>
-                        <li><span className="font-bold text-gray-800">التحريك:</span> اسحب زوايا الجدران (Nodes) لتغيير أبعاد الغرفة، أو اسحب الأبواب لتحريكها داخل الجدار.</li>
-                        <li><span className="font-bold text-gray-800">الحذف:</span> حدد العنصر واضغط أيقونة سلة المهملات لحذفه.</li>
-                        <li><span className="font-bold text-gray-800">التراجع (Undo):</span> استخدم زر التراجع في الشريط العلوي لتصحيح الأخطاء فوراً.</li>
-                    </ul>
-                 </section>
-
-                 {/* Section 3 */}
-                 <section>
-                    <h3 className="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2">
-                        <span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">3</span>
-                        نظام التقارير الذكي
-                    </h3>
-                    <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
-                        <p className="text-sm text-blue-800 mb-3 font-medium">الميزة الأقوى في النظام! حول رسمك إلى وثيقة فنية بضغطة زر.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                            <div className="bg-white p-2 rounded border border-blue-100">
-                                <span className="block font-bold text-gray-800 mb-1">المسقط الأفقي</span>
-                                <span className="text-gray-500 text-xs">صورة دقيقة للمخطط مع الأبعاد</span>
-                            </div>
-                            <div className="bg-white p-2 rounded border border-blue-100">
-                                <span className="block font-bold text-gray-800 mb-1">الواجهات (Elevations)</span>
-                                <span className="text-gray-500 text-xs">عرض 4 واجهات مع ارتفاعات الفتحات</span>
-                            </div>
-                            <div className="bg-white p-2 rounded border border-blue-100">
-                                <span className="block font-bold text-gray-800 mb-1">جدول الكميات</span>
-                                <span className="text-gray-500 text-xs">حساب دهانات، أرضيات، ونعلات</span>
-                            </div>
-                            <div className="bg-white p-2 rounded border border-blue-100">
-                                <span className="block font-bold text-gray-800 mb-1">PDF احترافي</span>
-                                <span className="text-gray-500 text-xs">جاهز للطباعة والمشاركة</span>
-                            </div>
-                        </div>
-                    </div>
-                 </section>
-
-                 <div className="p-4 rounded-xl bg-gray-100 text-xs text-gray-500 text-center">
-                    تم تطوير هذه الأداة بواسطة <span className="font-bold text-gray-700">بيت الريف</span> لتسهيل أعمال المقاولات وحساب الكميات.
-                 </div>
-
+                 <section><h3 className="text-blue-600 font-bold text-lg mb-4 flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm">1</span>أدوات الرسم والبناء</h3><div className="bg-gray-50 rounded-xl p-4 space-y-4 border border-gray-100"><div className="flex gap-3"><div className="mt-1"><PenTool className="w-5 h-5 text-gray-700"/></div><div><h4 className="font-bold text-gray-900 mb-1">رسم جدار</h4><p className="text-sm text-gray-600 leading-relaxed">اضغط للبداية، حرك، واضغط للنهاية.</p></div></div><div className="flex gap-3"><div className="mt-1"><Armchair className="w-5 h-5 text-gray-700"/></div><div><h4 className="font-bold text-gray-900 mb-1">إضافة أثاث</h4><p className="text-sm text-gray-600 leading-relaxed">استخدم زر الأثاث لإضافة عناصر وتوزيعها.</p></div></div></div></section>
               </div>
            </div>
         </div>
       )}
 
-      {/* SAVE MENU BOTTOM SHEET */}
       {showSaveMenu && (
          <div className="fixed inset-0 bg-black/50 z-[70] flex items-end justify-center" onClick={() => setShowSaveMenu(false)}>
              <div className="bg-white w-full max-w-md rounded-t-2xl p-6 animate-in slide-in-from-bottom-10 duration-300" onClick={(e) => e.stopPropagation()}>
                  <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-6"></div>
                  <h3 className="font-bold text-lg mb-4 text-center">{t.saveOptions}</h3>
                  <div className="space-y-3">
-                     <button onClick={handleSaveToFiles} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors">
-                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><FolderHeart className="w-5 h-5" /></div>
-                         <div className="text-right flex-1"><div className="font-bold text-gray-800">{t.saveFile}</div></div>
-                         <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
-                     </button>
-                     <button onClick={() => { setShowSaveMenu(false); openReport(); }} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors">
-                         <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><FileText className="w-5 h-5" /></div>
-                         <div className="text-right flex-1"><div className="font-bold text-gray-800">عرض التقرير واستخراج PDF</div></div>
-                         <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
-                     </button>
-                     <button onClick={handleShare} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-green-50 transition-colors">
-                         <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"><Share2 className="w-5 h-5" /></div>
-                         <div className="text-right flex-1"><div className="font-bold text-gray-800">{t.shareApp}</div></div>
-                         <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
-                     </button>
-                     <button onClick={handleSaveImage} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-purple-50 transition-colors">
-                         <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"><ImageIcon className="w-5 h-5" /></div>
-                         <div className="text-right flex-1"><div className="font-bold text-gray-800">{t.saveImg}</div></div>
-                         <ArrowRight className="w-4 h-4 text-gray-400 rotate-180" />
-                     </button>
+                     <button onClick={handleSaveToFiles} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors"><div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><FolderHeart className="w-5 h-5" /></div><div className="text-right flex-1"><div className="font-bold text-gray-800">{t.saveFile}</div></div><ArrowRight className="w-4 h-4 text-gray-400 rotate-180" /></button>
+                     <button onClick={() => { setShowSaveMenu(false); openReport(); }} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-blue-50 transition-colors"><div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><FileText className="w-5 h-5" /></div><div className="text-right flex-1"><div className="font-bold text-gray-800">عرض التقرير واستخراج PDF</div></div><ArrowRight className="w-4 h-4 text-gray-400 rotate-180" /></button>
+                     <button onClick={handleShare} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-green-50 transition-colors"><div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600"><Share2 className="w-5 h-5" /></div><div className="text-right flex-1"><div className="font-bold text-gray-800">{t.shareApp}</div></div><ArrowRight className="w-4 h-4 text-gray-400 rotate-180" /></button>
+                     <button onClick={handleSaveImage} className="w-full flex items-center gap-3 p-4 rounded-xl bg-gray-50 hover:bg-purple-50 transition-colors"><div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600"><ImageIcon className="w-5 h-5" /></div><div className="text-right flex-1"><div className="font-bold text-gray-800">{t.saveImg}</div></div><ArrowRight className="w-4 h-4 text-gray-400 rotate-180" /></button>
                  </div>
                  <button onClick={() => setShowSaveMenu(false)} className="mt-6 w-full py-3 rounded-xl font-bold text-gray-500 hover:bg-gray-100">إلغاء</button>
              </div>
          </div>
       )}
 
-      {/* Bottom Bar */}
+      {/* NEW: Furniture Sidebar (Left) */}
+      {(showFurnitureMenu || window.innerWidth > 768) && (
+         <div className="fixed top-24 left-4 z-[40] bg-white rounded-xl shadow-lg border border-gray-100 flex flex-col gap-1 p-1 max-h-[60vh] overflow-y-auto no-scrollbar w-14 animate-in slide-in-from-left-4 duration-300">
+             <div className="text-[10px] font-bold text-center text-gray-400 py-1 border-b border-gray-100 mb-1">أثاث</div>
+             {Object.entries(FURNITURE_TEMPLATES).map(([type, tmpl]) => {
+                 const Icon = tmpl.icon;
+                 return (
+                     <button key={type} onClick={() => addFurniture(type as FurnitureType)} className="w-12 h-12 flex flex-col items-center justify-center rounded-lg hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-colors relative group flex-shrink-0">
+                         <Icon className="w-5 h-5 mb-0.5" />
+                         {/* Tooltip */}
+                         <span className="absolute left-full top-1/2 -translate-y-1/2 ml-3 bg-gray-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 whitespace-nowrap pointer-events-none z-50 transition-opacity">
+                           {lang === 'AR' ? tmpl.labelAr : tmpl.labelEn}
+                         </span>
+                     </button>
+                 )
+             })}
+         </div>
+      )}
+
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
         <div className="bg-white rounded-full shadow-xl border border-gray-100 p-1.5 flex items-center gap-1">
            <button onClick={() => setMode('SELECT')} className={`p-3 rounded-full transition-all ${mode === 'SELECT' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`}><MousePointer2 className="w-5 h-5" /></button>
@@ -1931,21 +1309,15 @@ export function RoomPlanner2DLogic({ onBack, initialData }: { onBack: () => void
            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
            <button onClick={() => setMode('RECT')} className={`p-3 rounded-full transition-all ${mode === 'RECT' ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`} title="رسم غرفة (مربع)"><LayoutTemplate className="w-5 h-5" /></button>
            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
-           <button onClick={() => setMode('PAN')} className={`p-3 rounded-full transition-all ${mode === 'PAN' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`} title="تحريك"><Hand className="w-5 h-5" /></button>
+           <button onClick={() => setShowFurnitureMenu(true)} className={`p-3 rounded-full transition-all ${showFurnitureMenu ? 'bg-blue-600 text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`} title="إضافة أثاث"><Armchair className="w-5 h-5" /></button>
            <div className="w-[1px] h-6 bg-gray-200 mx-1"></div>
-           <button onClick={() => setMode('ROTATE')} className={`p-3 rounded-full transition-all ${mode === 'ROTATE' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`} title="تدوير المخطط"><RotateCw className="w-5 h-5" /></button>
+           <button onClick={() => setMode('PAN')} className={`p-3 rounded-full transition-all ${mode === 'PAN' ? 'bg-black text-white shadow-md' : 'text-gray-400 hover:bg-gray-50'}`} title="تحريك"><Hand className="w-5 h-5" /></button>
         </div>
       </div>
     </div>
-      {/* 3D Viewer Overlay */}
       {show3D && (
           <Suspense fallback={<div className="fixed inset-0 bg-white z-[100] flex items-center justify-center font-bold text-gray-500">جاري تحميل العرض ثلاثي الأبعاد...</div>}>
-            <RoomPlanner3D 
-              nodes={nodes} 
-              walls={walls} 
-              objects={objects} 
-              onClose={() => setShow3D(false)} 
-            />
+            <RoomPlanner3D nodes={nodes} walls={walls} objects={objects} onClose={() => setShow3D(false)} />
           </Suspense>
       )}
 

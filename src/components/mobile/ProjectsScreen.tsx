@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Users, CheckCircle2, Clock, Plus, Lock, FolderOpen } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useUser } from '../../utils/UserContext';
 import { checkPolicy } from '../../utils/uiPolicy';
@@ -200,7 +199,6 @@ export function ProjectsScreen({ onNavigate }: ProjectsScreenProps) {
         <Plus className="w-8 h-8" />
       </button>
 
-      <BottomNav activeTab="projects" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

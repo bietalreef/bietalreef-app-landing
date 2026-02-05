@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Star, Heart, CheckCircle, Users, Sparkles, Snowflake, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check, Wind, ThermometerSun } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
@@ -904,13 +903,6 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
         )}
 
       </div>
-
-      {/* Service-Specific Bottom Navigation */}
-      <ServiceBottomNav
-        activeTab={serviceNavTab}
-        onTabChange={setServiceNavTab}
-        serviceName="التكييف والتبريد"
-      />
 
     </div>
   );

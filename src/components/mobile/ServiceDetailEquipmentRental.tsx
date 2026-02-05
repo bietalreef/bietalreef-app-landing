@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Truck } from 'lucide-react';
-import { BottomNav } from './BottomNav';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -115,7 +114,6 @@ export function ServiceDetailEquipmentRental({ onBack, onNavigate, onOpenSearch,
           <button className="bg-white text-[#F39C12] px-10 py-4 rounded-full hover:shadow-2xl transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('rentNow')}</button>
         </div>
       </div>
-      <BottomNav activeTab="services" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

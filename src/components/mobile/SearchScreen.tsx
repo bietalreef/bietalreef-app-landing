@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Search, ArrowRight, X, SlidersHorizontal, Star, MapPin, Tag } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { BottomNav } from './BottomNav';
 import { useTranslation } from '../../contexts/LanguageContext';
 
 interface SearchScreenProps {
@@ -258,7 +257,6 @@ export function SearchScreen({ onBack, onNavigate }: SearchScreenProps) {
         </div>
       </div>
 
-      <BottomNav activeTab="services" onTabChange={handleBottomNavChange} />
     </div>
   );
 }

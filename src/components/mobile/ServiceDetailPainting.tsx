@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { ArrowRight, Star, Search, Mic, SlidersHorizontal, Globe } from 'lucide-react';
-import { ServiceBottomNav } from './ServiceBottomNav';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ServiceSEOHead } from '../SEOHead';
 
@@ -247,12 +246,6 @@ export function ServiceDetailPainting({ onBack, onOpenSearch }: ServiceDetailPai
         </div>
       </div>
 
-      {/* Service-Specific Bottom Navigation */}
-      <ServiceBottomNav
-        activeTab={serviceNavTab}
-        onTabChange={setServiceNavTab}
-        serviceName="الدهانات"
-      />
     </div>
   );
 }
