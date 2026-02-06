@@ -148,9 +148,9 @@ export function WalletScreen() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5EEE1] pb-8" dir="rtl">
+    <div className="min-h-screen bg-background pb-8" dir="rtl">
       {/* Hero Balance Section */}
-      <div className="bg-[#F5EEE1] px-6 pt-8 pb-12 relative overflow-hidden">
+      <div className="bg-background px-6 pt-8 pb-12 relative overflow-hidden">
         {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-32 h-32 bg-[#C8A86A]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#2AA676]/8 rounded-full blur-3xl" />
@@ -234,7 +234,7 @@ export function WalletScreen() {
       </div>
 
       {/* Tabs with Icons */}
-      <div className="px-4 -mt-5">
+      <div className="px-4 -mt-5 relative z-20">
         <div className="bg-white rounded-2xl shadow-lg p-1.5 flex gap-1 border border-[#E6DCC8]">
           {tabsData.map((tab) => {
             const TabIcon = tab.icon;
@@ -263,7 +263,7 @@ export function WalletScreen() {
       </div>
 
       {/* Tab Content */}
-      <div className="px-4 mt-4">
+      <div className="px-4 mt-4 relative z-10">
         <AnimatePresence mode="wait">
           {/* ── Overview ── */}
           {activeTab === 'overview' && (
@@ -450,35 +450,34 @@ export function WalletScreen() {
                       whileHover={{ scale: 1.01 }}
                       onClick={() => handleBuyPackage(pkg)}
                       disabled={buyingPackage === pkg.id}
-                      className={`relative w-full bg-white rounded-3xl p-5 border-2 transition-all text-right overflow-hidden group ${
+                      className={`relative w-full bg-white rounded-3xl p-4 border-2 transition-all text-right group ${
                         pkg.popular 
                           ? 'border-[#C8A86A] shadow-lg' 
                           : 'border-[#E6DCC8] hover:border-[#C8A86A]/40 shadow-sm'
                       } ${buyingPackage === pkg.id ? 'opacity-50' : ''}`}
                     >
                       {/* Glow effect on active/hover */}
-                      <div className="absolute inset-0 bg-gradient-to-l from-[#C8A86A]/0 to-[#C8A86A]/0 group-hover:from-[#C8A86A]/5 group-hover:to-[#C8A86A]/10 group-active:from-[#C8A86A]/10 group-active:to-[#C8A86A]/20 transition-all duration-300" />
-                      <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#C8A86A]/0 group-active:bg-[#C8A86A]/15 rounded-full blur-2xl transition-all duration-300" />
+                      <div className="absolute inset-0 rounded-3xl bg-gradient-to-l from-[#C8A86A]/0 to-[#C8A86A]/0 group-hover:from-[#C8A86A]/5 group-hover:to-[#C8A86A]/10 group-active:from-[#C8A86A]/10 group-active:to-[#C8A86A]/20 transition-all duration-300" />
                       
                       {pkg.popular && (
-                        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-sm px-4 py-1 rounded-b-xl" style={fw700}>
+                        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-xs px-3 py-0.5 rounded-b-xl z-10" style={fw700}>
                           {isEn ? 'Most Popular' : 'الأكثر طلباً'}
                         </div>
                       )}
                       
-                      <div className="relative flex items-center gap-4">
+                      <div className="relative flex items-center gap-3">
                         {/* Icon */}
-                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pkg.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
-                          <Icon className="w-7 h-7 text-white" />
+                        <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${pkg.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                          <Icon className="w-6 h-6 text-white" />
                         </div>
                         
                         {/* Info */}
-                        <div className="flex-1">
-                          <p className="text-3xl font-black text-[#1F3D2B]" style={fw800}>
-                            {pkg.coins} <span className="text-base text-[#1F3D2B]/40" style={fw700}>{isEn ? 'Coins' : 'كوينز'}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-2xl md:text-3xl font-black text-[#1F3D2B] truncate" style={fw800}>
+                            {pkg.coins} <span className="text-xs md:text-sm text-[#1F3D2B]/40" style={fw700}>{isEn ? 'Coins' : 'كوينز'}</span>
                           </p>
                           {pkg.bonus > 0 && (
-                            <p className="text-emerald-600 text-base mt-0.5" style={fw700}>
+                            <p className="text-emerald-600 text-xs md:text-sm mt-0.5" style={fw700}>
                               + {pkg.bonus} {isEn ? 'free' : 'مجاناً'} 🎁
                             </p>
                           )}
@@ -486,7 +485,7 @@ export function WalletScreen() {
                         
                         {/* Price Button */}
                         <div className="flex-shrink-0">
-                          <div className="bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-xl py-3 px-6 rounded-2xl text-center shadow-md group-active:shadow-[0_0_20px_rgba(200,168,106,0.5)] transition-shadow" style={fw800}>
+                          <div className="bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-sm md:text-base py-2.5 px-4 md:px-5 rounded-2xl text-center shadow-md group-active:shadow-[0_0_20px_rgba(200,168,106,0.5)] transition-shadow whitespace-nowrap" style={fw800}>
                             {buyingPackage === pkg.id ? (
                               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto" />
                             ) : (

@@ -73,26 +73,26 @@
 }
 
 .dark {
-  --background: #F5EEE1;
-  --foreground: #1F3D2B;
-  --card: #ffffff;
-  --card-foreground: #1F3D2B;
-  --popover: #ffffff;
-  --popover-foreground: #1F3D2B;
+  --background: #111318;
+  --foreground: #F0E8DA;
+  --card: #1C2026;
+  --card-foreground: #F0E8DA;
+  --popover: #1C2026;
+  --popover-foreground: #F0E8DA;
   --primary: #2AA676;
   --primary-foreground: #ffffff;
-  --secondary: #F5EEE1;
-  --secondary-foreground: #1F3D2B;
-  --muted: #E6DCC8;
-  --muted-foreground: #6B7E73;
-  --accent: #E6DCC8;
-  --accent-foreground: #1F3D2B;
-  --destructive: #d4183d;
+  --secondary: #1C2026;
+  --secondary-foreground: #F0E8DA;
+  --muted: #252A32;
+  --muted-foreground: #8B9084;
+  --accent: #252A32;
+  --accent-foreground: #F0E8DA;
+  --destructive: #EF4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(31, 61, 43, 0.10);
+  --border: rgba(245, 238, 225, 0.06);
   --input: transparent;
-  --input-background: #ffffff;
-  --switch-background: #cbced4;
+  --input-background: #1C2026;
+  --switch-background: #3A3F48;
   --ring: rgba(42, 166, 118, 0.40);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
@@ -101,45 +101,45 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: #F5EEE1;
-  --sidebar-foreground: #1F3D2B;
+  --sidebar: #181B20;
+  --sidebar-foreground: #F0E8DA;
   --sidebar-primary: #2AA676;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #E6DCC8;
-  --sidebar-accent-foreground: #1F3D2B;
-  --sidebar-border: rgba(31, 61, 43, 0.10);
+  --sidebar-accent: #252A32;
+  --sidebar-accent-foreground: #F0E8DA;
+  --sidebar-border: rgba(245, 238, 225, 0.06);
   --sidebar-ring: rgba(42, 166, 118, 0.30);
 
   /* ═══════════════════════════════════════════════
-     بيت الريف — الوضع الداكن (Dark = Current Look)
-     Warm Beige + Forest Green + Gold
+     بيت الريف — الوضع الداكن الحقيقي 🌙
+     True Dark Mode — Warm Dark + Green + Gold
      ═══════════════════════════════════════════════ */
-  --bait-bg:                #F5EEE1;
-  --bait-bg-alt:            #FFF8F0;
-  --bait-surface:           #ffffff;
-  --bait-surface-hover:     #F8F5F0;
-  --bait-surface-elevated:  #ffffff;
-  --bait-glass:             rgba(255, 255, 255, 0.80);
-  --bait-glass-border:      rgba(255, 255, 255, 0.60);
+  --bait-bg:                #111318;
+  --bait-bg-alt:            #181B20;
+  --bait-surface:           #1C2026;
+  --bait-surface-hover:     #252A32;
+  --bait-surface-elevated:  #222730;
+  --bait-glass:             rgba(28, 32, 38, 0.90);
+  --bait-glass-border:      rgba(245, 238, 225, 0.06);
   --bait-green:             #2AA676;
-  --bait-green-bright:      #2AA676;
-  --bait-green-light:       rgba(42, 166, 118, 0.10);
+  --bait-green-bright:      #34D68D;
+  --bait-green-light:       rgba(42, 166, 118, 0.12);
   --bait-green-dark:        #1F3D2B;
-  --bait-gold:              #C8A86A;
-  --bait-gold-light:        rgba(200, 168, 106, 0.10);
-  --bait-text:              #1F3D2B;
-  --bait-text-secondary:    rgba(31, 61, 43, 0.60);
-  --bait-text-muted:        rgba(31, 61, 43, 0.40);
-  --bait-text-inverse:      #ffffff;
-  --bait-border:            rgba(31, 61, 43, 0.10);
-  --bait-border-strong:     rgba(31, 61, 43, 0.20);
-  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.06);
-  --bait-shadow-lg:         0 10px 30px rgba(0, 0, 0, 0.08);
-  --bait-input-bg:          #ffffff;
-  --bait-header-bg:         rgba(255, 255, 255, 0.80);
-  --bait-skeleton:          #E6DCC8;
-  --bait-badge-bg:          rgba(255, 255, 255, 0.20);
-  --bait-overlay:           rgba(0, 0, 0, 0.50);
+  --bait-gold:              #D4AF37;
+  --bait-gold-light:        rgba(212, 175, 55, 0.12);
+  --bait-text:              #F0E8DA;
+  --bait-text-secondary:    rgba(240, 232, 218, 0.65);
+  --bait-text-muted:        rgba(240, 232, 218, 0.40);
+  --bait-text-inverse:      #111318;
+  --bait-border:            rgba(245, 238, 225, 0.06);
+  --bait-border-strong:     rgba(245, 238, 225, 0.12);
+  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.30);
+  --bait-shadow-lg:         0 8px 24px rgba(0, 0, 0, 0.40);
+  --bait-input-bg:          #1C2026;
+  --bait-header-bg:         rgba(17, 19, 24, 0.92);
+  --bait-skeleton:          #252A32;
+  --bait-badge-bg:          rgba(42, 166, 118, 0.12);
+  --bait-overlay:           rgba(0, 0, 0, 0.70);
 }
 
 @theme inline {
@@ -602,4 +602,337 @@ html:not(.dark) ::-webkit-scrollbar-thumb {
 }
 html:not(.dark) ::-webkit-scrollbar-thumb:hover {
   background: #B8A98E;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   بيت الريف — DARK MODE OVERRIDES  (html.dark) 🌙
+   Transform hardcoded light-mode inline colors (#F5EEE1, bg-white,
+   text-[#1F3D2B], border-[#E6DCC8], etc.) to proper dark equivalents.
+   Maintains brand identity: Green #2AA676 + Gold #D4AF37
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Page & Section Backgrounds ─── */
+html.dark {
+  background-color: #111318;
+}
+html.dark body {
+  background-color: #111318;
+  color: #F0E8DA;
+}
+
+/* bg-[#F5EEE1] → dark background */
+html.dark [class*="bg-\[#F5EEE1\]"],
+html.dark [class*="bg-\[#f5eee1\]"] {
+  background-color: #111318 !important;
+}
+
+/* bg-white → dark card surface */
+html.dark [class*="bg-white"]:not([class*="bg-white/"]) {
+  background-color: #1C2026 !important;
+}
+/* bg-white/xx (translucent white) → dark glass */
+html.dark [class*="bg-white/"] {
+  background-color: rgba(28, 32, 38, 0.70) !important;
+}
+
+/* bg-[#E6DCC8] → dark muted surface */
+html.dark [class*="bg-\[#E6DCC8\]"],
+html.dark [class*="bg-\[#e6dcc8\]"] {
+  background-color: #252A32 !important;
+}
+/* bg-[#FFF8F0] → dark alt bg */
+html.dark [class*="bg-\[#FFF8F0\]"],
+html.dark [class*="bg-\[#fff8f0\]"] {
+  background-color: #181B20 !important;
+}
+/* bg-[#EFE7D8] / bg-[#F0E8D9] → dark alt bg */
+html.dark [class*="bg-\[#EFE7D8\]"],
+html.dark [class*="bg-\[#F0E8D9\]"],
+html.dark [class*="bg-\[#efe7d8\]"],
+html.dark [class*="bg-\[#f0e8d9\]"] {
+  background-color: #181B20 !important;
+}
+/* bg-[#FAFAF9] → dark bg */
+html.dark [class*="bg-\[#FAFAF9\]"],
+html.dark [class*="bg-\[#fafaf9\]"] {
+  background-color: #111318 !important;
+}
+
+/* bg-gray-50, bg-gray-100, bg-gray-200 → dark surfaces */
+html.dark .bg-gray-50 {
+  background-color: #181B20 !important;
+}
+html.dark .bg-gray-100 {
+  background-color: #1C2026 !important;
+}
+html.dark .bg-gray-200 {
+  background-color: #252A32 !important;
+}
+
+/* Gradients from beige → dark */
+html.dark [class*="from-\[#F5EEE1\]"],
+html.dark [class*="from-\[#f5eee1\]"] {
+  --tw-gradient-from: #111318 !important;
+}
+html.dark [class*="to-\[#F5EEE1\]"],
+html.dark [class*="to-white"],
+html.dark [class*="to-\[#f5eee1\]"] {
+  --tw-gradient-to: #181B20 !important;
+}
+html.dark [class*="via-\[#F8F3EB\]"],
+html.dark [class*="via-\[#f8f3eb\]"] {
+  --tw-gradient-via: #151820 !important;
+}
+html.dark [class*="from-white"] {
+  --tw-gradient-from: #1C2026 !important;
+}
+
+/* ─── Green accents — KEEP for buttons, adjust bg sections ─── */
+/* bg-[#2AA676] → keep green for buttons */
+/* bg-[#2E7D50] → keep green for buttons */
+/* bg-[#1F3D2B] large sections → dark surface */
+html.dark [class*="bg-\[#1F3D2B\]"]:not(button):not([role="button"]):not([class*="bg-\[#1F3D2B\]/"]) {
+  background-color: #181B20 !important;
+}
+/* bg-[#1F3D2B]/xx → dark tint */
+html.dark [class*="bg-\[#1F3D2B\]/"]:not(button):not([role="button"]) {
+  background-color: rgba(42, 166, 118, 0.08) !important;
+}
+/* bg-[#2E7D50]/10 etc. → green tint on dark */
+html.dark [class*="bg-\[#2E7D50\]/"] {
+  background-color: rgba(42, 166, 118, 0.10) !important;
+}
+/* bg-[#2AA676]/xx → green tint on dark */
+html.dark [class*="bg-\[#2AA676\]/"] {
+  background-color: rgba(42, 166, 118, 0.12) !important;
+}
+
+/* ─── Gold accents — brighten on dark ─── */
+html.dark [class*="text-\[#C8A86A\]"],
+html.dark [class*="text-\[#c8a86a\]"] {
+  color: #D4AF37 !important;
+}
+html.dark [class*="bg-\[#C8A86A\]/"]:not(button) {
+  background-color: rgba(212, 175, 55, 0.12) !important;
+}
+html.dark [class*="bg-\[#D4AF37\]/"]:not(button) {
+  background-color: rgba(212, 175, 55, 0.15) !important;
+}
+
+/* ─── Text Colors ─── */
+/* text-[#1F3D2B] → warm light text */
+html.dark [class*="text-\[#1F3D2B\]"]:not([class*="text-\[#1F3D2B\]/"]) {
+  color: #F0E8DA !important;
+}
+/* text-[#1F3D2B]/60 etc. → warm muted text */
+html.dark [class*="text-\[#1F3D2B\]/"] {
+  color: rgba(240, 232, 218, 0.65) !important;
+}
+/* text-[#1A1A1A] → light text */
+html.dark [class*="text-\[#1A1A1A\]"],
+html.dark [class*="text-\[#1a1a1a\]"] {
+  color: #F0E8DA !important;
+}
+/* text-[#2E7D50] → brighter green on dark */
+html.dark [class*="text-\[#2E7D50\]"],
+html.dark [class*="text-\[#2e7d50\]"] {
+  color: #34D68D !important;
+}
+
+/* Gray text series → lighter for dark bg */
+html.dark .text-gray-400 {
+  color: rgba(240, 232, 218, 0.40) !important;
+}
+html.dark .text-gray-500 {
+  color: rgba(240, 232, 218, 0.50) !important;
+}
+html.dark .text-gray-600 {
+  color: rgba(240, 232, 218, 0.60) !important;
+}
+html.dark .text-gray-700 {
+  color: rgba(240, 232, 218, 0.70) !important;
+}
+html.dark .text-gray-800 {
+  color: rgba(240, 232, 218, 0.85) !important;
+}
+html.dark .text-gray-900 {
+  color: #F0E8DA !important;
+}
+html.dark .text-black {
+  color: #F0E8DA !important;
+}
+
+/* ─── Border Colors ─── */
+/* border-[#E6DCC8] → dark border */
+html.dark [class*="border-\[#E6DCC8\]"],
+html.dark [class*="border-\[#e6dcc8\]"] {
+  border-color: rgba(245, 238, 225, 0.08) !important;
+}
+/* border-gray-200 → dark border */
+html.dark .border-gray-200 {
+  border-color: rgba(245, 238, 225, 0.08) !important;
+}
+html.dark .border-gray-300 {
+  border-color: rgba(245, 238, 225, 0.10) !important;
+}
+/* border-white/xx → subtle dark border */
+html.dark [class*="border-white/"] {
+  border-color: rgba(245, 238, 225, 0.06) !important;
+}
+
+/* ─── Inputs in Dark Mode ─── */
+html.dark input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: #1C2026 !important;
+  color: #F0E8DA !important;
+  border-color: rgba(245, 238, 225, 0.10) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: rgba(240, 232, 218, 0.35) !important;
+}
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: rgba(42, 166, 118, 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(42, 166, 118, 0.15) !important;
+}
+
+/* ─── Range slider in dark mode ─── */
+html.dark input[type="range"] {
+  background: #252A32 !important;
+}
+html.dark input[type="range"]::-webkit-slider-thumb {
+  background: #2AA676;
+  border-color: #1C2026;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.50);
+}
+html.dark input[type="range"]::-moz-range-thumb {
+  background: #2AA676;
+  border-color: #1C2026;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.50);
+}
+
+/* ─── Hover states ─── */
+html.dark [class*="hover\:bg-gray-50"]:hover {
+  background-color: #222730 !important;
+}
+html.dark [class*="hover\:bg-\[#F5EEE1\]"]:hover,
+html.dark [class*="hover\:bg-\[#f5eee1\]"]:hover {
+  background-color: #181B20 !important;
+}
+html.dark [class*="hover\:bg-white"]:hover {
+  background-color: #252A32 !important;
+}
+html.dark [class*="hover\:border-\[#4285F4\]"]:hover {
+  border-color: #4285F4 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   DARK MODE — Card Glow (Subtle inner light) ✨
+   ═══════════════════════════════════════════════════ */
+
+/* Dark cards get subtle edge glow */
+html.dark [class*="bg-white"][class*="rounded"],
+html.dark [class*="bg-\[#1C2026\]"][class*="rounded"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.30),
+    0 4px 16px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+html.dark [class*="bg-white"][class*="rounded"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(42, 166, 118, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Shadow classes → dark depth */
+html.dark [class*="shadow-sm"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+html.dark [class*="shadow-lg"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.30),
+    0 8px 24px rgba(0, 0, 0, 0.20) !important;
+}
+html.dark [class*="shadow-xl"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.35),
+    0 16px 40px rgba(0, 0, 0, 0.25) !important;
+}
+html.dark [class*="shadow-2xl"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.05),
+    0 12px 30px rgba(0, 0, 0, 0.40),
+    0 20px 50px rgba(0, 0, 0, 0.30) !important;
+}
+
+/* ─── Backdrop blur glass panels ─── */
+html.dark [class*="backdrop-blur"] {
+  background-color: rgba(17, 19, 24, 0.85) !important;
+}
+/* Allow specific bg-white backdrop elements to be dark glass */
+html.dark [class*="backdrop-blur"][class*="bg-white/"] {
+  background-color: rgba(28, 32, 38, 0.75) !important;
+}
+
+/* ─── Overlays & Modals ─── */
+html.dark [class*="bg-black/40"],
+html.dark [class*="bg-black/50"] {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}
+
+/* ─── Dark Scrollbar ─── */
+html.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #111318;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #2A2F38;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3A4048;
+}
+
+/* ─── Keep specific button colors in dark ─── */
+/* Green buttons stay green */
+html.dark button[class*="bg-\[#2E7D50\]"],
+html.dark button[class*="bg-\[#2AA676\]"],
+html.dark [role="button"][class*="bg-\[#2E7D50\]"],
+html.dark [role="button"][class*="bg-\[#2AA676\]"] {
+  background-color: unset !important;
+}
+/* Gold accent dot in legend stays */
+html.dark [class*="bg-\[#C8A86A\]"]:not([class*="/"]),
+html.dark [class*="bg-\[#D4AF37\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+/* Green dot stays */
+html.dark [class*="bg-\[#2AA676\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+/* Purple dot stays */
+html.dark [class*="bg-\[#8B5CF6\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+
+/* ─── Divider lines ─── */
+html.dark .border-t {
+  border-color: rgba(245, 238, 225, 0.06) !important;
+}
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(245, 238, 225, 0.06) !important;
 }

@@ -25,7 +25,7 @@ export function SimpleToolShell({
   backLabel,
 }: SimpleToolShellProps) {
   return (
-    <div className="min-h-screen bg-[#FAFAF9] pb-32" dir="rtl">
+    <div className="min-h-screen bg-background pb-32" dir="rtl">
       {/* Header - compact & clean */}
       <div
         className="px-5 pt-6 pb-8 rounded-b-[32px] shadow-lg relative overflow-hidden"

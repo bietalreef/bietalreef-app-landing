@@ -3,7 +3,7 @@ import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
-// New V2 Tools (working tools)
+// Tools
 import { MaterialCalculatorV2 } from './tools/MaterialCalculatorV2';
 import { PaintFlooringCalc } from './tools/PaintFlooringCalc';
 import { CostEstimatorTool } from './tools/CostEstimatorTool';
@@ -15,12 +15,16 @@ import { SocialMediaManager } from './tools/SocialMediaManager';
 import { ColorPaletteTool } from './tools/ColorPaletteTool';
 import { LightingCalcTool } from './tools/LightingCalcTool';
 import { RoomLayoutTool } from './tools/RoomLayoutTool';
+import { Design2DTool } from './tools/Design2DTool';
+import { Design3DTool } from './tools/Design3DTool';
+import { Convert2Dto3DTool } from './tools/Convert2Dto3DTool';
 
 type ActiveTool = null
   | 'materials' | 'paint' | 'cost'
   | 'quote' | 'marketing' | 'contract' | 'invoice'
   | 'social-media'
-  | 'color-palette' | 'lighting' | 'room-layout';
+  | 'color-palette' | 'lighting' | 'room-layout'
+  | 'design-2d' | 'design-3d' | 'convert-2d-3d';
 
 interface ToolDef {
   id: ActiveTool;
@@ -34,38 +38,10 @@ interface ToolDef {
   badgeEn?: string;
 }
 
+// ═══════════════════════════════════════════════
+// ترتيب الأدوات حسب الأهمية — الأهم أولاً
+// ═══════════════════════════════════════════════
 const PRIMARY_TOOLS: ToolDef[] = [
-  {
-    id: 'materials',
-    icon: '🧮',
-    titleAr: 'حاسبة مواد البناء',
-    titleEn: 'Materials Calculator',
-    subtitleAr: 'كميات وتكاليف تقديرية',
-    subtitleEn: 'Quantities & cost estimates',
-    gradient: 'from-emerald-500 to-green-600',
-    badgeAr: 'الأكثر استخداماً',
-    badgeEn: 'Most Used',
-  },
-  {
-    id: 'paint',
-    icon: '🎨',
-    titleAr: 'حاسبة الدهانات والأرضيات',
-    titleEn: 'Paint & Flooring Calculator',
-    subtitleAr: 'دهان + بلاط + نعلات',
-    subtitleEn: 'Paint + tiles + skirting',
-    gradient: 'from-purple-500 to-pink-500',
-  },
-  {
-    id: 'cost',
-    icon: '💰',
-    titleAr: 'مقدّر تكلفة البناء',
-    titleEn: 'Construction Cost Estimator',
-    subtitleAr: 'ميزانية شاملة للمشروع',
-    subtitleEn: 'Complete project budget',
-    gradient: 'from-teal-500 to-cyan-500',
-    badgeAr: 'جديد',
-    badgeEn: 'New',
-  },
   {
     id: 'quote',
     icon: '📄',
@@ -100,44 +76,64 @@ const PRIMARY_TOOLS: ToolDef[] = [
     badgeEn: 'Enhanced',
   },
   {
-    id: 'marketing',
-    icon: '📱',
-    titleAr: 'مولّد المحتوى التسويقي',
-    titleEn: 'Marketing Content Generator',
-    subtitleAr: 'منشورات جاهزة للنشر',
-    subtitleEn: 'Ready-to-publish posts',
-    gradient: 'from-pink-500 to-rose-500',
+    id: 'materials',
+    icon: '🧮',
+    titleAr: 'حاسبة مواد البناء',
+    titleEn: 'Materials Calculator',
+    subtitleAr: 'كميات وتكاليف تقديرية',
+    subtitleEn: 'Quantities & cost estimates',
+    gradient: 'from-emerald-500 to-green-600',
+    badgeAr: 'الأكثر استخداماً',
+    badgeEn: 'Most Used',
   },
   {
-    id: 'social-media',
-    icon: '👥',
-    titleAr: 'مدير وسائل التواصل الاجتماعي',
-    titleEn: 'Social Media Manager',
-    subtitleAr: 'إدارة حساباتك على وسائل التواصل الاجتماعي',
-    subtitleEn: 'Manage your social media accounts',
-    gradient: 'from-blue-500 to-indigo-500',
-    badgeAr: 'جديد',
-    badgeEn: 'New',
+    id: 'cost',
+    icon: '💰',
+    titleAr: 'مقدّر تكلفة البناء',
+    titleEn: 'Cost Estimator',
+    subtitleAr: 'ميزانية شاملة للمشروع',
+    subtitleEn: 'Complete project budget',
+    gradient: 'from-teal-500 to-cyan-500',
   },
   {
-    id: 'color-palette',
+    id: 'paint',
     icon: '🎨',
-    titleAr: ' لوحة الألوان',
-    titleEn: 'Color Palette',
-    subtitleAr: 'اختر الألوان المناسبة لمشروعك',
-    subtitleEn: 'Select the right colors for your project',
-    gradient: 'from-pink-500 to-rose-500',
+    titleAr: 'حاسبة الدهانات والأرضيات',
+    titleEn: 'Paint & Flooring',
+    subtitleAr: 'دهان + بلاط + نعلات',
+    subtitleEn: 'Paint + tiles + skirting',
+    gradient: 'from-purple-500 to-pink-500',
+  },
+  {
+    id: 'design-2d',
+    icon: '✏️',
+    titleAr: 'تصميم ثنائي الأبعاد',
+    titleEn: '2D Floor Plan',
+    subtitleAr: 'ارسم مخططات الغرف والأثاث',
+    subtitleEn: 'Draw rooms, walls & furniture',
+    gradient: 'from-indigo-500 to-blue-600',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
   {
-    id: 'lighting',
-    icon: '💡',
-    titleAr: 'حاسبة الإضاءة',
-    titleEn: 'Lighting Calculator',
-    subtitleAr: 'حساب الإضاءة المناسبة لغرفتك',
-    subtitleEn: 'Calculate the right lighting for your room',
-    gradient: 'from-yellow-500 to-amber-500',
+    id: 'design-3d',
+    icon: '🧊',
+    titleAr: 'تصميم ثلاثي الأبعاد',
+    titleEn: '3D Room Visualizer',
+    subtitleAr: 'تصوّر الغرف بشكل ثلاثي',
+    subtitleEn: 'Visualize rooms in 3D',
+    gradient: 'from-purple-500 to-violet-600',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'convert-2d-3d',
+    icon: '🔄',
+    titleAr: 'تحويل 2D إلى 3D',
+    titleEn: '2D to 3D Converter',
+    subtitleAr: 'حوّل المخططات لنماذج ثلاثية',
+    subtitleEn: 'Convert plans to 3D models',
+    gradient: 'from-green-500 to-teal-600',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
@@ -148,9 +144,43 @@ const PRIMARY_TOOLS: ToolDef[] = [
     titleEn: 'Room Layout',
     subtitleAr: 'تصميم تخطيط غرفتك',
     subtitleEn: 'Design your room layout',
+    gradient: 'from-indigo-500 to-blue-500',
+  },
+  {
+    id: 'color-palette',
+    icon: '🎨',
+    titleAr: 'لوحة الألوان',
+    titleEn: 'Color Palette',
+    subtitleAr: 'اختر الألوان المناسبة لمشروعك',
+    subtitleEn: 'Select colors for your project',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  {
+    id: 'lighting',
+    icon: '💡',
+    titleAr: 'حاسبة الإضاءة',
+    titleEn: 'Lighting Calculator',
+    subtitleAr: 'حساب الإضاءة المناسبة',
+    subtitleEn: 'Calculate room lighting',
+    gradient: 'from-amber-400 to-yellow-600',
+  },
+  {
+    id: 'marketing',
+    icon: '📱',
+    titleAr: 'مولّد المحتوى التسويقي',
+    titleEn: 'Marketing Content',
+    subtitleAr: 'منشورات جاهزة للنشر',
+    subtitleEn: 'Ready-to-publish posts',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  {
+    id: 'social-media',
+    icon: '👥',
+    titleAr: 'مدير وسائل التواصل',
+    titleEn: 'Social Media Manager',
+    subtitleAr: 'إدارة حساباتك على التواصل',
+    subtitleEn: 'Manage social accounts',
     gradient: 'from-blue-500 to-indigo-500',
-    badgeAr: 'جديد',
-    badgeEn: 'New',
   },
 ];
 
@@ -178,10 +208,13 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
   if (activeTool === 'color-palette') return <ColorPaletteTool onBack={handleBack} />;
   if (activeTool === 'lighting') return <LightingCalcTool onBack={handleBack} />;
   if (activeTool === 'room-layout') return <RoomLayoutTool onBack={handleBack} />;
+  if (activeTool === 'design-2d') return <Design2DTool onBack={handleBack} />;
+  if (activeTool === 'design-3d') return <Design3DTool onBack={handleBack} />;
+  if (activeTool === 'convert-2d-3d') return <Convert2Dto3DTool onBack={handleBack} />;
 
   // ══════════ Main Dashboard ══════════
   return (
-    <div className="min-h-screen bg-[#FAFAF9] pb-32" dir="rtl">
+    <div className="min-h-screen bg-background pb-32" dir="rtl">
 
       {/* Page Header */}
       <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] px-5 pt-8 pb-10 relative overflow-hidden">
@@ -197,53 +230,55 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
         </div>
       </div>
 
-      {/* Primary Tools Grid */}
+      {/* Primary Tools Grid — 2 per row on mobile */}
       <div className="px-4 -mt-5 relative z-10">
         <div className="flex items-center justify-between mb-3 px-1">
           <h3 className="text-[#1A1A1A] font-bold font-cairo text-lg">
             {isEn ? 'Core Tools' : 'الأدوات الأساسية'}
           </h3>
           <span className="text-xs font-bold text-[#2AA676] bg-[#2AA676]/10 px-2.5 py-1 rounded-full font-cairo">
-            {PRIMARY_TOOLS.length} {isEn ? 'tools' : 'أدوات'}
+            {PRIMARY_TOOLS.length} {isEn ? 'tools' : 'أداة'}
           </span>
         </div>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {PRIMARY_TOOLS.map((tool, index) => {
             const badge = isEn ? tool.badgeEn : tool.badgeAr;
             return (
               <motion.button
                 key={tool.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.06 }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.04 }}
                 onClick={() => setActiveTool(tool.id)}
-                className="w-full bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/80 hover:shadow-md transition-all group active:scale-[0.98] flex items-center gap-4 text-right"
+                className="bg-white rounded-[20px] p-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/80 hover:shadow-md transition-all group active:scale-[0.97] flex flex-col items-center text-center relative"
               >
-                <div className={`w-14 h-14 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                {/* Badge */}
+                {badge && (
+                  <span className={`absolute top-2 left-2 text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
+                    badge === 'جديد' || badge === 'New' ? 'bg-green-100 text-green-700' :
+                    badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
+                    badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
+                    'bg-gray-100 text-gray-600'
+                  }`}>
+                    {badge}
+                  </span>
+                )}
+
+                {/* Icon */}
+                <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2.5 group-hover:scale-110 transition-transform`}>
                   {tool.icon}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <h4 className="font-bold font-cairo text-[15px] text-[#1A1A1A] leading-tight truncate">
-                      {isEn ? tool.titleEn : tool.titleAr}
-                    </h4>
-                    {badge && (
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
-                        badge === 'جديد' || badge === 'New' ? 'bg-green-100 text-green-700' :
-                        badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
-                        badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {badge}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-400 font-cairo">
-                    {isEn ? tool.subtitleEn : tool.subtitleAr}
-                  </p>
-                </div>
-                <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-[#2AA676] transition-colors flex-shrink-0" />
+
+                {/* Title */}
+                <h4 className="font-bold font-cairo text-[12px] text-[#1A1A1A] leading-tight mb-1 line-clamp-2 min-h-[32px] flex items-center">
+                  {isEn ? tool.titleEn : tool.titleAr}
+                </h4>
+
+                {/* Subtitle */}
+                <p className="text-[10px] text-gray-400 font-cairo leading-tight line-clamp-2">
+                  {isEn ? tool.subtitleEn : tool.subtitleAr}
+                </p>
               </motion.button>
             );
           })}
@@ -262,8 +297,7 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
               <p className="text-xs text-gray-600 font-cairo leading-relaxed">
                 {isEn
                   ? 'All core tools work fully and give you instant results. You can copy results or share them via WhatsApp directly. Print as PDF for professional A4 documents.'
-                  : 'جميع الأدوات الأساسية تعمل بشكل كامل وتعطيك نتائج فورية. يمكنك نسخ النتائج أو مشاركتها عبر واتساب مباشرة. اطبع كـ PDF للحصول على مستندات A4 احترافية.'
-                }
+                  : 'جميع الأدوات الأساسية تعمل بشكل كامل وتعطيك نتائج فورية. يمكنك نسخ النتائج أو مشاركتها عبر واتساب مباشرة. اطبع كـ PDF للحصول على مستندات A4 احترافية.'}
               </p>
             </div>
           </div>

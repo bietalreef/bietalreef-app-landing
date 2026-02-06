@@ -4,6 +4,7 @@ import { sectionsTree, MainSection, SubSection } from '../../data/sectionsTree';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useUser } from '../../utils/UserContext';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface SideDrawerProps {
   isOpen: boolean;
@@ -15,10 +16,11 @@ interface SideDrawerProps {
 export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDrawerProps) {
   const { t, language } = useTranslation('common');
   const { profile, logout } = useUser();
+  const theme = useTheme();
   const [showServicesOverlay, setShowServicesOverlay] = useState(false);
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif';
-
+  
   const handleSectionClick = (section: MainSection) => {
     if (section.expandable && section.subSections && section.subSections.length > 0) {
       // Open full services overlay instead of dropdown
@@ -310,6 +312,33 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
 
         {/* Footer */}
         <div className="border-t border-gray-200 p-4 bg-[#F5EEE1]/30">
+          {/* Theme Toggle */}
+          <div className="flex items-center justify-center mb-3">
+            <div className="flex items-center bg-white/80 border border-[#E6DCC8] rounded-full p-1 shadow-sm">
+              <button
+                onClick={() => { if (theme.theme !== 'light') theme.toggleTheme(); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  theme.theme === 'light'
+                    ? 'bg-[#2E7D50] text-white shadow-md'
+                    : 'text-gray-500 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily }}
+              >
+                {isEn ? 'Light' : 'فاتح'}
+              </button>
+              <button
+                onClick={() => { if (theme.theme !== 'dark') theme.toggleTheme(); }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  theme.theme === 'dark'
+                    ? 'bg-[#2E7D50] text-white shadow-md'
+                    : 'text-gray-500 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily }}
+              >
+                {isEn ? 'Dark' : 'داكن'}
+              </button>
+            </div>
+          </div>
           <div className="text-center mb-2">
             <div className="text-2xl mb-1">🏠</div>
             <p className="font-bold text-sm text-[#1F3D2B]" style={{ fontFamily }}>

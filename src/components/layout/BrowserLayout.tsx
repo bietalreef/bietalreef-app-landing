@@ -81,7 +81,7 @@ export function BrowserLayout() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-[#F5EEE1] flex flex-col">
+    <div className="relative w-full min-h-screen bg-background flex flex-col">
       {/* Side Drawer */}
       <SideDrawer 
         isOpen={isSideDrawerOpen}

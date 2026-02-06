@@ -88,7 +88,10 @@ export function ColorPaletteTool({ onBack }: { onBack: () => void }) {
       title={isEn ? 'Color Palette Generator' : 'مولّد لوحات الألوان'}
       subtitle={isEn ? 'Design color schemes for your rooms' : 'صمّم تنسيقات ألوان لغرفك'}
       onBack={onBack}
-      gradient="from-pink-500 to-rose-600"
+      icon="🎨"
+      gradientFrom="#EC4899"
+      gradientTo="#E11D48"
+      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-5 p-4" dir="rtl">
         {/* Room Type */}

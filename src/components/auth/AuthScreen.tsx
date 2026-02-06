@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../utils/supabase/client';
-import { Mail, ArrowLeft, Loader2, CheckCircle2, Shield, Sparkles, Globe, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, ArrowLeft, Loader2, CheckCircle2, Shield, Sparkles, Globe, Lock, Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { motion, AnimatePresence } from 'motion/react';
 import logoImg from "figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png";
 import { useLanguage } from '../../contexts/LanguageContext';
 import { LegalModals, useLegalModals } from '../LegalModals';
 import { HeroCylinder } from './HeroCylinder';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface AuthScreenProps {
   onComplete: () => void;
@@ -240,6 +241,7 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
   const { language, setLanguage } = useLanguage();
   const isEn = language === 'en';
   const { openModal, openTerms, openPrivacy, closeModal } = useLegalModals();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <motion.div
@@ -463,6 +465,41 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
                 style={{ fontFamily: 'Inter, sans-serif' }}
               >
                 English
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Theme Switcher */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="flex items-center justify-center pt-1"
+          >
+            <div className="flex items-center bg-white/80 border border-[#E6DCC8] rounded-full p-1 shadow-sm">
+              <button
+                onClick={() => { if (theme !== 'light') toggleTheme(); }}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  theme === 'light'
+                    ? 'bg-[#2E7D50] text-white shadow-md'
+                    : 'text-gray-500 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              >
+                <Sun className="w-3.5 h-3.5" />
+                {isEn ? 'Light' : 'فاتح'}
+              </button>
+              <button
+                onClick={() => { if (theme !== 'dark') toggleTheme(); }}
+                className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  theme === 'dark'
+                    ? 'bg-[#2E7D50] text-white shadow-md'
+                    : 'text-gray-500 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              >
+                <Moon className="w-3.5 h-3.5" />
+                {isEn ? 'Dark' : 'داكن'}
               </button>
             </div>
           </motion.div>
