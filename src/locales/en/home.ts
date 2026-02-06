@@ -148,6 +148,114 @@ export const home = {
   noProjects: "No projects yet",
   startFirstProject: "Start your first project",
   exploreServices: "Explore Services",
+
+  // =====================
+  // Voice Rooms
+  // =====================
+  voiceRooms: "Live Voice Rooms",
+  live: "Live",
+  customerSupport: "Customer Support",
+  availableForAll: "Available for everyone",
+  majorProjects: "Major Projects",
+  forProPackage: "Pro Package Only",
+  comingSoon: "Coming Soon",
+
+  // =====================
+  // Provider Empty States
+  // =====================
+  noProvidersYet: "No registered providers yet",
+  registerAsProvider: "Register as a provider to appear here!",
+  serviceProvider: "Service Provider",
+
+  // =====================
+  // Toast Messages
+  // =====================
+  notAllowed: "Not Allowed",
+  upgradeRequired: "Please upgrade to the Pro package",
+  verifyRequired: "Please verify your account to continue",
+  upgrade: "Upgrade",
+  verify: "Verify",
+  processingRequest: "Processing your request...",
+  joiningVIPRoom: "Joining VIP Projects Room...",
+  joiningCSRoom: "Joining Customer Support Room...",
+
+  // =====================
+  // Community Feed
+  // =====================
+  communityTitle: "Biet Alreef Community",
+  exploreMore: "Explore More",
+  likes: "Likes",
+  viewAllComments: "View all comments",
+  loadMore: "Load More",
+  communityPost1: {
+    userName: "Eng. Ahmed Al Omran",
+    role: "Pro Provider",
+    text: "Just completed a modern villa design in Dubai Hills. We focused on maximizing natural lighting and open spaces.",
+    tags: "Design,Build,Dubai",
+    timeAgo: "2 hours ago"
+  },
+  communityPost2: {
+    userName: "Advanced Construction Co.",
+    role: "Enterprise",
+    text: "Started excavation and foundation work for the new commercial complex. Using the latest soil testing technology to ensure sustainability.",
+    tags: "Contracting,Excavation,Commercial",
+    timeAgo: "5 hours ago"
+  },
+  communityPost3: {
+    userName: "Sarah Decor",
+    role: "Freelancer",
+    text: "Ideas for styling small living rooms using light colors and mirrors. What do you think?",
+    tags: "Decor,Tips,Furniture",
+    timeAgo: "Yesterday"
+  },
+
+  // =====================
+  // Packages Section
+  // =====================
+  chooseYourPlan: "Choose Your Plan",
+  packagesSubtitle: "Packages designed to fit your needs whether you're a client or a service provider",
+  clientJourney: "Client Journey",
+  providerJourney: "Provider Journey",
+  
+  // Client Packages
+  packageGuest: {
+    title: "Guest",
+    subtitle: "Browse, explore, no contact",
+    features: "Browse public projects,View the store,Use free tools",
+    btnText: "Sign Up Free"
+  },
+  packageVerified: {
+    title: "Verified",
+    subtitle: "3 projects, contact, rate",
+    features: "Add up to 3 projects,Contact providers,Rate services,Verified badge",
+    btnText: "Activate Account"
+  },
+  packageVIP: {
+    title: "VIP",
+    subtitle: "Unlimited, account manager, private rooms",
+    features: "Unlimited projects,Personal account manager,Private chat rooms,Priority support,Exclusive discounts",
+    btnText: "Upgrade Membership"
+  },
+
+  // Provider Packages
+  packageFreelancer: {
+    title: "Freelancer",
+    subtitle: "Limited intake, basic profile",
+    features: "Basic profile,Receive 3 requests/month,Appear in general search",
+    btnText: "Start as Freelancer"
+  },
+  packagePro: {
+    title: "Pro",
+    subtitle: "Submit offers, verified badge, visibility",
+    features: "Unlimited proposals,Pro badge,Priority search ranking,Advanced portfolio",
+    btnText: "Subscribe Now"
+  },
+  packageEnterprise: {
+    title: "Enterprise",
+    subtitle: "Team management, tenders, API",
+    features: "Team accounts,Access major tenders,API integration,Advanced dashboard,Relationship manager",
+    btnText: "Contact Sales"
+  },
 };
 
 export default home;

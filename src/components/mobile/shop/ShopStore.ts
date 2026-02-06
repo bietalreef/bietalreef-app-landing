@@ -3,13 +3,16 @@ import { create } from 'zustand';
 export type Product = {
   id: string;
   name: string;
+  nameEn?: string;
   price: number;
   originalPrice?: number;
   image: string;
   category: string;
+  categoryEn?: string;
   rating?: number;
   description?: string;
-  specs?: { label: string; value: string }[];
+  descriptionEn?: string;
+  specs?: { label: string; labelEn?: string; value: string; valueEn?: string }[];
   isNew?: boolean;
 };
 
@@ -19,6 +22,15 @@ export type CartItem = Product & {
 
 export type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered';
 
+export type CustomerInfo = {
+  fullName: string;
+  phone: string;
+  email: string;
+  city: string;
+  address: string;
+  notes?: string;
+};
+
 export type Order = {
   id: string;
   items: CartItem[];
@@ -26,6 +38,7 @@ export type Order = {
   status: OrderStatus;
   date: string;
   trackingStep?: number;
+  customer?: CustomerInfo;
 };
 
 interface ShopState {
@@ -49,23 +62,7 @@ interface ShopState {
 
 export const useShopStore = create<ShopState>((set) => ({
   cart: [],
-  orders: [
-    {
-      id: 'ORD-992519',
-      items: [],
-      total: 4462.50,
-      status: 'shipped',
-      date: '2023-10-15',
-      trackingStep: 2
-    },
-    {
-       id: 'ORD-12524',
-       items: [],
-       total: 450.00,
-       status: 'delivered',
-       date: '2023-10-10'
-    }
-  ],
+  orders: [],
   favorites: [],
   currentView: 'home',
   selectedProduct: null,

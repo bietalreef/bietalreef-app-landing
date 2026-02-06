@@ -38,6 +38,10 @@ export const services = {
   aed: "د.إ",
   km: "كم",
   
+  // Empty State
+  noProvidersAvailable: "لا يوجد مزودين متاحين حالياً",
+  serviceProvider: "مزود خدمة",
+  
   // Search Placeholders
   searchPlaceholder1: "ابحث عن مقاول بناء…",
   searchPlaceholder2: "استشارات هندسية قريبة؟",
@@ -219,7 +223,7 @@ export const services = {
   
   // Craftsmen
   craftsmenServices: {
-    title: "العمالة الحرفية",
+    title: "العمالة الحرف��ة",
     description: "عمالة ماهرة لجميع أعمال البناء",
     masons: "بناؤون",
     carpenters: "نجارون",

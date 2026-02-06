@@ -1,11 +1,12 @@
 // ====================================
 // 🎛️ Marketplace Filters Component
-// بيت الريف - فلاتر المتجر
+// بيت الريف - فلاتر المتجر (Bilingual)
 // ====================================
 
 import { useState } from 'react';
 import { SlidersHorizontal, X } from 'lucide-react';
-import { MarketplaceCategory, MarketplaceFilterState, CATEGORY_LABELS, CATEGORY_ICONS } from '../../data/marketplace';
+import { MarketplaceCategory, MarketplaceFilterState, CATEGORY_LABELS, CATEGORY_LABELS_EN, CATEGORY_ICONS } from '../../data/marketplace';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface MarketplaceFiltersProps {
   filterState: MarketplaceFilterState;
@@ -14,24 +15,23 @@ interface MarketplaceFiltersProps {
 }
 
 export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: MarketplaceFiltersProps) {
+  const { t, language, textAlign } = useTranslation('store');
+  const isEn = language === 'en';
+  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const catLabels = isEn ? CATEGORY_LABELS_EN : CATEGORY_LABELS;
+
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
   const categories: (MarketplaceCategory | 'all')[] = [
-    'all',
-    'materials',
-    'furniture',
-    'tools',
-    'equipment',
-    'decor',
-    'services'
+    'all', 'materials', 'furniture', 'tools', 'equipment', 'decor', 'services'
   ];
 
   const sortOptions = [
-    { value: 'popular', label: 'الأكثر طلباً' },
-    { value: 'price_low', label: 'السعر: من الأقل' },
-    { value: 'price_high', label: 'السعر: من الأعلى' },
-    { value: 'rating', label: 'الأعلى تقييماً' },
-    { value: 'near_me', label: 'الأقرب لي' }
+    { value: 'popular', label: isEn ? 'Most Popular' : 'الأكثر طلباً' },
+    { value: 'price_low', label: isEn ? 'Price: Low to High' : 'السعر: من الأقل' },
+    { value: 'price_high', label: isEn ? 'Price: High to Low' : 'السعر: من الأعلى' },
+    { value: 'rating', label: isEn ? 'Highest Rated' : 'الأعلى تقييماً' },
+    { value: 'near_me', label: isEn ? 'Near Me' : 'الأقرب لي' }
   ] as const;
 
   return (
@@ -54,10 +54,10 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
                     : 'bg-[#F5EEE1] text-[#1F3D2B] hover:bg-[#E5DED1]'
                   }
                 `}
-                style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+                style={{ fontFamily, fontWeight: 700 }}
               >
                 <span className="mr-1">{icon}</span>
-                {CATEGORY_LABELS[category]}
+                {catLabels[category]}
               </button>
             );
           })}
@@ -76,9 +76,9 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
               : 'bg-white border border-[#F2994A] text-[#F2994A]'
             }
           `}
-          style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+          style={{ fontFamily, fontWeight: 700 }}
         >
-          🔥 عروض
+          🔥 {isEn ? 'Offers' : 'عروض'}
         </button>
 
         {/* In Stock Filter */}
@@ -91,9 +91,9 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
               : 'bg-white border border-[#2AA676] text-[#2AA676]'
             }
           `}
-          style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+          style={{ fontFamily, fontWeight: 700 }}
         >
-          ✅ متاح
+          ✅ {isEn ? 'Available' : 'متاح'}
         </button>
 
         {/* Sort Dropdown */}
@@ -105,7 +105,7 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
             sortBy: e.target.value as MarketplaceFilterState['sortBy']
           })}
           className="px-3 py-1.5 rounded-full text-xs bg-white border border-[#4A90E2] text-[#4A90E2] outline-none"
-          style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+          style={{ fontFamily, fontWeight: 700 }}
         >
           {sortOptions.map(option => (
             <option key={option.value} value={option.value}>
@@ -127,7 +127,9 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
       {showAdvancedFilters && (
         <div className="px-4 py-4 bg-[#F5EEE1]/30 border-t border-[#F5EEE1]">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-sm text-[#1F3D2B]">فلاتر متقدمة</h3>
+            <h3 className="font-bold text-sm text-[#1F3D2B]" style={{ fontFamily, textAlign }}>
+              {isEn ? 'Advanced Filters' : 'فلاتر متقدمة'}
+            </h3>
             <button
               onClick={() => setShowAdvancedFilters(false)}
               className="text-[#1F3D2B]/60 hover:text-[#1F3D2B]"
@@ -138,32 +140,32 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
 
           {/* Price Range */}
           <div className="mb-4">
-            <label className="block text-xs text-[#1F3D2B]/80 mb-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-              نطاق السعر (درهم)
+            <label className="block text-xs text-[#1F3D2B]/80 mb-2" style={{ fontFamily, fontWeight: 600, textAlign }}>
+              {isEn ? 'Price Range (AED)' : 'نطاق السعر (درهم)'}
             </label>
             <div className="flex items-center gap-2">
               <input
                 type="number"
-                placeholder="من"
+                placeholder={isEn ? 'From' : 'من'}
                 value={filterState.minPrice || ''}
                 onChange={(e) => onFilterChange({ 
                   ...filterState, 
                   minPrice: e.target.value ? Number(e.target.value) : undefined 
                 })}
                 className="flex-1 px-3 py-2 rounded-lg border border-[#E5DED1] outline-none text-sm"
-                style={{ fontFamily: 'Cairo, sans-serif' }}
+                style={{ fontFamily }}
               />
               <span className="text-[#1F3D2B]/60">-</span>
               <input
                 type="number"
-                placeholder="إلى"
+                placeholder={isEn ? 'To' : 'إلى'}
                 value={filterState.maxPrice || ''}
                 onChange={(e) => onFilterChange({ 
                   ...filterState, 
                   maxPrice: e.target.value ? Number(e.target.value) : undefined 
                 })}
                 className="flex-1 px-3 py-2 rounded-lg border border-[#E5DED1] outline-none text-sm"
-                style={{ fontFamily: 'Cairo, sans-serif' }}
+                style={{ fontFamily }}
               />
             </div>
           </div>
@@ -177,17 +179,17 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
               inStockOnly: false
             })}
             className="w-full px-4 py-2 rounded-lg bg-white border border-[#4A90E2] text-[#4A90E2] text-sm hover:bg-[#4A90E2]/10 transition-colors"
-            style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+            style={{ fontFamily, fontWeight: 700 }}
           >
-            إعادة تعيين الفلاتر
+            {isEn ? 'Reset Filters' : 'إعادة تعيين الفلاتر'}
           </button>
         </div>
       )}
 
       {/* Results Count */}
       <div className="px-4 py-2 bg-[#F5EEE1]/50 text-center">
-        <p className="text-xs text-[#1F3D2B]/70" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-          {itemsCount} منتج متاح
+        <p className="text-xs text-[#1F3D2B]/70" style={{ fontFamily, fontWeight: 600 }}>
+          {itemsCount} {isEn ? 'products available' : 'منتج متاح'}
         </p>
       </div>
     </div>

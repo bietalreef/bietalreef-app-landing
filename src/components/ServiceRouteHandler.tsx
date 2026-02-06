@@ -1,23 +1,23 @@
 import { useParams, useNavigate } from 'react-router';
-import { useSearchStore } from '../../stores/search-store';
-import { ServiceDetailPlumbing } from '../mobile/ServiceDetailPlumbing';
-import { ServiceDetailElectricity } from '../mobile/ServiceDetailElectricity';
-import { ServiceDetailAC } from '../mobile/ServiceDetailAC';
-import { ServiceDetailPainting } from '../mobile/ServiceDetailPainting';
-import { ServiceDetailCleaning } from '../mobile/ServiceDetailCleaning';
-import { ServiceDetailCarpentry } from '../mobile/ServiceDetailCarpentry';
-import { ServiceDetailInterior } from '../mobile/ServiceDetailInterior';
-import { ServiceDetailExterior } from '../mobile/ServiceDetailExterior';
-import { ServiceDetailConstruction } from '../mobile/ServiceDetailConstruction';
-import { ServiceDetailConsultation } from '../mobile/ServiceDetailConsultation';
-import { ServiceDetailConstructionContracting } from '../mobile/ServiceDetailConstructionContracting';
-import { ServiceDetailEngineeringConsultation } from '../mobile/ServiceDetailEngineeringConsultation';
-import { ServiceDetailMaintenance } from '../mobile/ServiceDetailMaintenance';
-import { ServiceDetailCraftsmen } from '../mobile/ServiceDetailCraftsmen';
-import { ServiceDetailWorkshops } from '../mobile/ServiceDetailWorkshops';
-import { ServiceDetailEquipmentRental } from '../mobile/ServiceDetailEquipmentRental';
-import { ServiceDetailBuildingMaterials } from '../mobile/ServiceDetailBuildingMaterials';
-import { ServiceDetailFurnitureDecor } from '../mobile/ServiceDetailFurnitureDecor';
+import { useSearchStore } from '../stores/search-store';
+import { ServiceDetailPlumbing } from './mobile/ServiceDetailPlumbing';
+import { ServiceDetailElectricity } from './mobile/ServiceDetailElectricity';
+import { ServiceDetailAC } from './mobile/ServiceDetailAC';
+import { ServiceDetailPainting } from './mobile/ServiceDetailPainting';
+import { ServiceDetailCleaning } from './mobile/ServiceDetailCleaning';
+import { ServiceDetailCarpentry } from './mobile/ServiceDetailCarpentry';
+import { ServiceDetailInterior } from './mobile/ServiceDetailInterior';
+import { ServiceDetailExterior } from './mobile/ServiceDetailExterior';
+import { ServiceDetailConstruction } from './mobile/ServiceDetailConstruction';
+import { ServiceDetailConsultation } from './mobile/ServiceDetailConsultation';
+import { ServiceDetailConstructionContracting } from './mobile/ServiceDetailConstructionContracting';
+import { ServiceDetailEngineeringConsultation } from './mobile/ServiceDetailEngineeringConsultation';
+import { ServiceDetailMaintenance } from './mobile/ServiceDetailMaintenance';
+import { ServiceDetailCraftsmen } from './mobile/ServiceDetailCraftsmen';
+import { ServiceDetailWorkshops } from './mobile/ServiceDetailWorkshops';
+import { ServiceDetailEquipmentRental } from './mobile/ServiceDetailEquipmentRental';
+import { ServiceDetailBuildingMaterials } from './mobile/ServiceDetailBuildingMaterials';
+import { ServiceDetailFurnitureDecor } from './mobile/ServiceDetailFurnitureDecor';
 
 export function ServiceRouteHandler() {
   const { id } = useParams<{ id: string }>();
@@ -25,7 +25,6 @@ export function ServiceRouteHandler() {
   const setOpenSearch = useSearchStore((state) => state.setOpen);
 
   const handleOpenSearch = (term: string) => {
-    // Ideally set search term too
     setOpenSearch(true);
   };
 
@@ -34,8 +33,6 @@ export function ServiceRouteHandler() {
   };
 
   const handleNavigate = (tab: string) => {
-      // Logic for some components that emitted onNavigate(tab)
-      // We should map these tabs to routes
       navigate(`/${tab}`);
   }
 

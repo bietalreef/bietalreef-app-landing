@@ -47,14 +47,15 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
   // Derive display info from actual profile
   const isLoggedIn = !!profile && !!profile.email;
   const userEmail = profile?.email || '';
-  const displayName = profile?.full_name || userEmail.split('@')[0] || 'زائر';
+  const displayName = profile?.full_name || userEmail.split('@')[0] || (language === 'en' ? 'Guest' : 'زائر');
   const userRole = profile?.role;
   
   const getRoleBadge = () => {
-    if (!isLoggedIn) return { text: 'مستخدم زائر', bg: 'bg-gray-400', textColor: 'text-white' };
-    if (userRole === 'admin') return { text: 'مدير النظام', bg: 'bg-red-500', textColor: 'text-white' };
-    if (userRole === 'provider') return { text: 'مزود خدمة', bg: 'bg-blue-500', textColor: 'text-white' };
-    return { text: 'عميل', bg: 'bg-[#2AA676]', textColor: 'text-white' };
+    const isEn = language === 'en';
+    if (!isLoggedIn) return { text: isEn ? 'Guest User' : 'مستخدم زائر', bg: 'bg-gray-400', textColor: 'text-white' };
+    if (userRole === 'admin') return { text: isEn ? 'System Admin' : 'مدير النظام', bg: 'bg-red-500', textColor: 'text-white' };
+    if (userRole === 'provider') return { text: isEn ? 'Service Provider' : 'مزود خدمة', bg: 'bg-blue-500', textColor: 'text-white' };
+    return { text: isEn ? 'Client' : 'عميل', bg: 'bg-[#2AA676]', textColor: 'text-white' };
   };
 
   const badge = getRoleBadge();

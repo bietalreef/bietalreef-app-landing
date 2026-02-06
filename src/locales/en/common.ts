@@ -16,7 +16,7 @@ export const common = {
   
   // Navigation
   home: "Home",
-  services: "Services",
+  servicesNav: "Services",
   weyaak: "Weyaak",
   projects: "Projects",
   profile: "Profile",

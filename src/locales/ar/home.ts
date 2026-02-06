@@ -148,6 +148,114 @@ export const home = {
   noProjects: "لا توجد مشاريع حالياً",
   startFirstProject: "ابدأ مشروعك الأول",
   exploreServices: "استكشف الخدمات",
+
+  // =====================
+  // Voice Rooms
+  // =====================
+  voiceRooms: "الغرف الصوتية المباشرة",
+  live: "مباشر",
+  customerSupport: "خدمة العملاء",
+  availableForAll: "متاح للجميع",
+  majorProjects: "مشاريع كبرى",
+  forProPackage: "للباقة الاحترافية",
+  comingSoon: "قريباً",
+
+  // =====================
+  // Provider Empty States
+  // =====================
+  noProvidersYet: "لا يوجد مزودين مسجلين حالياً",
+  registerAsProvider: "سجل الآن كمزود خدمة لتظهر هنا!",
+  serviceProvider: "مزود خدمة",
+
+  // =====================
+  // Toast Messages
+  // =====================
+  notAllowed: "غير مسموح",
+  upgradeRequired: "يرجى الترقية للباقة الاحترافية",
+  verifyRequired: "يرجى توثيق حسابك للاستمرار",
+  upgrade: "ترقية",
+  verify: "توثيق",
+  processingRequest: "جاري تنفيذ الطلب...",
+  joiningVIPRoom: "جاري الدخول لغرفة المشاريع VIP...",
+  joiningCSRoom: "جاري الدخول لغرفة خدمة العملاء...",
+
+  // =====================
+  // Community Feed
+  // =====================
+  communityTitle: "مجتمع بيت الريف",
+  exploreMore: "استكشف المزيد",
+  likes: "إعجاب",
+  viewAllComments: "عرض كل التعليقات",
+  loadMore: "تحميل المزيد",
+  communityPost1: {
+    userName: "م. أحمد العمران",
+    role: "مزود محترف",
+    text: "تم الانتهاء بحمد الله من تصميم فيلا مودرن في دبي هيلز. ركزنا على استغلال الإضاءة الطبيعية والمساحات المفتوحة.",
+    tags: "تصميم,تنفيذ,دبي",
+    timeAgo: "منذ ساعتين"
+  },
+  communityPost2: {
+    userName: "شركة البناء المتقدمة",
+    role: "شركة",
+    text: "بدء أعمال الحفر والأساسات لمشروع المجمع التجاري الجديد. نستخدم أحدث تقنيات فحص التربة لضمان الاستدامة.",
+    tags: "مقاولات,حفر,مشاريع تجارية",
+    timeAgo: "منذ 5 ساعات"
+  },
+  communityPost3: {
+    userName: "سارة الديكور",
+    role: "مستقلة",
+    text: "أفكار لتنسيق غرف المعيشة الصغيرة باستخدام الألوان الفاتحة والمرايا. رأيكم يهمنا!",
+    tags: "ديكور,نصائح,أثاث",
+    timeAgo: "أمس"
+  },
+
+  // =====================
+  // Packages Section
+  // =====================
+  chooseYourPlan: "اختر خطتك المناسبة",
+  packagesSubtitle: "باقات مصممة لتناسب احتياجاتك سواء كنت عميلاً أو مزود خدمة",
+  clientJourney: "رحلة العميل",
+  providerJourney: "رحلة المزود",
+  
+  // Client Packages
+  packageGuest: {
+    title: "زائر (Guest)",
+    subtitle: "استكشاف، تصفح، بدون تواصل",
+    features: "تصفح المشاريع العامة,الاطلاع على المتجر,استخدام الأدوات المجانية",
+    btnText: "التسجيل مجاناً"
+  },
+  packageVerified: {
+    title: "موثق (Verified)",
+    subtitle: "3 مشاريع، تواصل، تقييم",
+    features: "إضافة 3 مشاريع,التواصل مع المزودين,تقييم الخدمات,شارة موثوق",
+    btnText: "تفعيل الحساب"
+  },
+  packageVIP: {
+    title: "مميز (VIP)",
+    subtitle: "بلا حدود، مدير حساب، غرف خاصة",
+    features: "مشاريع غير محدودة,مدير حساب شخصي,غرف دردشة خاصة,أولوية الدعم,خصومات حصرية",
+    btnText: "ترقية للعضوية"
+  },
+
+  // Provider Packages
+  packageFreelancer: {
+    title: "مستقل (Freelancer)",
+    subtitle: "استقبال محدود، ملف بسيط",
+    features: "ملف شخصي أساسي,استقبال 3 طلبات شهرياً,الظهور في البحث العام",
+    btnText: "ابدأ كمستقل"
+  },
+  packagePro: {
+    title: "محترف (Pro)",
+    subtitle: "تقديم عروض، شارة توثيق، ظهور",
+    features: "تقديم عروض غير محدودة,شارة محترف,أولوية الظهور في البحث,معرض أعمال متقدم",
+    btnText: "اشترك الآن"
+  },
+  packageEnterprise: {
+    title: "شركة (Enterprise)",
+    subtitle: "إدارة فريق، مناقصات، API",
+    features: "حسابات فريق عمل,دخول المناقصات الكبرى,ربط API,لوحة تحكم متقدمة,مدير علاقات",
+    btnText: "تواصل للمبيعات"
+  },
 };
 
 export default home;

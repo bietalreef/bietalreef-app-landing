@@ -1,9 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Search, Mic, Filter, Star, MessageCircle, MapPin, Heart, Share2, Eye } from 'lucide-react';
+import { useState } from 'react';
+import { Star, MapPin, Heart } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
-import { supabase } from '../../utils/supabase/client';
-import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 
 interface ServicesContentProps {
@@ -12,16 +10,12 @@ interface ServicesContentProps {
 }
 
 export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesContentProps) {
-  const { t, dir, language } = useTranslation('services');
+  const { t, language } = useTranslation('services');
   const [activeFilter, setActiveFilter] = useState<'recommended' | 'offers' | 'nearby' | 'cheapest' | 'toprated'>('recommended');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
 
-  // Real Data State
-  const [serviceProviders, setServiceProviders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // 9 Services - Categories can remain hardcoded as they are UI navigation
+  // 9 Services - Categories
   const services = [
     { id: 'constructionContracting', name: t('constructionContracting'), icon: '🏗️', subsections: 4 },
     { id: 'engineeringConsultation', name: t('engineeringConsultation'), icon: '📐', subsections: 4 },
@@ -34,31 +28,53 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
     { id: 'cleaning', name: t('cleaning'), icon: '✨', subsections: 3 },
   ];
 
-  // Fetch Real Providers
-  useEffect(() => {
-    async function fetchProviders() {
-      setLoading(true);
-      try {
-        const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('role', 'provider')
-            .limit(10);
-            
-        if (error) {
-             console.error("Error fetching providers:", error);
-        } else {
-             setServiceProviders(data || []);
-        }
-      } catch (err) {
-        console.error("Error fetching providers:", err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProviders();
-  }, []);
+  // Demo providers (bilingual) - profiles table not yet configured
+  const demoProviders = [
+    {
+      id: 'demo-srv-1',
+      full_name: t('providers.ahmed.name'),
+      specialty: t('providers.ahmed.service'),
+      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AhmedSrv',
+      is_verified: true,
+      status: 'online',
+      rating: 4.9,
+      hourly_rate: 150,
+      location: language === 'ar' ? 'دبي' : 'Dubai',
+    },
+    {
+      id: 'demo-srv-2',
+      full_name: t('providers.alnoor.name'),
+      specialty: t('providers.alnoor.service'),
+      avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=NE',
+      is_verified: true,
+      status: 'online',
+      rating: 5.0,
+      hourly_rate: 200,
+      location: language === 'ar' ? 'أبوظبي' : 'Abu Dhabi',
+    },
+    {
+      id: 'demo-srv-3',
+      full_name: t('providers.khalid.name'),
+      specialty: t('providers.khalid.service'),
+      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Khalid',
+      is_verified: false,
+      status: 'busy',
+      rating: 4.7,
+      hourly_rate: 120,
+      location: language === 'ar' ? 'الشارقة' : 'Sharjah',
+    },
+    {
+      id: 'demo-srv-4',
+      full_name: t('providers.colors.name'),
+      specialty: t('providers.colors.service'),
+      avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=BC',
+      is_verified: true,
+      status: 'online',
+      rating: 4.8,
+      hourly_rate: 180,
+      location: language === 'ar' ? 'عجمان' : 'Ajman',
+    },
+  ];
 
   const filters = [
     { id: 'recommended', label: t('recommended'), icon: '⭐' },
@@ -99,7 +115,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
   };
 
   return (
-    <div className="flex-1 bg-gradient-to-b from-[#F5EEE1] to-white overflow-y-auto" dir={dir}>
+    <div className="flex-1 bg-gradient-to-b from-[#F5EEE1] to-white overflow-y-auto">
       
       {/* FILTER CHIPS */}
       <div className="px-5 py-5">
@@ -153,7 +169,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
         </div>
       </div>
 
-      {/* PROVIDER CARDS */}
+      {/* PROVIDER CARDS (Demo Data) */}
       <div className="px-5 py-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }}>
@@ -161,107 +177,94 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
           </h2>
         </div>
 
-        {loading ? (
-             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                 {[1,2,3].map(i => <div key={i} className="h-48 bg-slate-100 rounded-[28px] animate-pulse" />)}
-             </div>
-        ) : serviceProviders.length === 0 ? (
-             <div className="text-center py-10 opacity-60">
-                 <p className="text-sm text-slate-400" style={{ fontFamily: 'Cairo, sans-serif' }}>لا يوجد مزودين متاحين حالياً</p>
-             </div>
-        ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {serviceProviders.map((provider) => (
-                <div
-                key={provider.id}
-                className="relative bg-white rounded-[28px] overflow-hidden shadow-[0_6px_24px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] transition-all border-2 border-[#F5EEE1]"
-                >
-                <div className="flex">
-                    {/* Image + Button + Price */}
-                    <div className="flex flex-col w-[140px] flex-shrink-0">
-                    {/* Image */}
-                    <div className="relative w-[140px] h-[120px] overflow-hidden">
-                        <ImageWithFallback 
-                        src={provider.avatar_url || 'https://via.placeholder.com/150'}
-                        alt={provider.full_name || 'Provider'}
-                        className="w-full h-full object-cover"
-                        />
-                        {provider.is_verified && (
-                        <div className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg">
-                            <span className="text-white text-xs">✓</span>
-                        </div>
-                        )}
-                        <div className="absolute bottom-2 left-2 right-2">
-                        <div className={`${getAvailabilityColor(provider.status || 'offline')} text-white px-2 py-1 rounded-lg text-xs text-center shadow-md`} style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                            {getAvailabilityText(provider.status || 'offline')}
-                        </div>
-                        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {demoProviders.map((provider) => (
+            <div
+              key={provider.id}
+              className="relative bg-white rounded-[28px] overflow-hidden shadow-[0_6px_24px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] transition-all border-2 border-[#F5EEE1]"
+            >
+              <div className="flex">
+                {/* Image + Button + Price */}
+                <div className="flex flex-col w-[140px] flex-shrink-0">
+                  {/* Image */}
+                  <div className="relative w-[140px] h-[120px] overflow-hidden">
+                    <ImageWithFallback 
+                      src={provider.avatar_url}
+                      alt={provider.full_name}
+                      className="w-full h-full object-cover"
+                    />
+                    {provider.is_verified && (
+                      <div className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg">
+                        <span className="text-white text-xs">✓</span>
+                      </div>
+                    )}
+                    <div className="absolute bottom-2 left-2 right-2">
+                      <div className={`${getAvailabilityColor(provider.status)} text-white px-2 py-1 rounded-lg text-xs text-center shadow-md`} style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                        {getAvailabilityText(provider.status)}
+                      </div>
                     </div>
-                    
-                    {/* Button */}
-                    <div className="px-2 pt-2">
-                        <button className="w-full bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-2 py-2 rounded-[14px] text-xs shadow-md hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                        {t('viewDetails')}
-                        </button>
-                    </div>
+                  </div>
+                  
+                  {/* Button */}
+                  <div className="px-2 pt-2">
+                    <button className="w-full bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-2 py-2 rounded-[14px] text-xs shadow-md hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                      {t('viewDetails')}
+                    </button>
+                  </div>
 
-                    {/* Price Box */}
-                    <div className="px-2 pt-1.5 pb-2">
-                        <div className="w-full bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[14px] py-2 px-2 shadow-md flex items-center justify-center gap-1">
-                        <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 900, fontSize: '18px', lineHeight: 1 }}>
-                            {provider.hourly_rate || '--'}
-                        </p>
-                        <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '10px' }}>
-                            {t('aed')}
-                        </p>
-                        </div>
+                  {/* Price Box */}
+                  <div className="px-2 pt-1.5 pb-2">
+                    <div className="w-full bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[14px] py-2 px-2 shadow-md flex items-center justify-center gap-1">
+                      <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 900, fontSize: '18px', lineHeight: 1 }}>
+                        {provider.hourly_rate}
+                      </p>
+                      <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '10px' }}>
+                        {t('aed')}
+                      </p>
                     </div>
-                    </div>
-
-                    {/* Details */}
-                    <div className="flex-1 p-4 flex flex-col">
-                    <h3 className="text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
-                        {provider.full_name || (provider.email ? provider.email.split('@')[0] : 'مزود خدمة')}
-                    </h3>
-                    <p className="text-[#4A90E2] text-xs mb-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                        ID: {provider.id.slice(0, 8)}
-                    </p>
-                    <p className="text-[#1A1A1A]/70 text-sm mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                        {provider.specialty || t('serviceProvider')}
-                    </p>
-
-                    <div className="flex items-center gap-3 mb-3">
-                        <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-[#56CCF2] text-[#56CCF2]" />
-                        <span className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
-                            {provider.rating || '0.0'}
-                        </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                        <MapPin className="w-3.5 h-3.5 text-[#4A90E2]" />
-                        <span className="text-[#1A1A1A]/70 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                            {provider.location || 'Dubai'}
-                        </span>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 mt-auto">
-                        <button 
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleFavorite(provider.id);
-                        }}
-                        className="w-9 h-9 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all"
-                        >
-                        <Heart className={`w-4.5 h-4.5 ${favorites.has(provider.id) ? 'fill-[#56CCF2] text-[#56CCF2]' : 'text-[#1A1A1A]/30'}`} />
-                        </button>
-                    </div>
-                    </div>
+                  </div>
                 </div>
+
+                {/* Details */}
+                <div className="flex-1 p-4 flex flex-col">
+                  <h3 className="text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
+                    {provider.full_name}
+                  </h3>
+                  <p className="text-[#1A1A1A]/70 text-sm mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+                    {provider.specialty}
+                  </p>
+
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-[#56CCF2] text-[#56CCF2]" />
+                      <span className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
+                        {provider.rating}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#4A90E2]" />
+                      <span className="text-[#1A1A1A]/70 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+                        {provider.location}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-auto">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(provider.id);
+                      }}
+                      className="w-9 h-9 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+                    >
+                      <Heart className={`w-4.5 h-4.5 ${favorites.has(provider.id) ? 'fill-[#56CCF2] text-[#56CCF2]' : 'text-[#1A1A1A]/30'}`} />
+                    </button>
+                  </div>
                 </div>
-            ))}
+              </div>
             </div>
-        )}
+          ))}
+        </div>
       </div>
 
       <div className="h-8" />

@@ -1,45 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Search, Bell, ShoppingCart, Globe2, Star, TrendingUp, Award, Zap, Camera, FileText, Phone, MapPin, Clock, Shield, ChevronLeft, ChevronRight, Heart, MessageCircle, Lock, Mic, User } from 'lucide-react';
+import { Star, TrendingUp, Award, Zap, Camera, FileText, Phone, Clock, Shield, ChevronLeft, ChevronRight, Lock, Mic, User } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { motion } from 'motion/react';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useUser } from '../../utils/UserContext';
 import { checkPolicy } from '../../utils/uiPolicy';
 import { toast } from 'sonner';
-import { supabase } from '../../utils/supabase/client';
 import { PackagesSection } from '../marketing/PackagesSection';
 import { CommunityFeed } from '../community/CommunityFeed';
 
 export function NewHomeContent() {
-  const { t, dir, language } = useTranslation('home');
+  const { t, language } = useTranslation('home');
   const { profile } = useUser();
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
-  
-  // Real Data State
-  const [realProviders, setRealProviders] = useState<any[]>([]);
-  const [loadingProviders, setLoadingProviders] = useState(true);
-
-  // Fetch Real Providers from DB
-  useEffect(() => {
-    async function fetchProviders() {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('role', 'provider')
-          .limit(5);
-
-        if (error) throw error;
-        setRealProviders(data || []);
-      } catch (err) {
-        console.error('Error fetching providers:', err);
-      } finally {
-        setLoadingProviders(false);
-      }
-    }
-
-    fetchProviders();
-  }, []);
 
   const heroSlides = [
     {
@@ -73,18 +46,17 @@ export function NewHomeContent() {
   const handleActionClick = (action: 'quick_rfq' | 'contact_providers' | 'create_project') => {
       const policy = checkPolicy(profile, action);
       if (!policy.allowed) {
-          toast.error(policy.reason || 'غير مسموح', {
-             description: policy.actionRequired === 'upgrade' ? 'يرجى الترقية للباقة الاحترافية' : 'يرجى توثيق حسابك للاستمرار',
+          toast.error(t('notAllowed'), {
+             description: policy.actionRequired === 'upgrade' ? t('upgradeRequired') : t('verifyRequired'),
              action: {
-                 label: policy.actionRequired === 'upgrade' ? 'ترقية' : 'توثيق',
+                 label: policy.actionRequired === 'upgrade' ? t('upgrade') : t('verify'),
                  onClick: () => console.log('Redirect to upgrade/verify')
              }
           });
           return;
       }
       
-      // Action allowed logic here
-      toast.success('جاري تنفيذ الطلب...');
+      toast.success(t('processingRequest'));
   };
 
   const handleVoiceRoomJoin = (isProRoom: boolean) => {
@@ -97,7 +69,7 @@ export function NewHomeContent() {
             return;
           }
       }
-      toast.success(isProRoom ? 'جاري الدخول لغرفة المشاريع VIP...' : 'جاري الدخول لغرفة خدمة العملاء...');
+      toast.success(isProRoom ? t('joiningVIPRoom') : t('joiningCSRoom'));
   };
 
   // Featured Categories
@@ -152,8 +124,44 @@ export function NewHomeContent() {
     }
   ];
 
+  // Demo providers (bilingual) - used while profiles table is not yet available
+  const demoProviders = [
+    {
+      id: 'demo-1',
+      name: t('providers.ahmed.name'),
+      specialty: t('providers.ahmed.specialty'),
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed',
+      is_verified: true,
+      tier: 'PRO',
+    },
+    {
+      id: 'demo-2',
+      name: t('providers.alnoor.name'),
+      specialty: t('providers.alnoor.specialty'),
+      avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=AN',
+      is_verified: true,
+      tier: 'ENTERPRISE',
+    },
+    {
+      id: 'demo-3',
+      name: t('providers.colors.name'),
+      specialty: t('providers.colors.specialty'),
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Colors',
+      is_verified: false,
+      tier: 'VERIFIED',
+    },
+    {
+      id: 'demo-4',
+      name: t('providers.elegant.name'),
+      specialty: t('providers.elegant.specialty'),
+      avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=ED',
+      is_verified: true,
+      tier: 'PRO',
+    },
+  ];
+
   return (
-    <div className="flex-1 bg-gradient-to-b from-[#F5EEE1] to-white overflow-y-auto" dir={dir}>
+    <div className="flex-1 bg-gradient-to-b from-[#F5EEE1] to-white overflow-y-auto">
       
       {/* Hero Carousel */}
       <div className="relative h-[380px] overflow-hidden">
@@ -277,16 +285,16 @@ export function NewHomeContent() {
         </div>
       </div>
 
-      {/* PACKAGES SECTION (NEW) */}
+      {/* PACKAGES SECTION */}
       <PackagesSection />
 
-      {/* COMMUNITY FEED (NEW) */}
+      {/* COMMUNITY FEED */}
       <CommunityFeed />
 
       {/* Voice Rooms Integration */}
       <div className="px-5 py-6">
         <h2 className="text-[#1A1A1A] mb-4" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '20px' }}>
-          الغرف الصوتية المباشرة 🎙️
+          {t('voiceRooms')} 🎙️
         </h2>
         <div className="flex gap-4 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
             
@@ -296,14 +304,14 @@ export function NewHomeContent() {
                 className="min-w-[160px] h-[180px] bg-gradient-to-br from-[#5B7FE8] to-[#4A90E2] rounded-[24px] p-4 relative flex flex-col justify-between shadow-lg cursor-pointer hover:scale-105 transition-transform"
             >
                 <div className="flex justify-between items-start">
-                    <span className="bg-white/20 text-white text-[10px] px-2 py-1 rounded-full backdrop-blur-sm">مباشر</span>
+                    <span className="bg-white/20 text-white text-[10px] px-2 py-1 rounded-full backdrop-blur-sm">{t('live')}</span>
                     <div className="bg-white/20 p-1.5 rounded-full">
                         <Mic className="w-4 h-4 text-white" />
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-white font-bold mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>خدمة العملاء</h3>
-                    <p className="text-white/80 text-xs">متاح للجميع</p>
+                    <h3 className="text-white font-bold mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('customerSupport')}</h3>
+                    <p className="text-white/80 text-xs">{t('availableForAll')}</p>
                 </div>
                 <div className="flex -space-x-2 space-x-reverse">
                     {[1,2,3].map(i => (
@@ -327,8 +335,8 @@ export function NewHomeContent() {
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-white font-bold mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>مشاريع كبرى</h3>
-                    <p className="text-gray-400 text-xs">للباقة الاحترافية</p>
+                    <h3 className="text-white font-bold mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('majorProjects')}</h3>
+                    <p className="text-gray-400 text-xs">{t('forProPackage')}</p>
                 </div>
                  <div className="flex -space-x-2 space-x-reverse opacity-50">
                     {[1,2].map(i => (
@@ -342,7 +350,7 @@ export function NewHomeContent() {
              {/* Placeholder Room */}
             <div className="min-w-[160px] h-[180px] border-2 border-dashed border-gray-300 rounded-[24px] flex flex-col items-center justify-center text-gray-400">
                  <Mic className="w-8 h-8 mb-2 opacity-50" />
-                 <span className="text-xs">قريباً</span>
+                 <span className="text-xs">{t('comingSoon')}</span>
             </div>
 
         </div>
@@ -385,7 +393,7 @@ export function NewHomeContent() {
         </div>
       </div>
 
-      {/* BEST PROVIDERS (REAL DATA ONLY) */}
+      {/* BEST PROVIDERS (Demo Data) */}
       <div className="px-5 py-6">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }}>
@@ -396,61 +404,48 @@ export function NewHomeContent() {
           </button>
         </div>
 
-        {/* Real Data Container */}
-        {loadingProviders ? (
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
-             {[1,2,3].map(i => (
-               <div key={i} className="min-w-[280px] h-[200px] bg-slate-100 rounded-[24px] animate-pulse"></div>
-             ))}
-          </div>
-        ) : realProviders.length === 0 ? (
-          <div className="text-center py-10 bg-slate-50 rounded-[24px] border border-slate-100">
-             <User className="w-10 h-10 text-slate-300 mx-auto mb-2" />
-             <p className="text-slate-400 font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>لا يوجد مزودين مسجلين حالياً</p>
-             <p className="text-slate-300 text-sm" style={{ fontFamily: 'Cairo, sans-serif' }}>سجل الآن كـ Provider لتظهر هنا!</p>
-          </div>
-        ) : (
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
-            {realProviders.map((provider) => (
-              <div
-                key={provider.id}
-                onClick={() => handleActionClick('contact_providers')}
-                className="min-w-[280px] bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] cursor-pointer"
-              >
-                {/* Header */}
-                <div className="flex items-start gap-3 mb-4">
-                  <div className="relative w-16 h-16 flex-shrink-0 rounded-[18px] overflow-hidden bg-slate-200 flex items-center justify-center">
-                    {/* Placeholder Avatar since DB doesn't have image column yet */}
-                    <User className="w-8 h-8 text-slate-400" />
-                    {provider.is_verified && (
-                      <div className="absolute top-1 right-1 w-5 h-5 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs">✓</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-[#1A1A1A] mb-1 truncate" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
-                       {provider.email ? provider.email.split('@')[0] : 'مزود خدمة'}
-                    </h3>
-                    <p className="text-[#1A5490] text-xs mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                      {(provider.tier || provider.plan || 'VERIFIED').toUpperCase()}
-                    </p>
-                  </div>
+        <div className="flex gap-4 overflow-x-auto pb-4 -mx-5 px-5 scrollbar-hide">
+          {demoProviders.map((provider) => (
+            <div
+              key={provider.id}
+              onClick={() => handleActionClick('contact_providers')}
+              className="min-w-[280px] bg-white rounded-[24px] p-5 shadow-md hover:shadow-lg transition-all border border-[#F5EEE1] cursor-pointer"
+            >
+              {/* Header */}
+              <div className="flex items-start gap-3 mb-4">
+                <div className="relative w-16 h-16 flex-shrink-0 rounded-[18px] overflow-hidden bg-slate-200 flex items-center justify-center">
+                  <img src={provider.avatar} alt={provider.name} className="w-full h-full object-cover" />
+                  {provider.is_verified && (
+                    <div className="absolute top-1 right-1 w-5 h-5 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center">
+                      <span className="text-white text-xs">✓</span>
+                    </div>
+                  )}
                 </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2">
-                  <button 
-                    onClick={(e) => { e.stopPropagation(); handleActionClick('contact_providers'); }}
-                    className="flex-1 bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-4 py-3 rounded-[16px] shadow-md text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
-                  >
-                    {t('contactNow')}
-                  </button>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-[#1A1A1A] mb-1 truncate" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
+                     {provider.name}
+                  </h3>
+                  <p className="text-[#1A5490] text-xs mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+                    {provider.tier}
+                  </p>
+                  <p className="text-[#6B7280] text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                    {provider.specialty}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={(e) => { e.stopPropagation(); handleActionClick('contact_providers'); }}
+                  className="flex-1 bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-4 py-3 rounded-[16px] shadow-md text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
+                >
+                  {t('contactNow')}
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* SPECIAL OFFERS BANNER */}
@@ -477,7 +472,7 @@ export function NewHomeContent() {
         </div>
       </div>
 
-      {/* Extra Padding for Bottom Navigation */}
+      {/* Extra Padding */}
       <div className="h-8" />
 
     </div>

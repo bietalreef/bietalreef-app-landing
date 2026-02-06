@@ -115,6 +115,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
             metadataUpdates.is_verified = updates.is_verified;
             dbUpdates.is_verified = updates.is_verified;
         }
+        if (updates.avatar_url) {
+            metadataUpdates.avatar_url = updates.avatar_url;
+            dbUpdates.avatar_url = updates.avatar_url;
+        }
 
         // 1. Update Auth Metadata
         if (Object.keys(metadataUpdates).length > 0) {

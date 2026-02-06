@@ -6,6 +6,35 @@ import { WeyaakBubble } from '../WeyaakBubble';
 import { FullSearchScreen } from '../mobile/FullSearchScreen';
 import { NotificationsCenter } from '../mobile/NotificationsCenter';
 import { useSearchStore } from '../../stores/search-store';
+import { useTranslation } from '../../contexts/LanguageContext';
+import { X } from 'lucide-react';
+
+// Page title mapping
+const PAGE_TITLES: Record<string, { ar: string; en: string; icon: string }> = {
+  '/services': { ar: 'الخدمات', en: 'Services', icon: '🔧' },
+  '/shop': { ar: 'المتجر', en: 'Store', icon: '🛒' },
+  '/store': { ar: 'المتجر', en: 'Store', icon: '🛒' },
+  '/tools': { ar: 'الأدوات', en: 'Tools', icon: '🛠️' },
+  '/wallet': { ar: 'محفظة ريف', en: 'Reef Wallet', icon: '🪙' },
+  '/profile': { ar: 'الملف الشخصي', en: 'Profile', icon: '👤' },
+  '/maps': { ar: 'الخرائط', en: 'Maps', icon: '🗺️' },
+  '/yak': { ar: 'وياك AI', en: 'Weyaak AI', icon: '🤖' },
+  '/projects': { ar: 'المشاريع', en: 'Projects', icon: '📁' },
+  '/rfq': { ar: 'طلب عرض سعر', en: 'RFQ', icon: '📋' },
+  '/marketplace': { ar: 'السوق', en: 'Marketplace', icon: '🏪' },
+  '/recommendations': { ar: 'التوصيات', en: 'Recommendations', icon: '⭐' },
+  '/offers': { ar: 'العروض', en: 'Offers', icon: '🔥' },
+};
+
+function getPageInfo(pathname: string): { ar: string; en: string; icon: string } | null {
+  // Exact match first
+  if (PAGE_TITLES[pathname]) return PAGE_TITLES[pathname];
+  // Prefix match (e.g. /services/plumbing → /services)
+  for (const [prefix, info] of Object.entries(PAGE_TITLES)) {
+    if (pathname.startsWith(prefix) && prefix !== '/') return info;
+  }
+  return null;
+}
 
 export function BrowserLayout() {
   const [isSideDrawerOpen, setIsSideDrawerOpen] = useState(false);
@@ -15,6 +44,9 @@ export function BrowserLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { isOpen: isSearchOpen, setOpen: setSearchOpen } = useSearchStore();
+  const { language } = useTranslation('common');
+  const isEn = language === 'en';
+  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
 
   const handleNavigate = (route: string) => {
     console.log("Navigating to:", route);
@@ -28,6 +60,8 @@ export function BrowserLayout() {
   };
 
   const isStore = location.pathname.startsWith('/store') || location.pathname.startsWith('/shop');
+  const isHome = location.pathname === '/home' || location.pathname === '/';
+  const pageInfo = getPageInfo(location.pathname);
 
   // If notifications screen is open, show it full screen
   if (showNotifications) {
@@ -55,6 +89,37 @@ export function BrowserLayout() {
         onOpenNotificationsCenter={handleOpenNotifications}
         showCart={isStore}
       />
+
+      {/* Page Close Bar — appears on ALL pages except Home */}
+      {!isHome && pageInfo && (
+        <div className="bg-white/80 backdrop-blur-sm border-b border-[#F5EEE1] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30">
+          {/* Page Title */}
+          <div className="flex items-center gap-2">
+            <span className="text-lg">{pageInfo.icon}</span>
+            <h2 
+              className="text-sm font-bold text-[#1F3D2B]"
+              style={{ fontFamily }}
+            >
+              {isEn ? pageInfo.en : pageInfo.ar}
+            </h2>
+          </div>
+
+          {/* Close Button X */}
+          <button
+            onClick={() => navigate('/home')}
+            className="flex items-center gap-1.5 bg-[#1F3D2B]/8 hover:bg-red-50 hover:text-red-600 text-[#1F3D2B]/70 px-3 py-1.5 rounded-xl transition-all duration-200 group"
+            aria-label={isEn ? 'Close page' : 'إغلاق الصفحة'}
+          >
+            <span 
+              className="text-xs font-semibold group-hover:text-red-600"
+              style={{ fontFamily }}
+            >
+              {isEn ? 'Close' : 'إغلاق'}
+            </span>
+            <X className="w-4 h-4 group-hover:text-red-600 transition-colors" />
+          </button>
+        </div>
+      )}
 
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto">

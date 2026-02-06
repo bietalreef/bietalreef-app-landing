@@ -1,6 +1,6 @@
 // ====================================
 // 🛒 Shop Screen - NEW MARKETPLACE SYSTEM
-// بيت الريف - شاشة المتجر المحدثة
+// بيت الريف - شاشة المتجر المحدثة (Bilingual)
 // ====================================
 
 import { useState } from 'react';
@@ -15,6 +15,7 @@ import { MarketplaceGrid } from './MarketplaceGrid';
 import { MarketplaceList } from './MarketplaceList';
 import { MarketplaceItemDetail } from './MarketplaceItemDetail';
 import { TopNav } from './TopNav';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface ShopScreenNewProps {
   activeTab?: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers';
@@ -24,6 +25,7 @@ interface ShopScreenNewProps {
 }
 
 export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, onOpenDrawer }: ShopScreenNewProps) {
+  const { t, language, textAlign } = useTranslation('store');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedItem, setSelectedItem] = useState<MarketplaceItem | null>(null);
   const [filterState, setFilterState] = useState<MarketplaceFilterState>({
@@ -33,47 +35,25 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
     inStockOnly: false
   });
 
+  const isEn = language === 'en';
+  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+
   // Filter items
   const filteredItems = MOCK_MARKETPLACE_ITEMS.filter(item => {
-    // Category filter
-    if (filterState.category !== 'all' && item.category !== filterState.category) {
-      return false;
-    }
-
-    // Offer filter
-    if (filterState.hasOffer && !item.hasOffer) {
-      return false;
-    }
-
-    // Stock filter
-    if (filterState.inStockOnly && !item.isAvailable) {
-      return false;
-    }
-
-    // Price range filter
-    if (filterState.minPrice && item.price < filterState.minPrice) {
-      return false;
-    }
-    if (filterState.maxPrice && item.price > filterState.maxPrice) {
-      return false;
-    }
-
+    if (filterState.category !== 'all' && item.category !== filterState.category) return false;
+    if (filterState.hasOffer && !item.hasOffer) return false;
+    if (filterState.inStockOnly && !item.isAvailable) return false;
+    if (filterState.minPrice && item.price < filterState.minPrice) return false;
+    if (filterState.maxPrice && item.price > filterState.maxPrice) return false;
     return true;
   }).sort((a, b) => {
-    // Sorting
     switch (filterState.sortBy) {
-      case 'price_low':
-        return a.price - b.price;
-      case 'price_high':
-        return b.price - a.price;
-      case 'rating':
-        return b.rating - a.rating;
-      case 'near_me':
-        // TODO: Implement location-based sorting
-        return 0;
+      case 'price_low': return a.price - b.price;
+      case 'price_high': return b.price - a.price;
+      case 'rating': return b.rating - a.rating;
+      case 'near_me': return 0;
       case 'popular':
-      default:
-        return b.reviewsCount - a.reviewsCount;
+      default: return b.reviewsCount - a.reviewsCount;
     }
   });
 
@@ -85,7 +65,6 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
         onBack={() => setSelectedItem(null)}
         onProviderClick={(providerId) => {
           console.log('Navigate to provider:', providerId);
-          // TODO: Navigate to provider page
         }}
       />
     );
@@ -102,17 +81,17 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
         onOpenSearch={onOpenSearch}
       />
 
-      {/* Content wrapper with flex-1 and overflow */}
+      {/* Content wrapper */}
       <div className="flex-1 flex flex-col overflow-hidden pb-16">
         {/* Header */}
         <div className="bg-gradient-to-br from-[#4A90E2] via-[#56CCF2] to-[#4A90E2] px-5 pt-4 pb-4 shadow-xl rounded-b-[32px]">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h1 className="text-white mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '26px', lineHeight: 1.2 }}>
-                المتجر
+              <h1 className="text-white mb-1" style={{ fontFamily, fontWeight: 800, fontSize: '26px', lineHeight: 1.2, textAlign }}>
+                {t('store')}
               </h1>
-              <p className="text-white/90 text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                {filteredItems.length} منتج متاح
+              <p className="text-white/90 text-sm" style={{ fontFamily, fontWeight: 600, textAlign }}>
+                {filteredItems.length} {t('productsAvailable')}
               </p>
             </div>
             <div className="flex items-center gap-2">
@@ -140,14 +119,11 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
             <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#4A90E2]" />
             <input
               type="text"
-              placeholder="ابحث عن منتج، مورد، أو خدمة..."
-              onClick={() => {
-                // TODO: Open FullSearchScreen
-                console.log('Open full search screen');
-              }}
+              placeholder={t('searchProducts')}
+              onClick={() => console.log('Open full search screen')}
               readOnly
               className="w-full bg-white rounded-[20px] pr-12 pl-4 py-3.5 text-[#1A1A1A] placeholder:text-[#1A1A1A]/50 border-2 border-transparent focus:border-white/50 outline-none shadow-lg cursor-pointer"
-              style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}
+              style={{ fontFamily, fontWeight: 600, fontSize: '14px', textAlign }}
             />
           </div>
         </div>
@@ -174,7 +150,6 @@ export function ShopScreenNew({ activeTab = 'shop', onTabChange, onOpenSearch, o
           )}
         </div>
       </div>
-
     </div>
   );
 }

@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-import { Routes, Route, Navigate } from 'react-router';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router';
 import { supabase } from './utils/supabase/client';
 import { SEOHead } from './components/seo/SEOHead';
 import { UserProvider } from './utils/UserContext';
 import { LanguageProvider } from './contexts/LanguageContext';
+import { WalletProvider } from './contexts/WalletContext';
 import { Toaster } from './components/ui/sonner';
 import { ErrorBoundary } from './components/ErrorBoundary';
+
+// Security
+import { SecurityGuard } from './components/security/SecurityGuard';
+import { DeviceGuard } from './components/security/DeviceGuard';
+import { ImageViewerProvider } from './components/security/ImageViewer';
 
 // Layouts
 import { BrowserLayout } from './components/layout/BrowserLayout';
@@ -27,6 +32,7 @@ import { OffersScreen } from './components/mobile/OffersScreen';
 import { MarketplaceScreen } from './components/mobile/MarketplaceScreen';
 import { RFQScreen } from './components/mobile/RFQScreen';
 import { ProjectDetail } from './components/mobile/ProjectDetail';
+import { WalletScreen } from './components/mobile/WalletScreen';
 import SystemTest from './components/SystemTest';
 
 export default function App() {
@@ -54,51 +60,61 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter>
         <LanguageProvider>
-          <SEOHead />
-          <UserProvider>
-            {view === 'login' ? (
-              <LoginApp onComplete={() => setView('main')} />
-            ) : view === 'test' ? (
-              <SystemTest />
-            ) : (
-              <Routes>
-                {/* Main Browser App Layout */}
-                <Route element={<BrowserLayout />}>
-                  <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route path="/home" element={<NewHomeContent />} />
-                  
-                  {/* Services Routes */}
-                  <Route path="/services" element={<ServicesContent />} />
-                  <Route path="/services/:id" element={<ServiceRouteHandler />} />
-                  <Route path="/services/:id/:city" element={<ServiceRouteHandler />} />
-                  
-                  {/* Other Main Sections */}
-                  <Route path="/yak" element={<WayakScreen onClose={() => window.history.back()} />} />
-                  <Route path="/projects" element={<ProjectsScreen />} />
-                  <Route path="/projects/:id" element={<ProjectDetail onBack={() => window.history.back()} />} />
-                  <Route path="/rfq" element={<RFQScreen onBack={() => window.history.back()} />} />
-                  <Route path="/marketplace" element={<MarketplaceScreen />} />
-                  
-                  {/* Store & Tools */}
-                  <Route path="/shop" element={<ShopScreen />} />
-                  <Route path="/store/*" element={<ShopScreen />} />
-                  <Route path="/tools" element={<ToolsScreen onFullscreenToggle={() => {}} />} />
-                  
-                  {/* User & Maps */}
-                  <Route path="/profile" element={<ProfileScreen />} />
-                  <Route path="/maps" element={<MapsScreen onMenuClick={() => {}} activeTab="maps" onTabChange={() => {}} />} />
-                  
-                  {/* Extras */}
-                  <Route path="/recommendations" element={<RecommendationsScreen />} />
-                  <Route path="/offers" element={<OffersScreen />} />
-                  
-                  {/* Fallback */}
-                  <Route path="*" element={<Navigate to="/home" replace />} />
-                </Route>
-              </Routes>
-            )}
-            <Toaster />
-          </UserProvider>
+          <DeviceGuard>
+            <SecurityGuard />
+            <SEOHead />
+            <UserProvider>
+              <WalletProvider>
+                <ImageViewerProvider>
+                {view === 'login' ? (
+                  <LoginApp onComplete={() => setView('main')} />
+                ) : view === 'test' ? (
+                  <SystemTest />
+                ) : (
+                  <Routes>
+                    {/* Main Browser App Layout */}
+                    <Route element={<BrowserLayout />}>
+                      <Route path="/" element={<Navigate to="/home" replace />} />
+                      <Route path="/home" element={<NewHomeContent />} />
+                      
+                      {/* Services Routes */}
+                      <Route path="/services" element={<ServicesContent />} />
+                      <Route path="/services/:id" element={<ServiceRouteHandler />} />
+                      <Route path="/services/:id/:city" element={<ServiceRouteHandler />} />
+                      
+                      {/* Other Main Sections */}
+                      <Route path="/yak" element={<WayakScreen onClose={() => window.history.back()} />} />
+                      <Route path="/projects" element={<ProjectsScreen />} />
+                      <Route path="/projects/:id" element={<ProjectDetail onBack={() => window.history.back()} />} />
+                      <Route path="/rfq" element={<RFQScreen onBack={() => window.history.back()} />} />
+                      <Route path="/marketplace" element={<MarketplaceScreen />} />
+                      
+                      {/* Store & Tools */}
+                      <Route path="/shop" element={<ShopScreen />} />
+                      <Route path="/store/*" element={<ShopScreen />} />
+                      <Route path="/tools" element={<ToolsScreen onFullscreenToggle={() => {}} />} />
+                      
+                      {/* Wallet */}
+                      <Route path="/wallet" element={<WalletScreen />} />
+                      
+                      {/* User & Maps */}
+                      <Route path="/profile" element={<ProfileScreen />} />
+                      <Route path="/maps" element={<MapsScreen onMenuClick={() => {}} activeTab="maps" onTabChange={() => {}} />} />
+                      
+                      {/* Extras */}
+                      <Route path="/recommendations" element={<RecommendationsScreen />} />
+                      <Route path="/offers" element={<OffersScreen />} />
+                      
+                      {/* Fallback */}
+                      <Route path="*" element={<Navigate to="/home" replace />} />
+                    </Route>
+                  </Routes>
+                )}
+                <Toaster />
+                </ImageViewerProvider>
+              </WalletProvider>
+            </UserProvider>
+          </DeviceGuard>
         </LanguageProvider>
       </BrowserRouter>
     </ErrorBoundary>

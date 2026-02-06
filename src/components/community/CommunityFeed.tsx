@@ -1,98 +1,101 @@
-import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, MapPin } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark } from 'lucide-react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface Post {
   id: string;
   user: {
-    name: string;
+    nameKey: string;
     avatar: string;
-    role: string;
+    roleKey: string;
     isVerified?: boolean;
   };
   content: {
-    text: string;
+    textKey: string;
     image?: string;
-    tags: string[];
+    tagsKey: string;
   };
   stats: {
     likes: number;
     comments: number;
     views: string;
   };
-  timeAgo: string;
+  timeAgoKey: string;
 }
 
 const MOCK_POSTS: Post[] = [
   {
     id: '1',
     user: {
-      name: 'م. أحمد العمران',
+      nameKey: 'communityPost1.userName',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed',
-      role: 'Pro Provider',
+      roleKey: 'communityPost1.role',
       isVerified: true
     },
     content: {
-      text: 'تم الانتهاء بحمد الله من تصميم فيلا مودرن في حي الياسمين. ركزنا على استغلال الإضاءة الطبيعية والمساحات المفتوحة. 🏡✨ #تصميم_داخلي #مودرن #بيت_الريف',
+      textKey: 'communityPost1.text',
       image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800',
-      tags: ['تصميم', 'تنفيذ', 'الرياض']
+      tagsKey: 'communityPost1.tags'
     },
     stats: {
       likes: 245,
       comments: 42,
       views: '1.2k'
     },
-    timeAgo: 'منذ ساعتين'
+    timeAgoKey: 'communityPost1.timeAgo'
   },
   {
     id: '2',
     user: {
-      name: 'شركة البناء المتقدمة',
+      nameKey: 'communityPost2.userName',
       avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=AC',
-      role: 'Enterprise',
+      roleKey: 'communityPost2.role',
       isVerified: true
     },
     content: {
-      text: 'بدء أعمال الحفر والأساسات لمشروع المجمع التجاري الجديد. نستخدم أحدث تقنيات فحص التربة لضمان الاستدامة. 🏗️🚧',
+      textKey: 'communityPost2.text',
       image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800',
-      tags: ['مقاولات', 'حفر', 'مشاريع_تجارية']
+      tagsKey: 'communityPost2.tags'
     },
     stats: {
       likes: 189,
       comments: 15,
       views: '850'
     },
-    timeAgo: 'منذ 5 ساعات'
+    timeAgoKey: 'communityPost2.timeAgo'
   },
   {
     id: '3',
     user: {
-      name: 'سارة الديكور',
+      nameKey: 'communityPost3.userName',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
-      role: 'Freelancer',
+      roleKey: 'communityPost3.role',
       isVerified: false
     },
     content: {
-      text: 'أفكار لتنسيق غرف المعيشة الصغيرة باستخدام الألوان الفاتحة والمرايا. 🛋️🎨 رأيكم يهمنا!',
+      textKey: 'communityPost3.text',
       image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800',
-      tags: ['ديكور', 'نصائح', 'أثاث']
+      tagsKey: 'communityPost3.tags'
     },
     stats: {
       likes: 567,
       comments: 89,
       views: '3.4k'
     },
-    timeAgo: 'أمس'
+    timeAgoKey: 'communityPost3.timeAgo'
   }
 ];
 
 export function CommunityFeed() {
+  const { t } = useTranslation('home');
+
   return (
-    <div className="w-full max-w-2xl mx-auto py-4 space-y-6 font-cairo" dir="rtl">
+    <div className="w-full max-w-2xl mx-auto py-4 space-y-6" style={{ fontFamily: 'Cairo, sans-serif' }}>
       
       {/* Feed Header */}
       <div className="flex items-center justify-between px-4 mb-2">
-        <h2 className="text-xl font-bold text-gray-900">مجتمع بيت الريف</h2>
+        <h2 className="text-xl font-bold text-gray-900">{t('communityTitle')}</h2>
         <button className="text-sm font-bold text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-full transition-colors">
-          استكشف المزيد
+          {t('exploreMore')}
         </button>
       </div>
 
@@ -103,10 +106,10 @@ export function CommunityFeed() {
           {/* Post Header */}
           <div className="p-4 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={post.user.avatar} alt={post.user.name} className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200" />
+              <img src={post.user.avatar} alt={t(post.user.nameKey)} className="w-10 h-10 rounded-full bg-gray-100 border border-gray-200" />
               <div>
                 <div className="flex items-center gap-1">
-                  <h3 className="font-bold text-sm text-gray-900">{post.user.name}</h3>
+                  <h3 className="font-bold text-sm text-gray-900">{t(post.user.nameKey)}</h3>
                   {post.user.isVerified && (
                     <span className="text-blue-500">
                       <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
@@ -114,9 +117,9 @@ export function CommunityFeed() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
-                   <span>{post.user.role}</span>
+                   <span>{t(post.user.roleKey)}</span>
                    <span>•</span>
-                   <span>{post.timeAgo}</span>
+                   <span>{t(post.timeAgoKey)}</span>
                 </div>
               </div>
             </div>
@@ -128,11 +131,11 @@ export function CommunityFeed() {
           {/* Post Content */}
           <div className="px-4 pb-3">
             <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-line mb-3">
-              {post.content.text}
+              {t(post.content.textKey)}
             </p>
             <div className="flex flex-wrap gap-1 mb-2">
-              {post.content.tags.map(tag => (
-                <span key={tag} className="text-blue-600 text-xs font-bold">#{tag}</span>
+              {t(post.content.tagsKey).split(',').map(tag => (
+                <span key={tag} className="text-blue-600 text-xs font-bold">#{tag.trim()}</span>
               ))}
             </div>
           </div>
@@ -164,10 +167,10 @@ export function CommunityFeed() {
              </div>
              
              <div className="text-sm font-bold text-gray-900">
-               {post.stats.likes} إعجاب
+               {post.stats.likes} {t('likes')}
              </div>
              <button className="text-xs text-gray-500 mt-1 hover:underline">
-               عرض كل {post.stats.comments} تعليق
+               {t('viewAllComments')} ({post.stats.comments})
              </button>
           </div>
         </article>
@@ -175,7 +178,7 @@ export function CommunityFeed() {
 
       <div className="text-center py-6">
         <button className="bg-gray-100 text-gray-600 px-6 py-2 rounded-full font-bold text-sm hover:bg-gray-200 transition-colors">
-           تحميل المزيد
+           {t('loadMore')}
         </button>
       </div>
     </div>

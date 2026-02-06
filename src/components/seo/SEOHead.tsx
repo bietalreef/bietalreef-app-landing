@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import { EMIRATES_AND_CITIES, AI_TOOLS_LINKS } from '../../utils/seoConstants';
 
 interface SEOHeadProps {
@@ -12,6 +12,23 @@ export const SEOHead = ({ title, description, type = 'website' }: SEOHeadProps) 
   const location = useLocation();
 
   useEffect(() => {
+    // 0. Security viewport meta — disable zoom
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+    if (!viewportMeta) {
+      viewportMeta = document.createElement('meta');
+      viewportMeta.setAttribute('name', 'viewport');
+      document.head.appendChild(viewportMeta);
+    }
+    viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover');
+
+    // Block PWA: remove manifest, add meta to prevent install banner
+    const manifests = document.querySelectorAll('link[rel="manifest"]');
+    manifests.forEach(m => m.remove());
+
+    // Ensure no apple-mobile-web-app-capable (prevents "Add to Home Screen" behavior)
+    let appleMeta = document.querySelector('meta[name="apple-mobile-web-app-capable"]');
+    if (appleMeta) appleMeta.remove();
+
     // 1. تحديد العنوان الافتراضي
     let pageTitle = title || 'بيت الريف | منصة الخدمات الشاملة في الإمارات';
     let pageDesc = description || 'اكتشف أفضل الحرفيين، شركات المقاولات، ومحلات مواد البناء في الإمارات. استخدم أدوات الذكاء الاصطناعي لحساب التكاليف وتصميم الديكور.';

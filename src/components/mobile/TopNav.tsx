@@ -1,10 +1,13 @@
 import image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3 from 'figma:asset/1d3f7ac269fcb8922cef991f788ec0c45ba06aa3.png';
 import { ShoppingCart, Search, Bell, Menu, Mic } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { LanguageSwitcher } from '../LanguageSwitcher';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useSearchStore } from '../../stores/search-store';
+import { WalletWidget } from './WalletWidget';
+import { useShopStore } from './shop/ShopStore';
 
 interface TopNavProps {
   onOpenDrawer?: () => void;
@@ -13,8 +16,15 @@ interface TopNavProps {
 }
 
 export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = false }: TopNavProps) {
-  const { t } = useTranslation('common');
+  const { t, language, textAlign } = useTranslation('common');
   const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Shop store for cart count
+  const cart = useShopStore((state) => state.cart);
+  const setCurrentView = useShopStore((state) => state.setCurrentView);
+  const cartCount = cart.reduce((acc: number, item: any) => acc + item.quantity, 0);
   
   // Fix: Split selectors to avoid "getSnapshot" infinite loop
   const setOpen = useSearchStore((state) => state.setOpen);
@@ -48,7 +58,7 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
 
   return (
     <div className="bg-white/90 backdrop-blur-md px-3 md:px-6 py-3 sticky top-0 z-40 shadow-sm border-b border-[#F5EEE1]">
-      {/* Single Row: Logo | Search | Icons - 🔥 دائماً RTL بغض النظر عن اللغة */}
+      {/* Single Row: Logo | Search | Icons — Layout always RTL */}
       <div className="flex items-center justify-between gap-2 md:gap-4" dir="rtl">
         {/* Right Side (RTL) - Side Drawer Button + Logo */}
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -81,9 +91,9 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
             <span 
               className="flex-1 text-[#1F3D2B]/60 text-xs md:text-sm truncate block" 
               style={{ 
-                fontFamily: 'Cairo, sans-serif', 
+                fontFamily: language === 'ar' ? 'Cairo, sans-serif' : 'Inter, Segoe UI, sans-serif', 
                 fontWeight: 600,
-                textAlign: 'right'
+                textAlign: textAlign
               }}
             >
               {getPlaceholder()}
@@ -95,6 +105,9 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
         {/* Left Side (RTL) - Icons */}
         <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
           
+          {/* Wallet Widget */}
+          <WalletWidget />
+
           {/* Language Switch */}
           <div className="transform scale-90 md:scale-100">
              <LanguageSwitcher variant="compact" />
@@ -102,13 +115,24 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
 
           {/* Cart Icon - ONLY SHOWN IF showCart IS TRUE */}
           {showCart && (
-            <button className="relative flex-shrink-0 p-1.5 md:p-2">
+            <button 
+              className="relative flex-shrink-0 p-1.5 md:p-2"
+              onClick={() => {
+                // If not already on store page, navigate there
+                if (!location.pathname.startsWith('/store') && !location.pathname.startsWith('/shop')) {
+                  navigate('/store');
+                }
+                setCurrentView('cart');
+              }}
+            >
               <ShoppingCart className="w-5 h-5 md:w-6 md:h-6 text-[#1A5490]" />
-              <div className="absolute top-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-md">
-                <span className="text-white text-[8px] md:text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                  3
-                </span>
-              </div>
+              {cartCount > 0 && (
+                <div className="absolute top-0 right-0 w-4 h-4 md:w-5 md:h-5 bg-gradient-to-br from-[#D4AF37] to-[#B5952F] rounded-full flex items-center justify-center shadow-md animate-in zoom-in">
+                  <span className="text-black text-[8px] md:text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                </div>
+              )}
             </button>
           )}
 

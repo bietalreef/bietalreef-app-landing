@@ -16,7 +16,7 @@ export const common = {
   
   // Navigation
   home: "الرئيسية",
-  services: "الخدمات",
+  servicesNav: "الخدمات",
   weyaak: "وياك",
   projects: "المشاريع",
   profile: "الملف الشخصي",

@@ -103,6 +103,7 @@ interface LanguageContextType {
   setLanguage: (lang: Language) => void;
   t: (key: string, namespace?: TranslationNamespace) => string;
   dir: 'ltr' | 'rtl';
+  textAlign: 'left' | 'right';
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -114,16 +115,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return (saved === 'en' || saved === 'ar') ? saved : 'ar';
   });
 
-  // Direction based on language
-  const dir = language === 'ar' ? 'rtl' : 'ltr';
+  // Layout direction is ALWAYS RTL — only text alignment changes
+  const dir: 'ltr' | 'rtl' = 'rtl';
+  const textAlign: 'left' | 'right' = language === 'ar' ? 'right' : 'left';
 
   // Save language preference to localStorage
   useEffect(() => {
     localStorage.setItem('language', language);
-    // Update document direction
-    document.documentElement.dir = dir;
+    // Layout direction always RTL — icons and structure never change
+    document.documentElement.dir = 'rtl';
     document.documentElement.lang = language;
-  }, [language, dir]);
+    // Add data attribute for CSS-based text alignment
+    document.documentElement.setAttribute('data-text-dir', language === 'ar' ? 'rtl' : 'ltr');
+  }, [language]);
 
   // Translation function
   const t = (key: string, namespace: TranslationNamespace = 'common'): string => {
@@ -152,7 +156,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, t, dir }}>
+    <LanguageContext.Provider value={{ language, setLanguage, t, dir, textAlign }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -169,10 +173,11 @@ export function useLanguage() {
 
 // Shorthand hook for translation only
 export function useTranslation(namespace: TranslationNamespace = 'common') {
-  const { t, language, dir } = useLanguage();
+  const { t, language, dir, textAlign } = useLanguage();
   return {
     t: (key: string) => t(key, namespace),
     language,
     dir,
+    textAlign,
   };
 }

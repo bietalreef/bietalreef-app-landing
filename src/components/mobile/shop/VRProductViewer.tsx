@@ -585,7 +585,7 @@ export function VRProductViewer({ product, onClose }: VRProductViewerProps) {
 
       {/* Product info bar */}
       <div className="absolute top-20 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full text-white text-xs font-bold z-20 max-w-[80%] truncate">
-        {product.name} — {product.price.toLocaleString()} ر.س
+        {product.name} — {product.price.toLocaleString()} د.إ
       </div>
 
       {/* Instruction hint */}

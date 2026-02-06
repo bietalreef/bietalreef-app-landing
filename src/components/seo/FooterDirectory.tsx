@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { EMIRATES_AND_CITIES, AI_TOOLS_LINKS, PRIORITY_SERVICES, generateServiceUrl, generateToolUrl } from '../../utils/seoConstants';
 
 export const FooterDirectory = () => {

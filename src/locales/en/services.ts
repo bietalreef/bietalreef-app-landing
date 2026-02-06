@@ -38,6 +38,10 @@ export const services = {
   aed: "AED",
   km: "km",
   
+  // Empty State
+  noProvidersAvailable: "No providers available at the moment",
+  serviceProvider: "Service Provider",
+  
   // Search Placeholders
   searchPlaceholder1: "Search for contractor…",
   searchPlaceholder2: "Nearby engineering consultation?",

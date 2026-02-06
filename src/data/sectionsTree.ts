@@ -54,6 +54,13 @@ export const sectionsTree: MainSection[] = [
     route: '/shop',
   },
   {
+    id: 'wallet',
+    nameAr: 'محفظة ريف',
+    nameEn: 'Reef Wallet',
+    icon: '🪙',
+    route: '/wallet',
+  },
+  {
     id: 'maps',
     nameAr: 'الخرائط',
     nameEn: 'Maps',

@@ -29,8 +29,12 @@ export function LanguageSwitcher({ variant = 'default', className = '' }: Langua
     return (
       <button
         onClick={toggleLanguage}
-        className={`flex items-center gap-1.5 px-3 py-1.5 bg-[#F5EEE1] text-[#1F3D2B] rounded-lg hover:bg-[#2AA676] hover:text-white transition-all ${className}`}
-        style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
+          language === 'ar' 
+            ? 'bg-[#F5EEE1] text-[#1F3D2B] hover:bg-[#2AA676] hover:text-white' 
+            : 'bg-[#4A90E2]/10 text-[#4A90E2] hover:bg-[#4A90E2] hover:text-white'
+        } ${className}`}
+        style={{ fontFamily: language === 'ar' ? 'Cairo, sans-serif' : 'Inter, Segoe UI, sans-serif', fontWeight: 600, fontSize: '14px' }}
       >
         <Globe className="w-4 h-4" />
         <span>{language === 'ar' ? 'EN' : 'ع'}</span>

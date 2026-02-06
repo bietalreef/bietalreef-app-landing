@@ -1,12 +1,13 @@
 // ====================================
 // 🛍️ Marketplace Item Card Component
-// بيت الريف - بطاقة منتج المتجر
+// بيت الريف - بطاقة منتج المتجر (Bilingual)
 // ====================================
 
 import { Star, MapPin, ShoppingCart, Heart } from 'lucide-react';
 import { MarketplaceItem } from '../../data/marketplace';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { motion } from 'motion/react';
+import { useTranslation } from '../../contexts/LanguageContext';
 
 interface MarketplaceItemCardProps {
   item: MarketplaceItem;
@@ -15,6 +16,17 @@ interface MarketplaceItemCardProps {
 }
 
 export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: MarketplaceItemCardProps) {
+  const { language, textAlign } = useTranslation('store');
+  const isEn = language === 'en';
+  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const currency = isEn ? 'AED' : 'درهم';
+
+  const title = isEn ? item.titleEn : item.title;
+  const unit = isEn ? item.unitEn : item.unit;
+  const cityName = isEn ? item.location?.cityEn : item.location?.city;
+  const unavailableText = isEn ? 'Unavailable' : 'غير متاح';
+  const featuredText = isEn ? 'Featured' : 'مميز';
+
   const discount = item.oldPrice 
     ? Math.round(((item.oldPrice - item.price) / item.oldPrice) * 100)
     : 0;
@@ -31,35 +43,35 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
         <div className="relative w-24 h-24 flex-shrink-0 rounded-[12px] overflow-hidden bg-[#F5EEE1]">
           <ImageWithFallback
             src={item.images[0]}
-            alt={item.title}
+            alt={title}
             className="w-full h-full object-cover"
           />
           
           {item.hasOffer && (
-            <div className="absolute top-1 left-1 bg-[#F2994A] text-white text-xs px-2 py-0.5 rounded-full" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+            <div className="absolute top-1 left-1 bg-[#F2994A] text-white text-xs px-2 py-0.5 rounded-full" style={{ fontFamily, fontWeight: 700 }}>
               -{discount}%
             </div>
           )}
 
           {!item.isAvailable && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">غير متاح</span>
+              <span className="text-white text-xs font-bold">{unavailableText}</span>
             </div>
           )}
         </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm text-[#1F3D2B] mb-1 truncate" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-            {item.title}
+          <h3 className="text-sm text-[#1F3D2B] mb-1 truncate" style={{ fontFamily, fontWeight: 700, textAlign }}>
+            {title}
           </h3>
           
           <div className="flex items-center gap-1 mb-2">
             <Star className="w-3 h-3 text-[#F2C94C] fill-[#F2C94C]" />
-            <span className="text-xs text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+            <span className="text-xs text-[#1F3D2B]" style={{ fontFamily, fontWeight: 600 }}>
               {item.rating}
             </span>
-            <span className="text-xs text-[#1F3D2B]/50" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+            <span className="text-xs text-[#1F3D2B]/50" style={{ fontFamily, fontWeight: 600 }}>
               ({item.reviewsCount})
             </span>
           </div>
@@ -67,23 +79,23 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
           {item.location && (
             <div className="flex items-center gap-1 mb-2">
               <MapPin className="w-3 h-3 text-[#4A90E2]" />
-              <span className="text-xs text-[#1F3D2B]/70" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                {item.location.city}
+              <span className="text-xs text-[#1F3D2B]/70" style={{ fontFamily, fontWeight: 600 }}>
+                {cityName}
               </span>
             </div>
           )}
 
           <div className="flex items-center gap-2">
             <div className="flex items-baseline gap-1">
-              <span className="text-base text-[#2AA676]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>
+              <span className="text-base text-[#2AA676]" style={{ fontFamily, fontWeight: 800 }}>
                 {item.price}
               </span>
-              <span className="text-xs text-[#2AA676]/70" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                درهم
+              <span className="text-xs text-[#2AA676]/70" style={{ fontFamily, fontWeight: 600 }}>
+                {currency}
               </span>
             </div>
             {item.oldPrice && (
-              <span className="text-xs text-[#1F3D2B]/40 line-through" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+              <span className="text-xs text-[#1F3D2B]/40 line-through" style={{ fontFamily, fontWeight: 600 }}>
                 {item.oldPrice}
               </span>
             )}
@@ -115,26 +127,26 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
       <div className="relative w-full aspect-square bg-[#F5EEE1]">
         <ImageWithFallback
           src={item.images[0]}
-          alt={item.title}
+          alt={title}
           className="w-full h-full object-cover"
         />
         
         {item.isFeatured && (
-          <div className="absolute top-2 right-2 bg-gradient-to-r from-[#C8A86A] to-[#D4AF37] text-white text-xs px-2 py-1 rounded-full flex items-center gap-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+          <div className="absolute top-2 right-2 bg-gradient-to-r from-[#C8A86A] to-[#D4AF37] text-white text-xs px-2 py-1 rounded-full flex items-center gap-1" style={{ fontFamily, fontWeight: 700 }}>
             <span>⭐</span>
-            مميز
+            {featuredText}
           </div>
         )}
 
         {item.hasOffer && (
-          <div className="absolute top-2 left-2 bg-[#F2994A] text-white text-xs px-2 py-1 rounded-full" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+          <div className="absolute top-2 left-2 bg-[#F2994A] text-white text-xs px-2 py-1 rounded-full" style={{ fontFamily, fontWeight: 700 }}>
             -{discount}%
           </div>
         )}
 
         {!item.isAvailable && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-            <span className="text-white font-bold">غير متاح</span>
+            <span className="text-white font-bold">{unavailableText}</span>
           </div>
         )}
 
@@ -151,16 +163,16 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
 
       {/* Content */}
       <div className="p-3">
-        <h3 className="text-sm text-[#1F3D2B] mb-1.5 line-clamp-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-          {item.title}
+        <h3 className="text-sm text-[#1F3D2B] mb-1.5 line-clamp-2" style={{ fontFamily, fontWeight: 700, textAlign }}>
+          {title}
         </h3>
 
         <div className="flex items-center gap-1 mb-2">
           <Star className="w-3.5 h-3.5 text-[#F2C94C] fill-[#F2C94C]" />
-          <span className="text-xs text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+          <span className="text-xs text-[#1F3D2B]" style={{ fontFamily, fontWeight: 600 }}>
             {item.rating}
           </span>
-          <span className="text-xs text-[#1F3D2B]/50" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+          <span className="text-xs text-[#1F3D2B]/50" style={{ fontFamily, fontWeight: 600 }}>
             ({item.reviewsCount})
           </span>
         </div>
@@ -168,8 +180,8 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
         {item.location && (
           <div className="flex items-center gap-1 mb-3">
             <MapPin className="w-3 h-3 text-[#4A90E2]" />
-            <span className="text-xs text-[#1F3D2B]/70 truncate" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-              {item.location.city}
+            <span className="text-xs text-[#1F3D2B]/70 truncate" style={{ fontFamily, fontWeight: 600 }}>
+              {cityName}
             </span>
           </div>
         )}
@@ -178,20 +190,20 @@ export function MarketplaceItemCard({ item, viewMode = 'grid', onClick }: Market
         <div className="flex items-center justify-between">
           <div>
             <div className="flex items-baseline gap-1">
-              <span className="text-lg text-[#2AA676]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>
+              <span className="text-lg text-[#2AA676]" style={{ fontFamily, fontWeight: 800 }}>
                 {item.price}
               </span>
-              <span className="text-xs text-[#2AA676]/70" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                درهم
+              <span className="text-xs text-[#2AA676]/70" style={{ fontFamily, fontWeight: 600 }}>
+                {currency}
               </span>
             </div>
             {item.oldPrice && (
-              <span className="text-xs text-[#1F3D2B]/40 line-through" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                {item.oldPrice} درهم
+              <span className="text-xs text-[#1F3D2B]/40 line-through" style={{ fontFamily, fontWeight: 600 }}>
+                {item.oldPrice} {currency}
               </span>
             )}
-            <p className="text-xs text-[#1F3D2B]/50 mt-0.5" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-              {item.unit}
+            <p className="text-xs text-[#1F3D2B]/50 mt-0.5" style={{ fontFamily, fontWeight: 600, textAlign }}>
+              {unit}
             </p>
           </div>
 
