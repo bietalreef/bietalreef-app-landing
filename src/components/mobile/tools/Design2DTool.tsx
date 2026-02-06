@@ -1,338 +1,1333 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { SimpleToolShell } from './SimpleToolShell';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import {
+  ArrowRight, ZoomIn, ZoomOut, Undo2, Redo2, Trash2,
+  Grid3X3, ChevronUp, ChevronDown, Eye, RotateCcw,
+  Maximize2, Ruler, Pencil, MoreHorizontal, HelpCircle,
+  SlidersHorizontal,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
-const fontCairo = 'Cairo, sans-serif';
+const f = 'Cairo, sans-serif';
 
-type ShapeType = 'rect' | 'circle' | 'line' | 'text' | 'wall';
-type ToolMode = 'select' | 'draw' | 'erase';
-
-interface Shape2D {
-  id: string;
-  type: ShapeType;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  color: string;
-  label?: string;
-  rotation?: number;
+/* ═══════════════════ TYPES ═══════════════════ */
+interface Pt { x: number; y: number }
+interface Wall {
+  id: string; p1: Pt; p2: Pt; thickness: number;
+}
+interface Door {
+  id: string; wallId: string;
+  /** 0-1 position along wall centerline */
+  pos: number;
+  width: number;
+  /** opening direction relative to wall normal */
+  flipSide: boolean;
+  /** swing left or right from hinge */
+  flipSwing: boolean;
+}
+interface Win {
+  id: string; wallId: string;
+  pos: number; width: number;
+}
+interface Furn {
+  id: string; x: number; y: number; w: number; h: number;
+  rot: number; typeId: string; label: string;
+}
+interface RoomLabel {
+  name: string; height: number; area: number; center: Pt;
 }
 
-const COLORS = ['#2AA676', '#1F3D2B', '#C8A86A', '#D4AF37', '#3B82F6', '#EF4444', '#8B5CF6', '#EC4899', '#F59E0B', '#6B7280'];
+type Tool = 'select' | 'wall' | 'door' | 'window' | 'pan' | 'erase';
 
-const PRESETS: { id: string; ar: string; en: string; shapes: Omit<Shape2D, 'id'>[] }[] = [
+/* ═══════════════════ CATALOG ═══════════════════ */
+interface CatItem {
+  id: string; ar: string; en: string;
+  w: number; h: number; icon: string; cat: string;
+}
+
+const CATALOG: CatItem[] = [
+  { id:'sofa3', ar:'كنبة 3', en:'3-Seat Sofa', w:2200, h:900, icon:'🛋️', cat:'furniture' },
+  { id:'sofa2', ar:'كنبة 2', en:'2-Seat Sofa', w:1600, h:850, icon:'🛋️', cat:'furniture' },
+  { id:'sofaL', ar:'كنبة L', en:'L-Sofa', w:2800, h:2000, icon:'🛋️', cat:'furniture' },
+  { id:'arm', ar:'كرسي', en:'Armchair', w:800, h:800, icon:'💺', cat:'furniture' },
+  { id:'ctable', ar:'طاولة قهوة', en:'Coffee Table', w:1200, h:600, icon:'☕', cat:'furniture' },
+  { id:'din4', ar:'طاولة طعام 4', en:'Dining 4P', w:1200, h:900, icon:'🍽️', cat:'furniture' },
+  { id:'din6', ar:'طاولة طعام 6', en:'Dining 6P', w:1800, h:900, icon:'🍽️', cat:'furniture' },
+  { id:'tv', ar:'وحدة تلفزيون', en:'TV Unit', w:1800, h:400, icon:'📺', cat:'furniture' },
+  { id:'shelf', ar:'مكتبة', en:'Bookshelf', w:1200, h:350, icon:'📚', cat:'furniture' },
+  { id:'bking', ar:'سرير كينج', en:'King Bed', w:2000, h:2100, icon:'🛏️', cat:'bedroom' },
+  { id:'bqueen', ar:'سرير كوين', en:'Queen Bed', w:1600, h:2000, icon:'🛏️', cat:'bedroom' },
+  { id:'bsingle', ar:'سرير مفرد', en:'Single Bed', w:1000, h:2000, icon:'🛏️', cat:'bedroom' },
+  { id:'ward', ar:'خزانة ملابس', en:'Wardrobe', w:1800, h:600, icon:'🗄️', cat:'bedroom' },
+  { id:'night', ar:'كومودينو', en:'Nightstand', w:500, h:400, icon:'🔲', cat:'bedroom' },
+  { id:'dresser', ar:'تسريحة', en:'Dresser', w:1200, h:500, icon:'🪞', cat:'bedroom' },
+  { id:'desk', ar:'مكتب عمل', en:'Work Desk', w:1400, h:700, icon:'🖥️', cat:'office' },
+  { id:'ochair', ar:'كرسي مكتب', en:'Office Chair', w:550, h:550, icon:'🪑', cat:'office' },
+  { id:'filing', ar:'خزانة ملفات', en:'Filing', w:400, h:600, icon:'🗄️', cat:'office' },
+  { id:'kcounter', ar:'كاونتر', en:'Counter', w:2400, h:600, icon:'🍳', cat:'kitchen' },
+  { id:'island', ar:'جزيرة مطبخ', en:'Island', w:1500, h:800, icon:'🏝️', cat:'kitchen' },
+  { id:'fridge', ar:'ثلاجة', en:'Fridge', w:700, h:700, icon:'🧊', cat:'kitchen' },
+  { id:'stove', ar:'فرن', en:'Stove', w:600, h:600, icon:'🔥', cat:'kitchen' },
+  { id:'ksink', ar:'حوض مطبخ', en:'Sink', w:600, h:500, icon:'🚰', cat:'kitchen' },
+  { id:'toilet', ar:'مرحاض', en:'Toilet', w:400, h:700, icon:'🚽', cat:'bathroom' },
+  { id:'tub', ar:'بانيو', en:'Bathtub', w:800, h:1700, icon:'🛁', cat:'bathroom' },
+  { id:'shower', ar:'دش', en:'Shower', w:900, h:900, icon:'🚿', cat:'bathroom' },
+  { id:'basin', ar:'حوض', en:'Basin', w:500, h:450, icon:'🧼', cat:'bathroom' },
+  { id:'washer', ar:'غسالة', en:'Washer', w:600, h:600, icon:'🫧', cat:'appliance' },
+  { id:'ac', ar:'مكيف', en:'AC', w:1000, h:200, icon:'❄️', cat:'appliance' },
+];
+
+const CATS = [
+  { id:'furniture', ar:'أثاث', en:'Furniture' },
+  { id:'bedroom', ar:'غرف نوم', en:'Bedroom' },
+  { id:'office', ar:'مكتب', en:'Office' },
+  { id:'kitchen', ar:'مطبخ', en:'Kitchen' },
+  { id:'bathroom', ar:'حمام', en:'Bathroom' },
+  { id:'appliance', ar:'أجهزة', en:'Appliances' },
+];
+
+/* ═══════════════════ TEMPLATES ═══════════════════ */
+interface Tpl {
+  id: string; ar: string; en: string;
+  walls: Omit<Wall,'id'>[];
+  doors: { wallIdx: number; pos: number; width: number }[];
+  windows: { wallIdx: number; pos: number; width: number }[];
+  rooms: RoomLabel[];
+}
+const TPLS: Tpl[] = [
   {
-    id: 'room', ar: 'غرفة فارغة', en: 'Empty Room',
-    shapes: [
-      { type: 'wall', x: 20, y: 20, w: 260, h: 10, color: '#1F3D2B' },
-      { type: 'wall', x: 20, y: 20, w: 10, h: 200, color: '#1F3D2B' },
-      { type: 'wall', x: 20, y: 210, w: 260, h: 10, color: '#1F3D2B' },
-      { type: 'wall', x: 270, y: 20, w: 10, h: 200, color: '#1F3D2B' },
+    id:'room1', ar:'غرفة واحدة', en:'Single Room',
+    walls: [
+      { p1:{x:1000,y:1000}, p2:{x:5867,y:1000}, thickness:200 },
+      { p1:{x:5867,y:1000}, p2:{x:5867,y:6955}, thickness:200 },
+      { p1:{x:5867,y:6955}, p2:{x:1000,y:6955}, thickness:200 },
+      { p1:{x:1000,y:6955}, p2:{x:1000,y:1000}, thickness:200 },
+    ],
+    doors:[{ wallIdx:2, pos:0.25, width:900 }],
+    windows:[{ wallIdx:0, pos:0.5, width:1500 }],
+    rooms:[{ name:'Room1', height:2800, area:26.60, center:{x:3434,y:3978} }],
+  },
+  {
+    id:'apt1', ar:'شقة غرفة وصالة', en:'1 BHK',
+    walls: [
+      { p1:{x:500,y:500}, p2:{x:8500,y:500}, thickness:250 },
+      { p1:{x:8500,y:500}, p2:{x:8500,y:7000}, thickness:250 },
+      { p1:{x:8500,y:7000}, p2:{x:500,y:7000}, thickness:250 },
+      { p1:{x:500,y:7000}, p2:{x:500,y:500}, thickness:250 },
+      { p1:{x:4500,y:500}, p2:{x:4500,y:4500}, thickness:150 },
+      { p1:{x:4500,y:4500}, p2:{x:8500,y:4500}, thickness:150 },
+      { p1:{x:500,y:4500}, p2:{x:2500,y:4500}, thickness:150 },
+    ],
+    doors:[
+      { wallIdx:4, pos:0.6, width:900 },
+      { wallIdx:6, pos:0.5, width:800 },
+    ],
+    windows:[
+      { wallIdx:0, pos:0.25, width:1500 },
+      { wallIdx:0, pos:0.75, width:1200 },
+    ],
+    rooms:[
+      { name:'Living', height:2800, area:24.0, center:{x:2500,y:2500} },
+      { name:'Bedroom', height:2800, area:16.0, center:{x:6500,y:2500} },
+      { name:'Kitchen', height:2700, area:12.0, center:{x:1500,y:5750} },
+      { name:'Hall', height:2800, area:10.0, center:{x:6500,y:5750} },
     ],
   },
   {
-    id: 'living', ar: 'غرفة معيشة', en: 'Living Room',
-    shapes: [
-      { type: 'wall', x: 10, y: 10, w: 280, h: 8, color: '#1F3D2B' },
-      { type: 'wall', x: 10, y: 10, w: 8, h: 220, color: '#1F3D2B' },
-      { type: 'wall', x: 10, y: 222, w: 280, h: 8, color: '#1F3D2B' },
-      { type: 'wall', x: 282, y: 10, w: 8, h: 220, color: '#1F3D2B' },
-      { type: 'rect', x: 30, y: 30, w: 100, h: 50, color: '#8B5CF6', label: 'Sofa' },
-      { type: 'rect', x: 60, y: 100, w: 40, h: 30, color: '#C8A86A', label: 'Table' },
-      { type: 'rect', x: 200, y: 30, w: 60, h: 15, color: '#3B82F6', label: 'TV' },
+    id:'villa', ar:'فيلا', en:'Villa',
+    walls: [
+      { p1:{x:500,y:500}, p2:{x:11000,y:500}, thickness:300 },
+      { p1:{x:11000,y:500}, p2:{x:11000,y:9000}, thickness:300 },
+      { p1:{x:11000,y:9000}, p2:{x:500,y:9000}, thickness:300 },
+      { p1:{x:500,y:9000}, p2:{x:500,y:500}, thickness:300 },
+      { p1:{x:5500,y:500}, p2:{x:5500,y:5500}, thickness:200 },
+      { p1:{x:5500,y:5500}, p2:{x:11000,y:5500}, thickness:200 },
+      { p1:{x:500,y:5500}, p2:{x:3500,y:5500}, thickness:200 },
+      { p1:{x:3500,y:5500}, p2:{x:3500,y:9000}, thickness:200 },
+      { p1:{x:8000,y:5500}, p2:{x:8000,y:9000}, thickness:200 },
     ],
-  },
-  {
-    id: 'office', ar: 'مكتب', en: 'Office',
-    shapes: [
-      { type: 'wall', x: 10, y: 10, w: 280, h: 8, color: '#1F3D2B' },
-      { type: 'wall', x: 10, y: 10, w: 8, h: 220, color: '#1F3D2B' },
-      { type: 'wall', x: 10, y: 222, w: 280, h: 8, color: '#1F3D2B' },
-      { type: 'wall', x: 282, y: 10, w: 8, h: 220, color: '#1F3D2B' },
-      { type: 'rect', x: 40, y: 40, w: 80, h: 50, color: '#6B7280', label: 'Desk' },
-      { type: 'circle', x: 70, y: 110, w: 30, h: 30, color: '#2AA676', label: 'Chair' },
-      { type: 'rect', x: 200, y: 30, w: 60, h: 120, color: '#C8A86A', label: 'Shelf' },
+    doors:[
+      { wallIdx:4, pos:0.55, width:1000 },
+      { wallIdx:7, pos:0.4, width:900 },
+      { wallIdx:8, pos:0.4, width:900 },
+    ],
+    windows:[
+      { wallIdx:0, pos:0.25, width:2000 },
+      { wallIdx:0, pos:0.75, width:2000 },
+      { wallIdx:1, pos:0.3, width:1500 },
+    ],
+    rooms:[
+      { name:'Majlis', height:3200, area:25.0, center:{x:3000,y:3000} },
+      { name:'Living', height:3200, area:27.5, center:{x:8250,y:3000} },
+      { name:'Kitchen', height:2800, area:10.5, center:{x:2000,y:7250} },
+      { name:'Master', height:3000, area:15.75, center:{x:5750,y:7250} },
+      { name:'Guest', height:3000, area:10.5, center:{x:9500,y:7250} },
     ],
   },
 ];
 
+/* ═══════════════════ UTILS ═══════════════════ */
+let _uid = 0;
+const uid = () => `e${++_uid}_${Date.now().toString(36)}`;
+const snap = (v: number, g: number) => Math.round(v / g) * g;
+const dist = (a: Pt, b: Pt) => Math.hypot(b.x - a.x, b.y - a.y);
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+
+/** polyfill for roundRect */
+const rrect = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+};
+
+/** normalized direction and normal of a wall */
+const wallVec = (w: { p1: Pt; p2: Pt }) => {
+  const len = dist(w.p1, w.p2);
+  if (len < 0.01) return { dx: 1, dy: 0, nx: 0, ny: 1, len };
+  const dx = (w.p2.x - w.p1.x) / len;
+  const dy = (w.p2.y - w.p1.y) / len;
+  return { dx, dy, nx: -dy, ny: dx, len };
+};
+
+/** find the nearest endpoint among all walls within radius */
+const findNearEndpoint = (pt: Pt, walls: Wall[], radius: number): Pt | null => {
+  let best: Pt | null = null;
+  let bestD = radius;
+  for (const w of walls) {
+    for (const p of [w.p1, w.p2]) {
+      const d = dist(pt, p);
+      if (d < bestD) { bestD = d; best = { ...p }; }
+    }
+  }
+  return best;
+};
+
+/** project a point onto a wall segment, return 0-1 parameter */
+const projectOnWall = (pt: Pt, w: Wall): { t: number; d: number; closest: Pt } => {
+  const v = wallVec(w);
+  const t = Math.max(0.05, Math.min(0.95,
+    ((pt.x - w.p1.x) * v.dx + (pt.y - w.p1.y) * v.dy) / v.len
+  ));
+  const closest = { x: lerp(w.p1.x, w.p2.x, t), y: lerp(w.p1.y, w.p2.y, t) };
+  return { t, d: dist(pt, closest), closest };
+};
+
+/* ═══════════════════ COMPONENT ═══════════════════ */
 export function Design2DTool({ onBack }: { onBack: () => void }) {
   const { language } = useLanguage();
   const isEn = language === 'en';
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [shapes, setShapes] = useState<Shape2D[]>([]);
-  const [currentColor, setCurrentColor] = useState('#2AA676');
-  const [currentShape, setCurrentShape] = useState<ShapeType>('rect');
-  const [toolMode, setToolMode] = useState<ToolMode>('draw');
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [gridVisible, setGridVisible] = useState(true);
+  const boxRef = useRef<HTMLDivElement>(null);
 
-  const genId = () => `s_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  /* ---- state ---- */
+  const [walls, setWalls] = useState<Wall[]>([]);
+  const [doors, setDoors] = useState<Door[]>([]);
+  const [wins, setWins] = useState<Win[]>([]);
+  const [furns, setFurns] = useState<Furn[]>([]);
+  const [rooms, setRooms] = useState<RoomLabel[]>([]);
 
-  const drawAll = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+  const [tool, setTool] = useState<Tool>('wall');
+  const [zoom, setZoom] = useState(0.055);
+  const [offset, setOffset] = useState<Pt>({ x: 60, y: 40 });
+  const [gridSnap] = useState(100);
+  const [showGrid, setShowGrid] = useState(true);
+  const [showDims, setShowDims] = useState(true);
+  const [wallThick, setWallThick] = useState(200);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const [drawStart, setDrawStart] = useState<Pt | null>(null);
+  const [cursor, setCursor] = useState<Pt>({ x: 0, y: 0 });
+  const [sel, setSel] = useState<{ type: 'wall' | 'door' | 'win' | 'furn'; id: string } | null>(null);
+  const [isPan, setIsPan] = useState(false);
+  const [panPrev, setPanPrev] = useState<Pt | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [dragOff, setDragOff] = useState<Pt>({ x: 0, y: 0 });
+  const [dragDoorWin, setDragDoorWin] = useState<string | null>(null);
 
-    // Background
-    ctx.fillStyle = '#FAFAF9';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const [catalogOpen, setCatalogOpen] = useState(false);
+  const [catalogCat, setCatalogCat] = useState('furniture');
+  const [showHelp, setShowHelp] = useState(false);
 
-    // Grid
-    if (gridVisible) {
-      ctx.strokeStyle = '#E5E7EB';
-      ctx.lineWidth = 0.5;
-      for (let x = 0; x <= canvas.width; x += 20) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, canvas.height);
-        ctx.stroke();
+  /* dimensions for property panel */
+  const [editDoorWidth, setEditDoorWidth] = useState(900);
+  const [showProps, setShowProps] = useState(false);
+
+  /* ---- canvas size ---- */
+  const [cSize, setCSize] = useState({ w: 400, h: 600 });
+  useEffect(() => {
+    const onResize = () => {
+      if (boxRef.current) {
+        const r = boxRef.current.getBoundingClientRect();
+        setCSize({ w: Math.floor(r.width), h: Math.floor(r.height) });
       }
-      for (let y = 0; y <= canvas.height; y += 20) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvas.width, y);
-        ctx.stroke();
+    };
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  /* ---- history ---- */
+  const histRef = useRef<string[]>([]);
+  const histIdx = useRef(-1);
+  const pushH = useCallback(() => {
+    const snap = JSON.stringify({ walls, doors, wins, furns, rooms });
+    histRef.current = histRef.current.slice(0, histIdx.current + 1);
+    histRef.current.push(snap);
+    histIdx.current++;
+  }, [walls, doors, wins, furns, rooms]);
+
+  const restoreH = (idx: number) => {
+    const s = JSON.parse(histRef.current[idx]);
+    setWalls(s.walls); setDoors(s.doors); setWins(s.wins);
+    setFurns(s.furns); setRooms(s.rooms);
+    histIdx.current = idx;
+  };
+  const undo = () => { if (histIdx.current > 0) restoreH(histIdx.current - 1); };
+  const redo = () => { if (histIdx.current < histRef.current.length - 1) restoreH(histIdx.current + 1); };
+
+  /* ---- coordinate transforms ---- */
+  const w2s = useCallback((p: Pt): Pt => ({ x: p.x * zoom + offset.x, y: p.y * zoom + offset.y }), [zoom, offset]);
+  const s2w = useCallback((sx: number, sy: number): Pt => ({ x: (sx - offset.x) / zoom, y: (sy - offset.y) / zoom }), [zoom, offset]);
+
+  /* ═══════════════════ RENDER ═══════════════════ */
+  const render = useCallback(() => {
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    if (!ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    const W = cv.width / dpr, H = cv.height / dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
+    /* background */
+    ctx.fillStyle = '#F5F5F5';
+    ctx.fillRect(0, 0, W, H);
+
+    /* ── grid ── */
+    if (showGrid) {
+      const tl = s2w(0, 0), br = s2w(W, H);
+      // fine 100mm
+      if (zoom > 0.018) {
+        ctx.strokeStyle = '#EAEAEA';
+        ctx.lineWidth = 0.4;
+        for (let x = snap(tl.x, 100); x <= br.x; x += 100) {
+          const sx = w2s({ x, y: 0 }).x;
+          ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, H); ctx.stroke();
+        }
+        for (let y = snap(tl.y, 100); y <= br.y; y += 100) {
+          const sy = w2s({ x: 0, y }).y;
+          ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(W, sy); ctx.stroke();
+        }
+      }
+      // coarse 1m
+      ctx.strokeStyle = '#D5D5D5';
+      ctx.lineWidth = 0.6;
+      for (let x = snap(tl.x, 1000); x <= br.x; x += 1000) {
+        const sx = w2s({ x, y: 0 }).x;
+        ctx.beginPath(); ctx.moveTo(sx, 0); ctx.lineTo(sx, H); ctx.stroke();
+      }
+      for (let y = snap(tl.y, 1000); y <= br.y; y += 1000) {
+        const sy = w2s({ x: 0, y }).y;
+        ctx.beginPath(); ctx.moveTo(0, sy); ctx.lineTo(W, sy); ctx.stroke();
       }
     }
 
-    // Shapes
-    shapes.forEach(shape => {
-      ctx.fillStyle = shape.color;
-      ctx.strokeStyle = selectedId === shape.id ? '#EF4444' : 'transparent';
-      ctx.lineWidth = selectedId === shape.id ? 2 : 0;
+    /* helper: draw wall as filled polygon */
+    const drawWallPoly = (w: Wall, highlight: boolean) => {
+      const v = wallVec(w);
+      const ht = w.thickness / 2;
+      const pts = [
+        w2s({ x: w.p1.x + v.nx * ht, y: w.p1.y + v.ny * ht }),
+        w2s({ x: w.p2.x + v.nx * ht, y: w.p2.y + v.ny * ht }),
+        w2s({ x: w.p2.x - v.nx * ht, y: w.p2.y - v.ny * ht }),
+        w2s({ x: w.p1.x - v.nx * ht, y: w.p1.y - v.ny * ht }),
+      ];
+      ctx.fillStyle = highlight ? '#4A5568' : '#5C636B';
+      ctx.strokeStyle = highlight ? '#2AA676' : '#3A3F45';
+      ctx.lineWidth = highlight ? 2.5 : 1;
+      ctx.beginPath();
+      pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.closePath(); ctx.fill(); ctx.stroke();
 
-      if (shape.type === 'rect' || shape.type === 'wall') {
-        ctx.fillRect(shape.x, shape.y, shape.w, shape.h);
-        if (selectedId === shape.id) ctx.strokeRect(shape.x, shape.y, shape.w, shape.h);
-      } else if (shape.type === 'circle') {
-        ctx.beginPath();
-        ctx.ellipse(shape.x + shape.w / 2, shape.y + shape.h / 2, shape.w / 2, shape.h / 2, 0, 0, Math.PI * 2);
-        ctx.fill();
-        if (selectedId === shape.id) ctx.stroke();
-      } else if (shape.type === 'line') {
-        ctx.strokeStyle = shape.color;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(shape.x, shape.y);
-        ctx.lineTo(shape.x + shape.w, shape.y + shape.h);
-        ctx.stroke();
+      /* endpoint squares */
+      for (const ep of [w.p1, w.p2]) {
+        const sp = w2s(ep);
+        const sz = Math.max(3, 4 * zoom * 40);
+        ctx.fillStyle = highlight ? '#2AA676' : '#3A3F45';
+        ctx.fillRect(sp.x - sz / 2, sp.y - sz / 2, sz, sz);
       }
+    };
 
-      // Label
-      if (shape.label && shape.type !== 'line') {
-        ctx.fillStyle = '#FFFFFF';
-        ctx.font = 'bold 10px Cairo, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(shape.label, shape.x + shape.w / 2, shape.y + shape.h / 2);
+    /* ── walls ── */
+    walls.forEach(w => drawWallPoly(w, sel?.type === 'wall' && sel.id === w.id));
+
+    /* ── doors ── */
+    doors.forEach(door => {
+      const w = walls.find(ww => ww.id === door.wallId);
+      if (!w) return;
+      const v = wallVec(w);
+      const cx = lerp(w.p1.x, w.p2.x, door.pos);
+      const cy = lerp(w.p1.y, w.p2.y, door.pos);
+      const hw = door.width / 2;
+      const ht = w.thickness / 2 + 30;
+      const isSel = sel?.type === 'door' && sel.id === door.id;
+
+      /* clear wall area for door gap */
+      const gap = [
+        w2s({ x: cx - v.dx * hw - v.nx * ht, y: cy - v.dy * hw - v.ny * ht }),
+        w2s({ x: cx + v.dx * hw - v.nx * ht, y: cy + v.dy * hw - v.ny * ht }),
+        w2s({ x: cx + v.dx * hw + v.nx * ht, y: cy + v.dy * hw + v.ny * ht }),
+        w2s({ x: cx - v.dx * hw + v.nx * ht, y: cy - v.dy * hw + v.ny * ht }),
+      ];
+      ctx.fillStyle = '#F5F5F5';
+      ctx.beginPath();
+      gap.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.closePath(); ctx.fill();
+
+      /* door sill (red/colored bar) */
+      const sillSide = door.flipSide ? 1 : -1;
+      const sillOff = w.thickness / 2;
+      const sill = [
+        w2s({ x: cx - v.dx * hw + v.nx * sillOff * sillSide, y: cy - v.dy * hw + v.ny * sillOff * sillSide }),
+        w2s({ x: cx + v.dx * hw + v.nx * sillOff * sillSide, y: cy + v.dy * hw + v.ny * sillOff * sillSide }),
+        w2s({ x: cx + v.dx * hw + v.nx * (sillOff + 60) * sillSide, y: cy + v.dy * hw + v.ny * (sillOff + 60) * sillSide }),
+        w2s({ x: cx - v.dx * hw + v.nx * (sillOff + 60) * sillSide, y: cy - v.dy * hw + v.ny * (sillOff + 60) * sillSide }),
+      ];
+      ctx.fillStyle = isSel ? '#C0392B' : '#E74C3C';
+      ctx.beginPath();
+      sill.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.closePath(); ctx.fill();
+
+      /* swing arc */
+      const hingeDir = door.flipSwing ? 1 : -1;
+      const hinge = {
+        x: cx + v.dx * hw * hingeDir,
+        y: cy + v.dy * hw * hingeDir,
+      };
+      const hs = w2s(hinge);
+      const arcR = door.width * zoom;
+      const wallAng = Math.atan2(v.dy, v.dx);
+      const normAng = wallAng + Math.PI / 2 * sillSide;
+      const startA = door.flipSwing ? wallAng + Math.PI : wallAng;
+      const endA = normAng + (door.flipSwing ? Math.PI : 0);
+
+      ctx.strokeStyle = isSel ? '#C0392B' : '#E74C3C';
+      ctx.lineWidth = 1.2;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.arc(hs.x, hs.y, arcR, startA, endA, door.flipSwing !== door.flipSide);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* leaf line */
+      const leafEnd = {
+        x: hinge.x + v.nx * door.width * sillSide,
+        y: hinge.y + v.ny * door.width * sillSide,
+      };
+      const les = w2s(leafEnd);
+      ctx.strokeStyle = isSel ? '#C0392B' : '#E74C3C';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(hs.x, hs.y); ctx.lineTo(les.x, les.y); ctx.stroke();
+
+      /* drag indicator when selected */
+      if (isSel) {
+        const center = w2s({ x: cx, y: cy });
+        const arrowLen = 14;
+        const arrAngle = Math.atan2(v.dy, v.dx);
+        ctx.fillStyle = '#3B82F6';
+        ctx.strokeStyle = '#3B82F6';
+        ctx.lineWidth = 2.5;
+        // double arrow along wall
+        for (const dir of [-1, 1]) {
+          const ex = center.x + Math.cos(arrAngle) * arrowLen * dir;
+          const ey = center.y + Math.sin(arrAngle) * arrowLen * dir;
+          ctx.beginPath(); ctx.moveTo(center.x, center.y); ctx.lineTo(ex, ey); ctx.stroke();
+          // arrowhead
+          const headA = arrAngle + Math.PI + dir * 0.5;
+          const headB = arrAngle + Math.PI - dir * 0.5;
+          ctx.beginPath();
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex + Math.cos(headA) * 5, ey + Math.sin(headA) * 5);
+          ctx.moveTo(ex, ey);
+          ctx.lineTo(ex + Math.cos(headB) * 5, ey + Math.sin(headB) * 5);
+          ctx.stroke();
+        }
       }
     });
-  }, [shapes, selectedId, gridVisible]);
 
-  useEffect(() => { drawAll(); }, [drawAll]);
+    /* ── windows ── */
+    wins.forEach(win => {
+      const w = walls.find(ww => ww.id === win.wallId);
+      if (!w) return;
+      const v = wallVec(w);
+      const cx = lerp(w.p1.x, w.p2.x, win.pos);
+      const cy = lerp(w.p1.y, w.p2.y, win.pos);
+      const hw = win.width / 2;
+      const ht = w.thickness / 2 + 15;
+      const isSel = sel?.type === 'win' && sel.id === win.id;
 
-  const getCanvasPos = (e: React.MouseEvent | React.TouchEvent) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return { x: 0, y: 0 };
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    if ('touches' in e) {
-      return {
-        x: (e.touches[0].clientX - rect.left) * scaleX,
-        y: (e.touches[0].clientY - rect.top) * scaleY,
-      };
+      /* clear gap */
+      const gap = [
+        w2s({ x: cx - v.dx * hw - v.nx * ht, y: cy - v.dy * hw - v.ny * ht }),
+        w2s({ x: cx + v.dx * hw - v.nx * ht, y: cy + v.dy * hw - v.ny * ht }),
+        w2s({ x: cx + v.dx * hw + v.nx * ht, y: cy + v.dy * hw + v.ny * ht }),
+        w2s({ x: cx - v.dx * hw + v.nx * ht, y: cy - v.dy * hw + v.ny * ht }),
+      ];
+      ctx.fillStyle = '#F5F5F5';
+      ctx.beginPath();
+      gap.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+      ctx.closePath(); ctx.fill();
+
+      /* 3 parallel lines */
+      const spacing = w.thickness / 3;
+      for (let i = -1; i <= 1; i++) {
+        const off = i * spacing;
+        const l1 = w2s({ x: cx - v.dx * hw + v.nx * off, y: cy - v.dy * hw + v.ny * off });
+        const l2 = w2s({ x: cx + v.dx * hw + v.nx * off, y: cy + v.dy * hw + v.ny * off });
+        ctx.strokeStyle = i === 0 ? (isSel ? '#2980B9' : '#3498DB') : (isSel ? '#5DADE2' : '#85C1E9');
+        ctx.lineWidth = i === 0 ? 2.5 : 1.2;
+        ctx.beginPath(); ctx.moveTo(l1.x, l1.y); ctx.lineTo(l2.x, l2.y); ctx.stroke();
+      }
+
+      /* drag indicator */
+      if (isSel) {
+        const center = w2s({ x: cx, y: cy });
+        const arrAngle = Math.atan2(v.dy, v.dx);
+        ctx.strokeStyle = '#3B82F6'; ctx.lineWidth = 2.5;
+        for (const dir of [-1, 1]) {
+          const ex = center.x + Math.cos(arrAngle) * 14 * dir;
+          const ey = center.y + Math.sin(arrAngle) * 14 * dir;
+          ctx.beginPath(); ctx.moveTo(center.x, center.y); ctx.lineTo(ex, ey); ctx.stroke();
+        }
+      }
+    });
+
+    /* ── furniture ── */
+    furns.forEach(item => {
+      const isSel2 = sel?.type === 'furn' && sel.id === item.id;
+      ctx.save();
+      const c = w2s({ x: item.x + item.w / 2, y: item.y + item.h / 2 });
+      ctx.translate(c.x, c.y);
+      ctx.rotate((item.rot * Math.PI) / 180);
+      const sw = item.w * zoom, sh = item.h * zoom;
+      ctx.fillStyle = isSel2 ? 'rgba(42,166,118,0.18)' : 'rgba(200,168,106,0.12)';
+      ctx.strokeStyle = isSel2 ? '#2AA676' : '#C8A86A';
+      ctx.lineWidth = isSel2 ? 2 : 1;
+      ctx.fillRect(-sw / 2, -sh / 2, sw, sh);
+      ctx.strokeRect(-sw / 2, -sh / 2, sw, sh);
+      // cross lines for identification
+      ctx.strokeStyle = isSel2 ? 'rgba(42,166,118,0.3)' : 'rgba(200,168,106,0.2)';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath(); ctx.moveTo(-sw/2, -sh/2); ctx.lineTo(sw/2, sh/2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(sw/2, -sh/2); ctx.lineTo(-sw/2, sh/2); ctx.stroke();
+      if (sw > 25) {
+        const fsz = Math.max(7, Math.min(11, sw / 7));
+        ctx.fillStyle = '#4A5A6A';
+        ctx.font = `bold ${fsz}px Cairo,sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(item.label.slice(0, 12), 0, 0);
+      }
+      ctx.restore();
+    });
+
+    /* ── dimension lines ── */
+    if (showDims) {
+      walls.forEach(w => {
+        const v = wallVec(w);
+        if (v.len < 150) return;
+
+        /* outer dimension (from outer face) */
+        const outerOff = w.thickness / 2 + 350;
+        const drawDimLine = (offsetDist: number, label: string, color: string, bgColor: string) => {
+          const p1 = w2s({ x: w.p1.x + v.nx * offsetDist, y: w.p1.y + v.ny * offsetDist });
+          const p2 = w2s({ x: w.p2.x + v.nx * offsetDist, y: w.p2.y + v.ny * offsetDist });
+
+          // extension ticks
+          const extA = 6;
+          ctx.strokeStyle = '#8896A4';
+          ctx.lineWidth = 0.6;
+          for (const p of [p1, p2]) {
+            const a = Math.atan2(v.ny, v.nx);
+            ctx.beginPath();
+            ctx.moveTo(p.x + Math.cos(a) * extA, p.y + Math.sin(a) * extA);
+            ctx.lineTo(p.x - Math.cos(a) * extA, p.y - Math.sin(a) * extA);
+            ctx.stroke();
+          }
+
+          // dimension line
+          ctx.strokeStyle = '#8896A4';
+          ctx.lineWidth = 0.7;
+          ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.stroke();
+
+          // arrows
+          const angle = Math.atan2(p2.y - p1.y, p2.x - p1.x);
+          const arSz = 5;
+          for (const [pt, d] of [[p1, 1], [p2, -1]] as const) {
+            ctx.beginPath();
+            ctx.moveTo(pt.x, pt.y);
+            ctx.lineTo(pt.x + Math.cos(angle + 2.7) * arSz * d, pt.y + Math.sin(angle + 2.7) * arSz * d);
+            ctx.moveTo(pt.x, pt.y);
+            ctx.lineTo(pt.x + Math.cos(angle - 2.7) * arSz * d, pt.y + Math.sin(angle - 2.7) * arSz * d);
+            ctx.stroke();
+          }
+
+          // label with background
+          const mid = { x: (p1.x + p2.x) / 2, y: (p1.y + p2.y) / 2 };
+          ctx.save();
+          ctx.translate(mid.x, mid.y);
+          let ta = angle;
+          if (ta > Math.PI / 2) ta -= Math.PI;
+          if (ta < -Math.PI / 2) ta += Math.PI;
+          ctx.rotate(ta);
+
+          ctx.font = 'bold 10px Cairo,sans-serif';
+          const tw = ctx.measureText(label).width + 8;
+          const th = 16;
+          ctx.fillStyle = bgColor;
+          rrect(ctx, -tw / 2, -th / 2, tw, th, 3);
+          ctx.fill();
+          ctx.fillStyle = color;
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(label, 0, 0);
+          ctx.restore();
+        };
+
+        // outer dim (full wall length including thickness at corners)
+        drawDimLine(outerOff, `${Math.round(v.len)}`, '#F5F5F5', '#4A5568');
+
+        // inner dim (wall length minus thickness)
+        const innerLen = Math.max(0, v.len - w.thickness);
+        if (innerLen > 100) {
+          drawDimLine(-(w.thickness / 2 + 350), `${Math.round(innerLen)}`, 'white', '#2563EB');
+        }
+      });
+
+      /* side labels on walls (blue rotated badges like Planner 5D) */
+      walls.forEach(w => {
+        const v = wallVec(w);
+        if (v.len < 400) return;
+        const mid = { x: (w.p1.x + w.p2.x) / 2, y: (w.p1.y + w.p2.y) / 2 };
+        // label on each side of the wall
+        for (const side of [1, -1]) {
+          const labelOff = w.thickness / 2 + 50;
+          const lp = w2s({ x: mid.x + v.nx * labelOff * side, y: mid.y + v.ny * labelOff * side });
+          ctx.save();
+          ctx.translate(lp.x, lp.y);
+          let a = Math.atan2(v.dy, v.dx);
+          if (a > Math.PI / 2) a -= Math.PI;
+          if (a < -Math.PI / 2) a += Math.PI;
+          ctx.rotate(a);
+          const txt = `${Math.round(v.len)}`;
+          ctx.font = 'bold 8px Cairo,sans-serif';
+          const tw2 = ctx.measureText(txt).width + 6;
+          ctx.fillStyle = '#2563EB';
+          rrect(ctx, -tw2 / 2, -7, tw2, 14, 2);
+          ctx.fill();
+          ctx.fillStyle = 'white';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(txt, 0, 0);
+          ctx.restore();
+        }
+      });
     }
-    return {
-      x: (e.clientX - rect.left) * scaleX,
-      y: (e.clientY - rect.top) * scaleY,
-    };
+
+    /* ── room labels ── */
+    rooms.forEach(r => {
+      const c = w2s(r.center);
+      ctx.fillStyle = '#3C4A5A';
+      ctx.font = 'bold 13px Cairo,sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(r.name, c.x, c.y - 18);
+      ctx.font = '11px Cairo,sans-serif';
+      ctx.fillStyle = '#6B7B8D';
+      ctx.fillText(`H=${r.height}`, c.x, c.y);
+      ctx.fillText(`S=${r.area.toFixed(2)}m\u00B2`, c.x, c.y + 16);
+    });
+
+    /* ── drawing preview ── */
+    if (drawStart && tool === 'wall') {
+      const v = { x: cursor.x - drawStart.x, y: cursor.y - drawStart.y };
+      const len = Math.hypot(v.x, v.y);
+      if (len > 10) {
+        const dx = v.x / len, dy = v.y / len;
+        const nx = -dy, ny = dx;
+        const ht = wallThick / 2;
+        const pts = [
+          w2s({ x: drawStart.x + nx * ht, y: drawStart.y + ny * ht }),
+          w2s({ x: cursor.x + nx * ht, y: cursor.y + ny * ht }),
+          w2s({ x: cursor.x - nx * ht, y: cursor.y - ny * ht }),
+          w2s({ x: drawStart.x - nx * ht, y: drawStart.y - ny * ht }),
+        ];
+        ctx.fillStyle = 'rgba(42,166,118,0.2)';
+        ctx.strokeStyle = '#2AA676';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // dimension preview
+        const mid = w2s({ x: (drawStart.x + cursor.x) / 2, y: (drawStart.y + cursor.y) / 2 });
+        ctx.font = 'bold 12px Cairo,sans-serif';
+        ctx.fillStyle = '#2AA676';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(len)} mm`, mid.x, mid.y - 18);
+
+        // angle preview
+        const angle = Math.round((Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360);
+        ctx.font = '10px Cairo,sans-serif';
+        ctx.fillText(`${angle}°`, mid.x, mid.y - 32);
+      }
+    }
+
+    /* snap cursor crosshair */
+    if (tool === 'wall' || tool === 'door' || tool === 'window') {
+      const cs = w2s(cursor);
+      ctx.strokeStyle = '#2AA676';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(cs.x - 15, cs.y); ctx.lineTo(cs.x + 15, cs.y);
+      ctx.moveTo(cs.x, cs.y - 15); ctx.lineTo(cs.x, cs.y + 15);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // snap indicator circle
+      ctx.strokeStyle = '#2AA676';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(cs.x, cs.y, 4, 0, Math.PI * 2); ctx.stroke();
+    }
+  }, [walls, doors, wins, furns, rooms, zoom, offset, showGrid, showDims, sel, drawStart, cursor, tool, wallThick, w2s, s2w, isEn]);
+
+  useEffect(() => { render(); }, [render, cSize]);
+
+  /* ═══════════════════ EVENTS ═══════════════════ */
+  const getPos = (e: React.MouseEvent | React.TouchEvent): Pt => {
+    const cv = canvasRef.current;
+    if (!cv) return { x: 0, y: 0 };
+    const r = cv.getBoundingClientRect();
+    if ('touches' in e && e.touches.length > 0) return { x: e.touches[0].clientX - r.left, y: e.touches[0].clientY - r.top };
+    if ('clientX' in e) return { x: (e as React.MouseEvent).clientX - r.left, y: (e as React.MouseEvent).clientY - r.top };
+    return { x: 0, y: 0 };
   };
 
-  const handlePointerDown = (e: React.MouseEvent | React.TouchEvent) => {
-    const pos = getCanvasPos(e);
+  const onDown = (e: React.MouseEvent | React.TouchEvent) => {
+    const pos = getPos(e);
+    const raw = s2w(pos.x, pos.y);
+    const snapped = { x: snap(raw.x, gridSnap), y: snap(raw.y, gridSnap) };
 
-    if (toolMode === 'select') {
-      const clicked = [...shapes].reverse().find(s => pos.x >= s.x && pos.x <= s.x + s.w && pos.y >= s.y && pos.y <= s.y + s.h);
-      setSelectedId(clicked?.id || null);
+    if (tool === 'pan') {
+      setIsPan(true); setPanPrev(pos); return;
+    }
+
+    if (tool === 'wall') {
+      if (!drawStart) {
+        // snap to existing endpoint
+        const ep = findNearEndpoint(snapped, walls, 300);
+        setDrawStart(ep || snapped);
+      } else {
+        // snap end to existing endpoint
+        const ep = findNearEndpoint(snapped, walls, 300);
+        const end = ep || snapped;
+        const nw: Wall = { id: uid(), p1: drawStart, p2: end, thickness: wallThick };
+        if (dist(nw.p1, nw.p2) > 50) {
+          setWalls(prev => [...prev, nw]);
+          pushH();
+        }
+        // check if closed to starting point → stop, else chain
+        const startSnap = findNearEndpoint(end, walls, 200);
+        if (startSnap && dist(startSnap, end) < 200 && walls.length >= 2) {
+          setDrawStart(null);
+        } else {
+          setDrawStart(end);
+        }
+      }
       return;
     }
 
-    if (toolMode === 'erase') {
-      const clicked = [...shapes].reverse().find(s => pos.x >= s.x && pos.x <= s.x + s.w && pos.y >= s.y && pos.y <= s.y + s.h);
-      if (clicked) setShapes(prev => prev.filter(s => s.id !== clicked.id));
+    if (tool === 'door' || tool === 'window') {
+      let bestW: Wall | null = null, bestD = 500, bestT = 0.5;
+      walls.forEach(w => {
+        const p = projectOnWall(raw, w);
+        if (p.d < bestD) { bestD = p.d; bestW = w; bestT = p.t; }
+      });
+      if (bestW) {
+        if (tool === 'door') {
+          const nd: Door = { id: uid(), wallId: bestW!.id, pos: bestT, width: editDoorWidth, flipSide: false, flipSwing: false };
+          setDoors(prev => [...prev, nd]);
+          setSel({ type: 'door', id: nd.id });
+        } else {
+          const nw2: Win = { id: uid(), wallId: bestW!.id, pos: bestT, width: 1500 };
+          setWins(prev => [...prev, nw2]);
+          setSel({ type: 'win', id: nw2.id });
+        }
+        pushH();
+      }
       return;
     }
 
-    setIsDrawing(true);
-    setStartPos(pos);
-  };
+    if (tool === 'select') {
+      // check doors
+      for (const d of doors) {
+        const w = walls.find(ww => ww.id === d.wallId);
+        if (!w) continue;
+        const cx = lerp(w.p1.x, w.p2.x, d.pos);
+        const cy = lerp(w.p1.y, w.p2.y, d.pos);
+        if (dist(raw, { x: cx, y: cy }) < d.width / 2 + 200) {
+          setSel({ type: 'door', id: d.id }); setDragDoorWin(d.id);
+          setShowProps(true); setEditDoorWidth(d.width);
+          return;
+        }
+      }
+      // check windows
+      for (const win of wins) {
+        const w = walls.find(ww => ww.id === win.wallId);
+        if (!w) continue;
+        const cx = lerp(w.p1.x, w.p2.x, win.pos);
+        const cy = lerp(w.p1.y, w.p2.y, win.pos);
+        if (dist(raw, { x: cx, y: cy }) < win.width / 2 + 200) {
+          setSel({ type: 'win', id: win.id }); setDragDoorWin(win.id);
+          setShowProps(true);
+          return;
+        }
+      }
+      // check furniture
+      const cf = [...furns].reverse().find(it =>
+        raw.x >= it.x && raw.x <= it.x + it.w && raw.y >= it.y && raw.y <= it.y + it.h
+      );
+      if (cf) {
+        setSel({ type: 'furn', id: cf.id }); setDragId(cf.id);
+        setDragOff({ x: raw.x - cf.x, y: raw.y - cf.y });
+        return;
+      }
+      // check walls
+      const cw = walls.find(w => {
+        const p = projectOnWall(raw, w);
+        return p.d < w.thickness;
+      });
+      if (cw) { setSel({ type: 'wall', id: cw.id }); setShowProps(true); }
+      else { setSel(null); setShowProps(false); }
+      return;
+    }
 
-  const handlePointerUp = (e: React.MouseEvent | React.TouchEvent) => {
-    if (!isDrawing || !startPos) { setIsDrawing(false); return; }
-
-    const pos = 'changedTouches' in e
-      ? (() => { const canvas = canvasRef.current!; const rect = canvas.getBoundingClientRect(); const scX = canvas.width / rect.width; const scY = canvas.height / rect.height; return { x: (e.changedTouches[0].clientX - rect.left) * scX, y: (e.changedTouches[0].clientY - rect.top) * scY }; })()
-      : getCanvasPos(e as React.MouseEvent);
-
-    const w = Math.abs(pos.x - startPos.x);
-    const h = Math.abs(pos.y - startPos.y);
-    if (w < 5 && h < 5) { setIsDrawing(false); setStartPos(null); return; }
-
-    const x = Math.min(startPos.x, pos.x);
-    const y = Math.min(startPos.y, pos.y);
-
-    const newShape: Shape2D = {
-      id: genId(),
-      type: currentShape,
-      x, y,
-      w: currentShape === 'line' ? pos.x - startPos.x : w,
-      h: currentShape === 'line' ? pos.y - startPos.y : h,
-      color: currentColor,
-    };
-
-    setShapes(prev => [...prev, newShape]);
-    setIsDrawing(false);
-    setStartPos(null);
-  };
-
-  const loadPreset = (preset: typeof PRESETS[0]) => {
-    setShapes(preset.shapes.map(s => ({ ...s, id: genId() })));
-    setSelectedId(null);
-  };
-
-  const deleteSelected = () => {
-    if (selectedId) {
-      setShapes(prev => prev.filter(s => s.id !== selectedId));
-      setSelectedId(null);
+    if (tool === 'erase') {
+      // same hit-test order: doors, windows, furniture, walls
+      for (const d of doors) {
+        const w = walls.find(ww => ww.id === d.wallId);
+        if (!w) continue;
+        const cx = lerp(w.p1.x, w.p2.x, d.pos);
+        const cy = lerp(w.p1.y, w.p2.y, d.pos);
+        if (dist(raw, { x: cx, y: cy }) < d.width / 2 + 200) {
+          setDoors(prev => prev.filter(dd => dd.id !== d.id)); pushH(); return;
+        }
+      }
+      for (const wi of wins) {
+        const w = walls.find(ww => ww.id === wi.wallId);
+        if (!w) continue;
+        const cx = lerp(w.p1.x, w.p2.x, wi.pos);
+        const cy = lerp(w.p1.y, w.p2.y, wi.pos);
+        if (dist(raw, { x: cx, y: cy }) < wi.width / 2 + 200) {
+          setWins(prev => prev.filter(ww => ww.id !== wi.id)); pushH(); return;
+        }
+      }
+      const cf2 = [...furns].reverse().find(it =>
+        raw.x >= it.x && raw.x <= it.x + it.w && raw.y >= it.y && raw.y <= it.y + it.h
+      );
+      if (cf2) { setFurns(prev => prev.filter(ff => ff.id !== cf2.id)); pushH(); return; }
+      const cw2 = walls.find(w => projectOnWall(raw, w).d < w.thickness);
+      if (cw2) {
+        setWalls(prev => prev.filter(ww => ww.id !== cw2.id));
+        setDoors(prev => prev.filter(d => d.wallId !== cw2.id));
+        setWins(prev => prev.filter(w => w.wallId !== cw2.id));
+        pushH();
+      }
     }
   };
 
-  const clearAll = () => { setShapes([]); setSelectedId(null); };
+  const onMove = (e: React.MouseEvent | React.TouchEvent) => {
+    const pos = getPos(e);
+    const raw = s2w(pos.x, pos.y);
+    const snapped = { x: snap(raw.x, gridSnap), y: snap(raw.y, gridSnap) };
+
+    // snap to existing endpoint when drawing walls
+    if (tool === 'wall') {
+      const ep = findNearEndpoint(snapped, walls, 300);
+      setCursor(ep || snapped);
+    } else {
+      setCursor(snapped);
+    }
+
+    if (isPan && panPrev) {
+      setOffset(prev => ({ x: prev.x + pos.x - panPrev.x, y: prev.y + pos.y - panPrev.y }));
+      setPanPrev(pos);
+      return;
+    }
+
+    // drag door/window along wall
+    if (dragDoorWin) {
+      const door = doors.find(d => d.id === dragDoorWin);
+      if (door) {
+        const w = walls.find(ww => ww.id === door.wallId);
+        if (w) {
+          const p = projectOnWall(raw, w);
+          setDoors(prev => prev.map(d => d.id === dragDoorWin ? { ...d, pos: p.t } : d));
+        }
+        return;
+      }
+      const win = wins.find(wi => wi.id === dragDoorWin);
+      if (win) {
+        const w = walls.find(ww => ww.id === win.wallId);
+        if (w) {
+          const p = projectOnWall(raw, w);
+          setWins(prev => prev.map(wi2 => wi2.id === dragDoorWin ? { ...wi2, pos: p.t } : wi2));
+        }
+        return;
+      }
+    }
+
+    // drag furniture
+    if (dragId) {
+      setFurns(prev => prev.map(it =>
+        it.id === dragId ? { ...it, x: snap(raw.x - dragOff.x, gridSnap), y: snap(raw.y - dragOff.y, gridSnap) } : it
+      ));
+    }
+  };
+
+  const onUp = () => {
+    if (isPan) { setIsPan(false); setPanPrev(null); }
+    if (dragId) { setDragId(null); pushH(); }
+    if (dragDoorWin) { setDragDoorWin(null); pushH(); }
+  };
+
+  /* pinch zoom */
+  const lastPinch = useRef(0);
+  const onTouchMove2 = (e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      const d = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      if (lastPinch.current > 0) {
+        const factor = d / lastPinch.current;
+        setZoom(z => Math.min(0.25, Math.max(0.008, z * factor)));
+      }
+      lastPinch.current = d;
+      return;
+    }
+    onMove(e);
+  };
+  const onTouchEnd2 = () => { lastPinch.current = 0; onUp(); };
+
+  /* ── zoom buttons ── */
+  const zoomIn = () => setZoom(z => Math.min(0.25, z * 1.3));
+  const zoomOut = () => setZoom(z => Math.max(0.008, z / 1.3));
+  const resetView = () => { setZoom(0.055); setOffset({ x: 60, y: 40 }); };
+
+  /* ── templates ── */
+  const loadTpl = (t: Tpl) => {
+    const nw = t.walls.map(w => ({ ...w, id: uid() }));
+    setWalls(nw);
+    setDoors(t.doors.map(d => ({
+      id: uid(), wallId: nw[d.wallIdx]?.id || '', pos: d.pos, width: d.width,
+      flipSide: false, flipSwing: false,
+    })));
+    setWins(t.windows.map(w => ({
+      id: uid(), wallId: nw[w.wallIdx]?.id || '', pos: w.pos, width: w.width,
+    })));
+    setFurns([]);
+    setRooms(t.rooms);
+    setSel(null); setDrawStart(null); setShowProps(false);
+    pushH();
+  };
+
+  /* ── add furniture ── */
+  const addFurn = (c: CatItem) => {
+    const center = s2w(cSize.w / 2, cSize.h / 2);
+    const nf: Furn = {
+      id: uid(), x: snap(center.x - c.w / 2, gridSnap), y: snap(center.y - c.h / 2, gridSnap),
+      w: c.w, h: c.h, rot: 0, typeId: c.id, label: isEn ? c.en : c.ar,
+    };
+    setFurns(prev => [...prev, nf]);
+    setSel({ type: 'furn', id: nf.id });
+    setTool('select'); setCatalogOpen(false); pushH();
+  };
+
+  /* ── selected actions ── */
+  const deleteSel = () => {
+    if (!sel) return;
+    if (sel.type === 'wall') {
+      setWalls(p => p.filter(w => w.id !== sel.id));
+      setDoors(p => p.filter(d => d.wallId !== sel.id));
+      setWins(p => p.filter(w => w.wallId !== sel.id));
+    } else if (sel.type === 'door') setDoors(p => p.filter(d => d.id !== sel.id));
+    else if (sel.type === 'win') setWins(p => p.filter(w => w.id !== sel.id));
+    else if (sel.type === 'furn') setFurns(p => p.filter(f2 => f2.id !== sel.id));
+    setSel(null); setShowProps(false); pushH();
+  };
+
+  const rotateSel = () => {
+    if (sel?.type === 'furn') {
+      setFurns(p => p.map(it => it.id === sel.id ? { ...it, rot: (it.rot + 90) % 360, w: it.h, h: it.w } : it));
+      pushH();
+    }
+  };
+
+  const flipDoor = () => {
+    if (sel?.type === 'door') {
+      setDoors(p => p.map(d => d.id === sel.id ? { ...d, flipSide: !d.flipSide } : d));
+      pushH();
+    }
+  };
+
+  const flipDoorSwing = () => {
+    if (sel?.type === 'door') {
+      setDoors(p => p.map(d => d.id === sel.id ? { ...d, flipSwing: !d.flipSwing } : d));
+      pushH();
+    }
+  };
+
+  const updateDoorWidth = (w: number) => {
+    if (sel?.type === 'door') {
+      setDoors(p => p.map(d => d.id === sel.id ? { ...d, width: w } : d));
+      setEditDoorWidth(w);
+      pushH();
+    }
+  };
+
+  const clearAll = () => {
+    setWalls([]); setDoors([]); setWins([]); setFurns([]); setRooms([]);
+    setSel(null); setDrawStart(null); setShowProps(false);
+  };
+
+  /* ── tool list ── */
+  const TOOLS: { id: Tool; icon: string; ar: string; en: string }[] = [
+    { id: 'select', icon: '👆', ar: 'تحديد', en: 'Select' },
+    { id: 'wall', icon: '🧱', ar: 'جدار', en: 'Wall' },
+    { id: 'door', icon: '🚪', ar: 'باب', en: 'Door' },
+    { id: 'window', icon: '🪟', ar: 'نافذة', en: 'Window' },
+    { id: 'pan', icon: '✋', ar: 'تحريك', en: 'Pan' },
+    { id: 'erase', icon: '🗑️', ar: 'مسح', en: 'Erase' },
+  ];
+
+  /* selected item info for floating toolbar */
+  const selScreenPos = useCallback((): Pt | null => {
+    if (!sel) return null;
+    if (sel.type === 'wall') {
+      const w = walls.find(ww => ww.id === sel.id);
+      if (!w) return null;
+      return w2s({ x: (w.p1.x + w.p2.x) / 2, y: Math.min(w.p1.y, w.p2.y) - 500 });
+    }
+    if (sel.type === 'door') {
+      const d = doors.find(dd => dd.id === sel.id);
+      if (!d) return null;
+      const w = walls.find(ww => ww.id === d.wallId);
+      if (!w) return null;
+      const cx = lerp(w.p1.x, w.p2.x, d.pos);
+      const cy = lerp(w.p1.y, w.p2.y, d.pos);
+      return w2s({ x: cx, y: cy - 600 });
+    }
+    if (sel.type === 'win') {
+      const wi = wins.find(ww => ww.id === sel.id);
+      if (!wi) return null;
+      const w = walls.find(ww => ww.id === wi.wallId);
+      if (!w) return null;
+      const cx = lerp(w.p1.x, w.p2.x, wi.pos);
+      const cy = lerp(w.p1.y, w.p2.y, wi.pos);
+      return w2s({ x: cx, y: cy - 600 });
+    }
+    if (sel.type === 'furn') {
+      const it = furns.find(ff => ff.id === sel.id);
+      if (!it) return null;
+      return w2s({ x: it.x + it.w / 2, y: it.y - 300 });
+    }
+    return null;
+  }, [sel, walls, doors, wins, furns, w2s]);
 
   return (
-    <SimpleToolShell
-      title={isEn ? '2D Floor Plan Designer' : 'مصمم المخططات ثنائية الأبعاد'}
-      subtitle={isEn ? 'Draw rooms, walls & furniture' : 'ارسم الغرف والجدران والأثاث'}
-      onBack={onBack}
-      icon="✏️"
-      gradientFrom="#6366F1"
-      gradientTo="#3B82F6"
-      backLabel={isEn ? 'Back' : 'رجوع'}
-    >
-      <div className="space-y-4 p-4" dir="rtl">
-        {/* Presets */}
-        <div>
-          <label className="text-xs font-bold text-[#1F3D2B]/70 mb-2 block" style={{ fontFamily: fontCairo }}>
-            {isEn ? 'Quick Templates' : 'قوالب جاهزة'}
-          </label>
-          <div className="flex gap-2 flex-wrap">
-            {PRESETS.map(p => (
-              <button key={p.id} onClick={() => loadPreset(p)}
-                className="bg-white border border-gray-200 px-3 py-2 rounded-xl text-xs font-bold text-[#1F3D2B] hover:bg-indigo-50 hover:border-indigo-300 transition-all"
-                style={{ fontFamily: fontCairo }}>
-                {isEn ? p.en : p.ar}
-              </button>
-            ))}
-          </div>
+    <div className="fixed inset-0 bg-[#F5F5F5] flex flex-col z-50" dir="rtl">
+      {/* ═══ HEADER ═══ */}
+      <div className="bg-white border-b border-gray-200 px-3 py-2 flex items-center justify-between shrink-0"
+        style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
+        <div className="flex items-center gap-2">
+          <button onClick={onBack} className="p-1.5 hover:bg-gray-100 rounded-lg"><ArrowRight className="w-5 h-5 text-[#4A5A6A]" /></button>
+          <h1 className="text-[#1F3D2B] text-sm font-bold" style={{ fontFamily: f }}>{isEn ? '2D Floor Plan' : 'مخطط ثنائي الأبعاد'}</h1>
         </div>
-
-        {/* Tool Mode */}
-        <div className="flex gap-2">
-          {([
-            { id: 'draw' as ToolMode, icon: '✏️', ar: 'رسم', en: 'Draw' },
-            { id: 'select' as ToolMode, icon: '👆', ar: 'تحديد', en: 'Select' },
-            { id: 'erase' as ToolMode, icon: '🗑️', ar: 'مسح', en: 'Erase' },
-          ]).map(m => (
-            <button key={m.id} onClick={() => setToolMode(m.id)}
-              className={`flex-1 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-                toolMode === m.id ? 'bg-indigo-500 text-white shadow-md' : 'bg-white border border-gray-200 text-[#1F3D2B]'
-              }`} style={{ fontFamily: fontCairo }}>
-              <span>{m.icon}</span> {isEn ? m.en : m.ar}
-            </button>
-          ))}
-        </div>
-
-        {/* Shape Type */}
-        {toolMode === 'draw' && (
-          <div className="flex gap-2">
-            {([
-              { id: 'rect' as ShapeType, icon: '▪️', ar: 'مستطيل', en: 'Rect' },
-              { id: 'circle' as ShapeType, icon: '⚪', ar: 'دائرة', en: 'Circle' },
-              { id: 'wall' as ShapeType, icon: '🧱', ar: 'جدار', en: 'Wall' },
-              { id: 'line' as ShapeType, icon: '📏', ar: 'خط', en: 'Line' },
-            ]).map(s => (
-              <button key={s.id} onClick={() => setCurrentShape(s.id)}
-                className={`flex-1 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 transition-all ${
-                  currentShape === s.id ? 'bg-[#2AA676] text-white shadow-md' : 'bg-white border border-gray-200 text-[#1F3D2B]'
-                }`} style={{ fontFamily: fontCairo }}>
-                <span className="text-sm">{s.icon}</span> {isEn ? s.en : s.ar}
-              </button>
-            ))}
+        <div className="flex items-center gap-1.5">
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            <span className="bg-white shadow-sm text-[#E74C3C] px-2 py-0.5 rounded text-[10px] font-bold" style={{ fontFamily: f }}>2D</span>
+            <span className="text-gray-400 px-2 py-0.5 rounded text-[10px] font-bold" style={{ fontFamily: f }}>3D</span>
           </div>
-        )}
-
-        {/* Colors */}
-        {toolMode === 'draw' && (
-          <div className="flex gap-1.5 flex-wrap">
-            {COLORS.map(c => (
-              <button key={c} onClick={() => setCurrentColor(c)}
-                className={`w-8 h-8 rounded-lg transition-all ${currentColor === c ? 'ring-2 ring-offset-2 ring-indigo-500 scale-110' : ''}`}
-                style={{ backgroundColor: c }} />
-            ))}
-          </div>
-        )}
-
-        {/* Canvas */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <canvas
-            ref={canvasRef}
-            width={300}
-            height={240}
-            className="w-full touch-none cursor-crosshair"
-            style={{ imageRendering: 'crisp-edges' }}
-            onMouseDown={handlePointerDown}
-            onMouseUp={handlePointerUp}
-            onTouchStart={handlePointerDown}
-            onTouchEnd={handlePointerUp}
-          />
-        </div>
-
-        {/* Actions */}
-        <div className="flex gap-2">
-          <button onClick={() => setGridVisible(v => !v)}
-            className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${gridVisible ? 'bg-gray-200 text-[#1F3D2B]' : 'bg-white border border-gray-200 text-gray-400'}`}
-            style={{ fontFamily: fontCairo }}>
-            {isEn ? 'Grid' : 'شبكة'} {gridVisible ? '✓' : ''}
+          <span className="bg-gray-100 text-[10px] font-bold px-2 py-1 rounded-lg text-[#4A5A6A]" style={{ fontFamily: f }}>1F</span>
+          <button onClick={() => setShowHelp(h => !h)} className="p-1 hover:bg-gray-100 rounded-lg">
+            <HelpCircle className="w-4 h-4 text-gray-400" />
           </button>
-          {selectedId && (
-            <button onClick={deleteSelected}
-              className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-red-50 text-red-600 border border-red-200"
-              style={{ fontFamily: fontCairo }}>
-              {isEn ? 'Delete Selected' : 'حذف المحدد'}
-            </button>
-          )}
-          <button onClick={clearAll}
-            className="flex-1 py-2.5 rounded-xl text-xs font-bold bg-white border border-gray-200 text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all"
-            style={{ fontFamily: fontCairo }}>
-            {isEn ? 'Clear All' : 'مسح الكل'}
-          </button>
-        </div>
-
-        {/* Info */}
-        <div className="bg-indigo-50 rounded-xl p-3 text-xs text-indigo-700" style={{ fontFamily: fontCairo }}>
-          {isEn
-            ? `${shapes.length} shapes on canvas. Draw by dragging on the canvas.`
-            : `${shapes.length} عنصر على اللوحة. ارسم بالسحب على الشاشة.`}
         </div>
       </div>
-    </SimpleToolShell>
+
+      {/* ═══ TEMPLATES ═══ */}
+      <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-3 py-1.5 flex gap-2 overflow-x-auto shrink-0">
+        {TPLS.map(t => (
+          <button key={t.id} onClick={() => loadTpl(t)}
+            className="whitespace-nowrap bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-bold text-[#1F3D2B] hover:border-[#2AA676] hover:bg-green-50 shrink-0"
+            style={{ fontFamily: f }}>{isEn ? t.en : t.ar}</button>
+        ))}
+        <button onClick={clearAll} className="whitespace-nowrap bg-red-50 border border-red-200 px-3 py-1 rounded-lg text-[10px] font-bold text-red-500 shrink-0"
+          style={{ fontFamily: f }}>{isEn ? 'Clear All' : 'مسح الكل'}</button>
+      </div>
+
+      {/* ═══ TOOL BAR ═══ */}
+      <div className="bg-white/90 backdrop-blur-sm border-b border-gray-100 px-2 py-1 flex gap-1 shrink-0 overflow-x-auto">
+        {TOOLS.map(t => (
+          <button key={t.id} onClick={() => { setTool(t.id); if (t.id !== 'wall') setDrawStart(null); }}
+            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap shrink-0 transition-all ${
+              tool === t.id ? 'bg-[#2AA676] text-white shadow-md' : 'bg-gray-50 text-[#4A5A6A] border border-gray-200'
+            }`} style={{ fontFamily: f }}>
+            <span className="text-sm">{t.icon}</span>{isEn ? t.en : t.ar}
+          </button>
+        ))}
+        {tool === 'wall' && (
+          <div className="flex items-center gap-1 px-1.5 shrink-0">
+            <span className="text-[9px] text-gray-400" style={{ fontFamily: f }}>{isEn ? 'T:' : 'س:'}</span>
+            <select value={wallThick} onChange={e => setWallThick(+e.target.value)}
+              className="text-[10px] bg-gray-50 border border-gray-200 rounded px-1 py-0.5 text-[#1F3D2B] font-bold">
+              {[100, 150, 200, 250, 300].map(v => <option key={v} value={v}>{v}mm</option>)}
+            </select>
+          </div>
+        )}
+        {drawStart && (
+          <button onClick={() => setDrawStart(null)}
+            className="px-2 py-1.5 bg-red-50 text-red-500 border border-red-200 rounded-lg text-[10px] font-bold whitespace-nowrap shrink-0"
+            style={{ fontFamily: f }}>{isEn ? 'End' : 'إنهاء'}</button>
+        )}
+      </div>
+
+      {/* ═══ CANVAS ═══ */}
+      <div ref={boxRef} className="flex-1 relative overflow-hidden touch-none"
+        style={{ cursor: tool === 'pan' ? (isPan ? 'grabbing' : 'grab') : tool === 'wall' ? 'crosshair' : tool === 'erase' ? 'not-allowed' : 'default' }}>
+        <canvas ref={canvasRef}
+          width={cSize.w * (window.devicePixelRatio || 1)}
+          height={cSize.h * (window.devicePixelRatio || 1)}
+          style={{ width: cSize.w, height: cSize.h }}
+          onMouseDown={onDown} onMouseMove={onMove} onMouseUp={onUp} onMouseLeave={onUp}
+          onTouchStart={onDown} onTouchMove={onTouchMove2} onTouchEnd={onTouchEnd2}
+        />
+
+        {/* ─── Side buttons ─── */}
+        <div className="absolute left-2 top-2 flex flex-col gap-1">
+          <button onClick={zoomIn} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><ZoomIn className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={zoomOut} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><ZoomOut className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={resetView} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Maximize2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <div className="h-px bg-gray-200 mx-0.5 my-0.5" />
+          <button onClick={() => setShowGrid(g => !g)} className={`w-8 h-8 rounded-xl shadow border flex items-center justify-center ${showGrid ? 'bg-[#2AA676] border-[#2AA676] text-white' : 'bg-white border-gray-200 text-[#4A5A6A]'}`}><Grid3X3 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setShowDims(d => !d)} className={`w-8 h-8 rounded-xl shadow border flex items-center justify-center ${showDims ? 'bg-[#2AA676] border-[#2AA676] text-white' : 'bg-white border-gray-200 text-[#4A5A6A]'}`}><Eye className="w-3.5 h-3.5" /></button>
+        </div>
+
+        {/* undo / redo */}
+        <div className="absolute left-2 bottom-2 flex flex-col gap-1">
+          <button onClick={undo} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Undo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={redo} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Redo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+        </div>
+
+        {/* ── Floating toolbar on selection ── */}
+        {sel && (() => {
+          const sp = selScreenPos();
+          if (!sp) return null;
+          const x = Math.max(40, Math.min(cSize.w - 140, sp.x - 70));
+          const y = Math.max(8, Math.min(cSize.h - 50, sp.y));
+          return (
+            <div className="absolute z-30 flex items-center gap-0.5 bg-white rounded-xl shadow-lg border border-gray-200 px-1 py-0.5"
+              style={{ left: x, top: y }}>
+              {sel.type === 'door' && (
+                <>
+                  <button onClick={flipDoor} className="p-1.5 hover:bg-gray-100 rounded-lg" title={isEn ? 'Flip side' : 'عكس الجانب'}>
+                    <SlidersHorizontal className="w-3.5 h-3.5 text-[#4A5A6A]" />
+                  </button>
+                  <button onClick={flipDoorSwing} className="p-1.5 hover:bg-gray-100 rounded-lg" title={isEn ? 'Flip swing' : 'عكس الفتح'}>
+                    <RotateCcw className="w-3.5 h-3.5 text-[#4A5A6A]" />
+                  </button>
+                </>
+              )}
+              {sel.type === 'furn' && (
+                <button onClick={rotateSel} className="p-1.5 hover:bg-gray-100 rounded-lg" title={isEn ? 'Rotate' : 'تدوير'}>
+                  <RotateCcw className="w-3.5 h-3.5 text-blue-500" />
+                </button>
+              )}
+              <button onClick={() => setShowProps(p2 => !p2)} className="p-1.5 hover:bg-gray-100 rounded-lg" title={isEn ? 'Properties' : 'خصائص'}>
+                <Ruler className="w-3.5 h-3.5 text-[#4A5A6A]" />
+              </button>
+              <button onClick={() => {}} className="p-1.5 hover:bg-gray-100 rounded-lg" title={isEn ? 'Edit' : 'تعديل'}>
+                <Pencil className="w-3.5 h-3.5 text-[#4A5A6A]" />
+              </button>
+              <button onClick={deleteSel} className="p-1.5 hover:bg-red-50 rounded-lg" title={isEn ? 'Delete' : 'حذف'}>
+                <Trash2 className="w-3.5 h-3.5 text-red-500" />
+              </button>
+              <button className="p-1.5 hover:bg-gray-100 rounded-lg">
+                <MoreHorizontal className="w-3.5 h-3.5 text-[#4A5A6A]" />
+              </button>
+            </div>
+          );
+        })()}
+
+        {/* properties panel */}
+        <AnimatePresence>
+          {showProps && sel && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+              className="absolute right-2 top-2 bg-white rounded-xl shadow-lg border border-gray-200 p-3 w-44 z-30 space-y-2"
+            >
+              <h4 className="text-[10px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>
+                {sel.type === 'wall' ? (isEn ? 'Wall Properties' : 'خصائص الجدار') :
+                 sel.type === 'door' ? (isEn ? 'Door Properties' : 'خصائص الباب') :
+                 sel.type === 'win' ? (isEn ? 'Window Properties' : 'خصائص النافذة') :
+                 (isEn ? 'Furniture' : 'أثاث')}
+              </h4>
+
+              {sel.type === 'wall' && (() => {
+                const w = walls.find(ww => ww.id === sel.id);
+                if (!w) return null;
+                const v = wallVec(w);
+                return (
+                  <div className="space-y-1.5 text-[9px] text-gray-600" style={{ fontFamily: f }}>
+                    <p>{isEn ? 'Length' : 'الطول'}: <strong>{Math.round(v.len)} mm</strong></p>
+                    <p>{isEn ? 'Inner' : 'داخلي'}: <strong>{Math.round(v.len - w.thickness)} mm</strong></p>
+                    <p>{isEn ? 'Thickness' : 'السماكة'}: <strong>{w.thickness} mm</strong></p>
+                    <p>{isEn ? 'Angle' : 'الزاوية'}: <strong>{Math.round((Math.atan2(v.dy, v.dx) * 180 / Math.PI + 360) % 360)}°</strong></p>
+                  </div>
+                );
+              })()}
+
+              {sel.type === 'door' && (() => {
+                const d = doors.find(dd => dd.id === sel.id);
+                if (!d) return null;
+                return (
+                  <div className="space-y-2" style={{ fontFamily: f }}>
+                    <div>
+                      <label className="text-[9px] text-gray-500 block mb-0.5">{isEn ? 'Width' : 'العرض'}</label>
+                      <div className="flex gap-1">
+                        {[700, 800, 900, 1000, 1200].map(w2 => (
+                          <button key={w2} onClick={() => updateDoorWidth(w2)}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${d.width === w2 ? 'bg-[#2AA676] text-white' : 'bg-gray-100 text-gray-600'}`}>
+                            {w2}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <button onClick={flipDoor} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                        {isEn ? 'Flip Side' : 'عكس الجانب'}
+                      </button>
+                      <button onClick={flipDoorSwing} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                        {isEn ? 'Flip Swing' : 'عكس الفتح'}
+                      </button>
+                    </div>
+                    <p className="text-[8px] text-gray-400">{isEn ? 'Drag the door along the wall to move it' : 'اسحب الباب على الجدار لتحريكه'}</p>
+                  </div>
+                );
+              })()}
+
+              {sel.type === 'win' && (() => {
+                const wi = wins.find(ww => ww.id === sel.id);
+                if (!wi) return null;
+                return (
+                  <div className="space-y-2" style={{ fontFamily: f }}>
+                    <div>
+                      <label className="text-[9px] text-gray-500 block mb-0.5">{isEn ? 'Width' : 'العرض'}</label>
+                      <div className="flex gap-1">
+                        {[800, 1000, 1200, 1500, 2000].map(w2 => (
+                          <button key={w2} onClick={() => { setWins(p => p.map(w3 => w3.id === sel.id ? { ...w3, width: w2 } : w3)); pushH(); }}
+                            className={`px-1.5 py-0.5 rounded text-[8px] font-bold ${wi.width === w2 ? 'bg-[#3498DB] text-white' : 'bg-gray-100 text-gray-600'}`}>
+                            {w2}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-[8px] text-gray-400">{isEn ? 'Drag the window along the wall' : 'اسحب النافذة على الجدار لتحريكها'}</p>
+                  </div>
+                );
+              })()}
+
+              <button onClick={() => setShowProps(false)} className="w-full py-1 bg-gray-100 rounded-lg text-[9px] font-bold text-gray-500" style={{ fontFamily: f }}>
+                {isEn ? 'Close' : 'إغلاق'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Help overlay */}
+        <AnimatePresence>
+          {showHelp && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 z-40 flex items-center justify-center p-4"
+              onClick={() => setShowHelp(false)}>
+              <div className="bg-white rounded-2xl p-5 max-w-xs text-right space-y-2" onClick={e => e.stopPropagation()}>
+                <h3 className="text-sm font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>{isEn ? 'How to Use' : 'كيفية الاستخدام'}</h3>
+                <div className="text-[10px] text-gray-600 space-y-1" style={{ fontFamily: f }}>
+                  <p>🧱 {isEn ? 'Wall: tap start point → tap end point. Chain walls by continuing.' : 'جدار: انقر نقطة البداية ← انقر نقطة النهاية. تسلسل الجدران بالاستمرار.'}</p>
+                  <p>🚪 {isEn ? 'Door: select tool → tap on a wall. Use Select to drag it.' : 'باب: اختر الأداة ← انقر على جدار. استخدم التحديد لسحبه.'}</p>
+                  <p>🪟 {isEn ? 'Window: select tool → tap on a wall. Drag to move.' : 'نافذة: اختر الأداة ← انقر على جدار. اسحب للتحريك.'}</p>
+                  <p>👆 {isEn ? 'Select: tap element → floating toolbar appears. Drag doors/windows along walls.' : 'تحديد: انقر على عنصر ← يظهر شريط أدوات عائم. اسحب الأبواب/النوافذ على الجدران.'}</p>
+                  <p>✋ {isEn ? 'Pan: drag canvas. Pinch to zoom.' : 'تحريك: اسحب اللوحة. ضم الأصابع للتكبير.'}</p>
+                  <p>📐 {isEn ? 'Dimensions: outer (gray) + inner (blue) auto-displayed.' : 'الأبعاد: خارجية (رمادي) + داخلية (أزرق) تظهر تلقائياً.'}</p>
+                </div>
+                <button onClick={() => setShowHelp(false)} className="w-full py-1.5 bg-[#2AA676] text-white rounded-xl text-[11px] font-bold" style={{ fontFamily: f }}>
+                  {isEn ? 'Got it!' : 'فهمت!'}
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* status bar */}
+        <div className="absolute right-2 bottom-2 bg-white/90 rounded-lg px-2 py-1 shadow-sm border border-gray-200">
+          <span className="text-[8px] text-[#7B8794] font-bold" style={{ fontFamily: f }}>
+            {walls.length}W {doors.length}D {wins.length}Win {furns.length}F | {Math.round(zoom * 1000)}%
+          </span>
+        </div>
+      </div>
+
+      {/* ═══ CATALOG ═══ */}
+      <div className="shrink-0 bg-white border-t border-gray-200" style={{ paddingBottom: 'max(0rem, env(safe-area-inset-bottom))' }}>
+        <button onClick={() => setCatalogOpen(o => !o)}
+          className="w-full flex items-center justify-center gap-2 py-1.5 text-[#4A5A6A] hover:bg-gray-50">
+          <span className="w-8 h-1 bg-gray-300 rounded-full" />
+          <span className="text-[10px] font-bold" style={{ fontFamily: f }}>{isEn ? 'Furniture Catalog' : 'كتالوج الأثاث'}</span>
+          {catalogOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronUp className="w-3.5 h-3.5" />}
+        </button>
+        <AnimatePresence>
+          {catalogOpen && (
+            <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+              <div className="flex gap-1 px-3 pb-1.5 overflow-x-auto">
+                {CATS.map(c => (
+                  <button key={c.id} onClick={() => setCatalogCat(c.id)}
+                    className={`whitespace-nowrap px-2.5 py-0.5 rounded-full text-[9px] font-bold shrink-0 ${catalogCat === c.id ? 'bg-[#2AA676] text-white' : 'bg-gray-100 text-[#4A5A6A]'}`}
+                    style={{ fontFamily: f }}>{isEn ? c.en : c.ar}</button>
+                ))}
+              </div>
+              <div className="grid grid-cols-4 gap-1.5 px-3 pb-3 max-h-36 overflow-y-auto">
+                {CATALOG.filter(c => c.cat === catalogCat).map(item => (
+                  <button key={item.id} onClick={() => addFurn(item)}
+                    className="bg-gray-50 border border-gray-200 rounded-xl p-1.5 flex flex-col items-center gap-0.5 hover:border-[#2AA676] hover:bg-green-50 active:scale-95 transition-all">
+                    <span className="text-lg">{item.icon}</span>
+                    <span className="text-[8px] font-bold text-[#4A5A6A] leading-tight text-center line-clamp-2" style={{ fontFamily: f }}>
+                      {isEn ? item.en : item.ar}
+                    </span>
+                    <span className="text-[7px] text-gray-400">{item.w / 10}×{item.h / 10}</span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </div>
   );
 }
