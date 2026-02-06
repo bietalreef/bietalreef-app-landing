@@ -8,7 +8,10 @@ export function OrderTracking() {
   const { selectedOrder, setCurrentView } = useShopStore();
   const { language, textAlign } = useTranslation('store');
   const isEn = language === 'en';
-  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const fontFamily = 'Cairo, sans-serif';
+  const fw6: React.CSSProperties = { fontFamily, fontWeight: 600 };
+  const fw7: React.CSSProperties = { fontFamily, fontWeight: 700 };
+  const fw8: React.CSSProperties = { fontFamily, fontWeight: 800 };
 
   if (!selectedOrder) return null;
 

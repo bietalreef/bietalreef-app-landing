@@ -1,7 +1,7 @@
 import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
 import { useUser } from '../utils/UserContext';
 import { checkPolicy, LegacyPolicyResult } from '../utils/uiPolicy';
-import { toast } from 'sonner';
 
 export function usePermissionGuard() {
   const { profile } = useUser();

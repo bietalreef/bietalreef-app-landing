@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router';
 import { TopNav } from '../mobile/TopNav';
 import { SideDrawer } from '../mobile/SideDrawer';
-import { WeyaakBubble } from '../WeyaakBubble';
 import { FullSearchScreen } from '../mobile/FullSearchScreen';
 import { NotificationsCenter } from '../mobile/NotificationsCenter';
+import { FooterDirectory } from '../seo/FooterDirectory';
 import { useSearchStore } from '../../stores/search-store';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { X } from 'lucide-react';
@@ -47,6 +47,13 @@ export function BrowserLayout() {
   const { language } = useTranslation('common');
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const mainRef = useRef<HTMLElement>(null);
+
+  // ── Scroll to top on route change ──
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0 });
+    mainRef.current?.scrollTo({ top: 0, left: 0 });
+  }, [location.pathname]);
 
   const handleNavigate = (route: string) => {
     console.log("Navigating to:", route);
@@ -74,7 +81,7 @@ export function BrowserLayout() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white flex flex-col">
+    <div className="relative w-full min-h-screen bg-[#F5EEE1] flex flex-col">
       {/* Side Drawer */}
       <SideDrawer 
         isOpen={isSideDrawerOpen}
@@ -122,12 +129,11 @@ export function BrowserLayout() {
       )}
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto">
+      <main ref={mainRef} className="flex-1">
         <Outlet />
-      </div>
-
-      {/* Weyaak AI Bubble */}
-      <WeyaakBubble position="fixed" />
+        {/* Footer SEO Directory — crawlable internal links */}
+        <FooterDirectory />
+      </main>
 
       {/* Search Screen Overlay */}
       {isSearchOpen && (

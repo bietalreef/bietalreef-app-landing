@@ -1,7 +1,7 @@
+import { toast } from 'sonner@2.0.3';
 import { useState, useCallback, useRef } from 'react';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { X, MapPin, Check } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface LocationPickerProps {
   isOpen: boolean;

@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
 import { Star, Heart, CheckCircle, Users, Sparkles, Droplets, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check, Wrench, ShowerHead } from 'lucide-react';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
 import { usePermissionGuard } from '../../hooks/usePermissionGuard';
 import { AccessModal } from '../ui/AccessModal';
-import { toast } from 'sonner';
+import { IDCopyBox } from './IDCopyBox';
+import { ProvidersTabContent } from './ProviderProfileCard';
+import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 
 interface ServiceDetailPlumbingProps {
   onBack: () => void;
@@ -121,7 +124,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
       availability: 'online',
       responseTime: '5 دقائق',
       projectsCount: 1234,
-      image: 'https://i.pravatar.cc/400?img=18',
+      image: 'https://images.unsplash.com/photo-1635221798248-8a3452ad07cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['تسريبات', 'تسليك', 'تركيب']
     },
     {
@@ -134,7 +137,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
       availability: 'online',
       responseTime: '10 دقائق',
       projectsCount: 987,
-      image: 'https://i.pravatar.cc/400?img=27',
+      image: 'https://images.unsplash.com/photo-1560072362-53f3810f8b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['صيانة', 'فلاتر', 'سخانات']
     },
     {
@@ -147,7 +150,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
       availability: 'busy',
       responseTime: '20 دقيقة',
       projectsCount: 756,
-      image: 'https://i.pravatar.cc/400?img=39',
+      image: 'https://images.unsplash.com/photo-1748640857973-93524ef0fe7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['كشف', 'إصلاح', 'طوارئ']
     }
   ];
@@ -343,7 +346,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
             }`}
             style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}
           >
-            الم��ودون
+            المودون
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
@@ -572,89 +575,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
 
         {/* TAB 2: المزودون */}
         {activeTab === 'providers' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '20px' }}>
-                أفضل مزودي السباكة
-              </h3>
-              <span className="bg-gradient-to-r from-[#56CCF2] to-[#2F80ED] text-white px-4 py-2 rounded-full text-xs shadow-md" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                {topProviders.length} مزود
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {topProviders.map((provider) => (
-                <div
-                  key={provider.id}
-                  onClick={() => handleContactProvider(provider.name)}
-                  className="relative bg-white rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all border-2 border-[#F5EEE1] cursor-pointer"
-                >
-                  <div className="flex">
-                    <div className="flex flex-col w-[140px] flex-shrink-0">
-                      <div className="relative w-[140px] h-[120px] overflow-hidden">
-                        <ImageWithFallback 
-                          src={provider.image}
-                          alt={provider.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className={`absolute top-2 left-2 w-3 h-3 ${getAvailabilityColor(provider.availability)} rounded-full shadow-lg animate-pulse`} />
-                        <div className="absolute bottom-2 left-2 right-2">
-                          <div className="bg-white/95 backdrop-blur-sm rounded-[10px] px-2 py-1 text-center">
-                            <p className="text-[#1A1A1A] text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                              {getAvailabilityLabel(provider.availability)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-gradient-to-br from-[#F5EEE1] to-white p-3 flex flex-col items-center justify-center border-t-2 border-white flex-1">
-                        <p className="text-[#2F80ED] text-lg font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                          {provider.price}
-                        </p>
-                        <p className="text-[#1A1A1A]/50 text-xs font-semibold">درهم / زيارة</p>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 p-4 flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-[#1A1A1A] leading-tight" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
-                            {provider.name}
-                          </h4>
-                          <div className="flex items-center gap-1 bg-[#F5EEE1] px-2 py-0.5 rounded-full">
-                            <Star className="w-3 h-3 fill-[#F2C94C] text-[#F2C94C]" />
-                            <span className="text-[#1A1A1A] text-xs font-bold">{provider.rating}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-wrap gap-2 mb-3">
-                          {provider.specialties.map((spec, i) => (
-                            <span key={i} className="text-[10px] bg-[#56CCF2]/10 text-[#2F80ED] px-2 py-0.5 rounded-full font-semibold">
-                              {spec}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between text-xs text-[#1A1A1A]/60 font-medium">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3 h-3" />
-                          <span>{provider.distance}</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-green-500" />
-                          <span>{provider.projectsCount} مشروع</span>
-                        </div>
-                      </div>
-                      
-                      <button className="w-full mt-3 bg-[#1A1A1A] text-white py-2 rounded-[12px] text-xs font-bold hover:bg-[#333] transition-colors">
-                        تواصل الآن
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ProvidersTabContent />
         )}
 
         {/* TAB 3: التقييمات */}
@@ -717,6 +638,7 @@ export function ServiceDetailPlumbing({ onBack, onOpenSearch }: ServiceDetailPlu
       </div>
 
       <div className="h-8" />
+      <PlatformShowcaseBanner variant="mini" className="pb-6" />
     </div>
   );
 }

@@ -9,7 +9,10 @@ export function CartScreen() {
   const { cart, removeFromCart, updateQuantity, setCurrentView, clearCart } = useShopStore();
   const { language, textAlign } = useTranslation('store');
   const isEn = language === 'en';
-  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const fontFamily = 'Cairo, sans-serif';
+  const fw6: React.CSSProperties = { fontFamily, fontWeight: 600 };
+  const fw7: React.CSSProperties = { fontFamily, fontWeight: 700 };
+  const fw8: React.CSSProperties = { fontFamily, fontWeight: 800 };
   const currency = isEn ? 'AED' : 'د.إ';
   const [promoCode, setPromoCode] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
@@ -36,8 +39,8 @@ export function CartScreen() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="text-xl font-bold mb-2"
-          style={{ fontFamily, textAlign: 'center' }}
+          className="text-xl mb-2"
+          style={{ ...fw8, textAlign: 'center' }}
         >
           {isEn ? 'Your cart is empty' : 'سلة التسوق فارغة'}
         </motion.h2>
@@ -45,8 +48,8 @@ export function CartScreen() {
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-gray-500 text-sm text-center mb-8 max-w-xs"
-          style={{ fontFamily }}
+          className="text-gray-500 text-base text-center mb-8 max-w-xs"
+          style={fw6}
         >
           {isEn
             ? 'Explore our products and add items to your cart'
@@ -57,8 +60,8 @@ export function CartScreen() {
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.3 }}
           onClick={() => setCurrentView('home')}
-          className="bg-[#D4AF37] text-black font-bold px-8 py-3 rounded-xl hover:bg-[#B5952F] transition-colors"
-          style={{ fontFamily }}
+          className="bg-[#D4AF37] text-black px-8 py-3.5 rounded-xl hover:bg-[#B5952F] transition-colors text-base"
+          style={fw7}
         >
           {isEn ? 'Browse Products' : 'تصفح المنتجات'}
         </motion.button>
@@ -70,19 +73,19 @@ export function CartScreen() {
     <div className="flex flex-col h-full bg-[#1A1A1A] text-white overflow-y-auto" style={{ fontFamily }}>
       {/* Header */}
       <div className="p-4 flex items-center gap-4 sticky top-0 bg-[#1A1A1A]/95 backdrop-blur-md z-10 border-b border-white/5">
-        <button onClick={() => setCurrentView('home')} className="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+        <button onClick={() => setCurrentView('home')} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
           <ArrowRight className="w-5 h-5" />
         </button>
-        <h1 className="font-bold text-lg flex-1" style={{ fontFamily, textAlign }}>
+        <h1 className="text-xl flex-1" style={{ ...fw8, textAlign }}>
           {isEn ? 'Shopping Cart' : 'سلة التسوق'}
-          <span className="text-sm text-gray-500 font-normal mr-2">
+          <span className="text-sm text-gray-500 mr-2" style={fw6}>
             ({cartCount} {isEn ? 'items' : 'منتج'})
           </span>
         </h1>
         <button
           onClick={clearCart}
-          className="text-xs text-red-400 hover:text-red-300 transition-colors px-2 py-1"
-          style={{ fontFamily }}
+          className="text-sm text-red-400 hover:text-red-300 transition-colors px-2 py-1"
+          style={fw7}
         >
           {isEn ? 'Clear All' : 'مسح الكل'}
         </button>
@@ -106,10 +109,10 @@ export function CartScreen() {
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-between">
                 <div>
-                  <h3 className="font-bold text-sm truncate mb-1" style={{ fontFamily, textAlign }}>
+                  <h3 className="text-base truncate mb-1" style={{ ...fw7, textAlign }}>
                     {isEn ? (item.nameEn || item.name) : item.name}
                   </h3>
-                  <p className="text-xs text-gray-500" style={{ fontFamily, textAlign }}>
+                  <p className="text-sm text-gray-500" style={{ ...fw6, textAlign }}>
                     {isEn ? (item.categoryEn || item.category) : item.category}
                   </p>
                 </div>
@@ -135,7 +138,7 @@ export function CartScreen() {
                       <Plus className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <span className="font-bold text-[#D4AF37] text-sm" style={{ fontFamily }}>
+                  <span className="text-[#D4AF37] text-base" style={fw8}>
                     {(item.price * item.quantity).toLocaleString()} {currency}
                   </span>
                 </div>
@@ -179,41 +182,45 @@ export function CartScreen() {
 
         {/* Info Badges */}
         <div className="flex gap-3 overflow-x-auto py-2 no-scrollbar">
-          <div className="flex items-center gap-2 min-w-max text-xs text-gray-400 bg-[#252525] px-4 py-2.5 rounded-xl border border-white/5" style={{ fontFamily }}>
-            <Truck className="w-4 h-4 text-[#D4AF37]" />
+          <div className="flex items-center gap-2.5 min-w-max text-sm text-gray-400 bg-[#252525] px-4 py-3 rounded-xl border border-white/5" style={fw6}>
+            <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+              <Truck className="w-4 h-4 text-[#D4AF37]" />
+            </div>
             {subtotal > 500
               ? (isEn ? 'Free Delivery!' : 'توصيل مجاني!')
               : (isEn ? `${(500 - subtotal).toLocaleString()} AED for free delivery` : `${(500 - subtotal).toLocaleString()} د.إ للتوصيل المجاني`)}
           </div>
-          <div className="flex items-center gap-2 min-w-max text-xs text-gray-400 bg-[#252525] px-4 py-2.5 rounded-xl border border-white/5" style={{ fontFamily }}>
-            <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+          <div className="flex items-center gap-2.5 min-w-max text-sm text-gray-400 bg-[#252525] px-4 py-3 rounded-xl border border-white/5" style={fw6}>
+            <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+              <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+            </div>
             {isEn ? 'Secure Payment' : 'دفع آمن 100%'}
           </div>
         </div>
 
         {/* Price Summary */}
-        <div className="bg-[#252525] rounded-2xl p-4 border border-white/5 space-y-3">
-          <div className="flex justify-between text-sm text-gray-400" style={{ fontFamily }}>
+        <div className="bg-[#252525] rounded-2xl p-5 border border-white/5 space-y-3">
+          <div className="flex justify-between text-base text-gray-400" style={fw6}>
             <span>{isEn ? 'Subtotal' : 'المجموع الفرعي'}</span>
             <span>{subtotal.toLocaleString()} {currency}</span>
           </div>
           {promoApplied && (
-            <div className="flex justify-between text-sm text-green-400" style={{ fontFamily }}>
+            <div className="flex justify-between text-base text-green-400" style={fw6}>
               <span>{isEn ? 'Discount (10%)' : 'خصم (10%)'}</span>
               <span>-{discount.toLocaleString()} {currency}</span>
             </div>
           )}
-          <div className="flex justify-between text-sm text-gray-400" style={{ fontFamily }}>
+          <div className="flex justify-between text-base text-gray-400" style={fw6}>
             <span>{isEn ? 'VAT (5%)' : 'ضريبة القيمة المضافة (5%)'}</span>
             <span>{vat.toFixed(2)} {currency}</span>
           </div>
-          <div className="flex justify-between text-sm text-gray-400" style={{ fontFamily }}>
+          <div className="flex justify-between text-base text-gray-400" style={fw6}>
             <span>{isEn ? 'Delivery' : 'التوصيل'}</span>
             <span className={shipping === 0 ? 'text-green-400' : ''}>
               {shipping === 0 ? (isEn ? 'Free' : 'مجاني') : `${shipping} ${currency}`}
             </span>
           </div>
-          <div className="border-t border-white/10 pt-3 flex justify-between font-bold text-lg" style={{ fontFamily }}>
+          <div className="border-t border-white/10 pt-3 flex justify-between text-xl" style={fw8}>
             <span>{isEn ? 'Total' : 'الإجمالي'}</span>
             <span className="text-[#D4AF37]">{grandTotal.toFixed(2)} {currency}</span>
           </div>
@@ -225,11 +232,11 @@ export function CartScreen() {
         <motion.button
           whileTap={{ scale: 0.97 }}
           onClick={() => setCurrentView('checkout')}
-          className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black font-bold py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-[#D4AF37]/20 text-base"
-          style={{ fontFamily }}
+          className="w-full bg-gradient-to-r from-[#D4AF37] to-[#B5952F] text-black py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-[#D4AF37]/20 text-lg"
+          style={fw8}
         >
           <span>{isEn ? 'Continue to Checkout' : 'متابعة الشراء'}</span>
-          <span className="bg-black/20 px-3 py-1 rounded-lg text-sm">
+          <span className="bg-black/20 px-3.5 py-1.5 rounded-xl text-base" style={fw7}>
             {grandTotal.toFixed(2)} {currency}
           </span>
         </motion.button>

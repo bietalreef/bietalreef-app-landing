@@ -1,9 +1,9 @@
+import { toast } from 'sonner@2.0.3';
 import { useState, useEffect } from 'react';
 import { TrendingUp, Users, CheckCircle2, Clock, Plus, Lock, FolderOpen } from 'lucide-react';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useUser } from '../../utils/UserContext';
 import { checkPolicy } from '../../utils/uiPolicy';
-import { toast } from 'sonner';
 import { supabase } from '../../utils/supabase/client';
 
 interface ProjectsScreenProps {
@@ -97,12 +97,6 @@ export function ProjectsScreen({ onNavigate }: ProjectsScreenProps) {
       case 'pending': return t('statusPending');
       case 'completed': return t('statusCompleted');
       default: return status;
-    }
-  };
-
-  const handleBottomNavChange = (tab: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers') => {
-    if (onNavigate) {
-      onNavigate(tab);
     }
   };
 

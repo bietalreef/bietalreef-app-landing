@@ -1,8 +1,8 @@
+import { toast } from 'sonner@2.0.3';
 import { motion } from 'motion/react';
 import { CheckCircle2, XCircle, ShieldCheck, Crown, User, Star } from 'lucide-react';
 import { useUser } from '../utils/UserContext';
 import { useState } from 'react';
-import { toast } from 'sonner';
 
 interface PackageSelectionProps {
   onComplete: () => void;

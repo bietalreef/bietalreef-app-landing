@@ -3,6 +3,7 @@ import { Star, MapPin, Heart } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router';
+import { Sparkles, ChevronLeft, Crown, Shield, Video, FolderKanban, Wallet as WalletIcon } from 'lucide-react';
 
 interface ServicesContentProps {
   onServiceClick?: (serviceId: string) => void;
@@ -17,15 +18,15 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
 
   // 9 Services - Categories
   const services = [
-    { id: 'constructionContracting', name: t('constructionContracting'), icon: '🏗️', subsections: 4 },
-    { id: 'engineeringConsultation', name: t('engineeringConsultation'), icon: '📐', subsections: 4 },
-    { id: 'maintenance', name: t('maintenance'), icon: '🔧', subsections: 8 },
+    { id: 'construction-contracting', name: t('constructionContracting'), icon: '🏗️', subsections: 4 },
+    { id: 'engineering-consultation', name: t('engineeringConsultation'), icon: '📐', subsections: 4 },
+    { id: 'maintenance-companies', name: t('maintenance'), icon: '🔧', subsections: 8 },
     { id: 'craftsmen', name: t('craftsmen'), icon: '👷', subsections: 8 },
-    { id: 'workshops', name: t('workshops'), icon: '⚙️', subsections: 5 },
-    { id: 'equipmentRental', name: t('equipmentRental'), icon: '🚜', subsections: 3 },
-    { id: 'buildingMaterials', name: t('buildingMaterials'), icon: '🧱', subsections: 4 },
-    { id: 'furnitureDecor', name: t('furnitureDecor'), icon: '🛋️', subsections: 4 },
-    { id: 'cleaning', name: t('cleaning'), icon: '✨', subsections: 3 },
+    { id: 'workshops', name: t('workshops'), icon: '⚙', subsections: 5 },
+    { id: 'equipment-rental', name: t('equipmentRental'), icon: '🚜', subsections: 3 },
+    { id: 'building-materials', name: t('buildingMaterials'), icon: '🧱', subsections: 4 },
+    { id: 'furniture-stores', name: t('furnitureDecor'), icon: '🛋️', subsections: 4 },
+    { id: 'cleaning-services', name: t('cleaning'), icon: '✨', subsections: 3 },
   ];
 
   // Demo providers (bilingual) - profiles table not yet configured
@@ -34,7 +35,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       id: 'demo-srv-1',
       full_name: t('providers.ahmed.name'),
       specialty: t('providers.ahmed.service'),
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AhmedSrv',
+      avatar_url: 'https://images.unsplash.com/photo-1659353587484-a83a0ddf8aca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       is_verified: true,
       status: 'online',
       rating: 4.9,
@@ -45,7 +46,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       id: 'demo-srv-2',
       full_name: t('providers.alnoor.name'),
       specialty: t('providers.alnoor.service'),
-      avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=NE',
+      avatar_url: 'https://images.unsplash.com/photo-1606309028742-4039c7b625b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       is_verified: true,
       status: 'online',
       rating: 5.0,
@@ -56,7 +57,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       id: 'demo-srv-3',
       full_name: t('providers.khalid.name'),
       specialty: t('providers.khalid.service'),
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Khalid',
+      avatar_url: 'https://images.unsplash.com/photo-1748640857973-93524ef0fe7d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       is_verified: false,
       status: 'busy',
       rating: 4.7,
@@ -67,7 +68,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       id: 'demo-srv-4',
       full_name: t('providers.colors.name'),
       specialty: t('providers.colors.service'),
-      avatar_url: 'https://api.dicebear.com/7.x/initials/svg?seed=BC',
+      avatar_url: 'https://images.unsplash.com/photo-1651596082386-f83cfa746e64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       is_verified: true,
       status: 'online',
       rating: 4.8,
@@ -167,6 +168,51 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
             </button>
           ))}
         </div>
+      </div>
+
+      {/* PLATFORM SHOWCASE BANNER */}
+      <div className="px-5 pb-4">
+        <button
+          onClick={() => navigate('/platform')}
+          className="w-full bg-white rounded-3xl p-5 shadow-sm hover:shadow-lg transition-all group relative overflow-hidden border border-[#E6DCC8]"
+        >
+          {/* Glow effects */}
+          <div className="absolute top-0 left-0 w-24 h-24 bg-[#2AA676]/8 rounded-full blur-2xl group-hover:bg-[#2AA676]/12 transition-all" />
+          <div className="absolute bottom-0 right-0 w-20 h-20 bg-[#C8A86A]/8 rounded-full blur-2xl" />
+          
+          <div className="relative flex items-center gap-4">
+            {/* Icon cluster */}
+            <div className="flex-shrink-0">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-2xl flex items-center justify-center shadow-lg">
+                <div className="grid grid-cols-2 gap-1">
+                  <Video className="w-4 h-4 text-white/80" />
+                  <FolderKanban className="w-4 h-4 text-white/80" />
+                  <WalletIcon className="w-4 h-4 text-[#C8A86A]" />
+                  <Shield className="w-4 h-4 text-white/80" />
+                </div>
+              </div>
+            </div>
+
+            {/* Text */}
+            <div className="flex-1 text-right">
+              <div className="flex items-center gap-2 justify-end mb-1">
+                <Crown className="w-4 h-4 text-[#C8A86A]" />
+                <h3 className="text-[#1F3D2B] font-bold text-base" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                  {language === 'ar' ? 'اكتشف مميزات بيت الريف' : 'Explore Beit Al Reef Features'}
+                </h3>
+              </div>
+              <p className="text-[#1F3D2B]/50 text-xs leading-relaxed" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {language === 'ar' 
+                  ? 'AI Video Creator • إدارة مشاريع • مركز مالي • نظام توثيق وأكثر'
+                  : 'AI Video Creator • Project Management • Financial Center • Verification & more'
+                }
+              </p>
+            </div>
+
+            {/* Arrow */}
+            <ChevronLeft className="w-5 h-5 text-[#2AA676] flex-shrink-0 group-hover:-translate-x-1 transition-transform" />
+          </div>
+        </button>
       </div>
 
       {/* PROVIDER CARDS (Demo Data) */}

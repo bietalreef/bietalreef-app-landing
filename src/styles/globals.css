@@ -2,80 +2,144 @@
 
 :root {
   --font-size: 16px;
-  --background: #ffffff;
-  --foreground: oklch(0.145 0 0);
+  --background: #F5EEE1;
+  --foreground: #1F3D2B;
   --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: #030213;
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.95 0.0058 264.53);
-  --secondary-foreground: #030213;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --destructive: #d4183d;
+  --card-foreground: #1F3D2B;
+  --popover: #ffffff;
+  --popover-foreground: #1F3D2B;
+  --primary: #2AA676;
+  --primary-foreground: #ffffff;
+  --secondary: #F5EEE1;
+  --secondary-foreground: #1F3D2B;
+  --muted: #EDE5D5;
+  --muted-foreground: #6B7E73;
+  --accent: #EDE5D5;
+  --accent-foreground: #1F3D2B;
+  --destructive: #EF4444;
   --destructive-foreground: #ffffff;
-  --border: rgba(0, 0, 0, 0.1);
+  --border: rgba(31, 61, 43, 0.10);
   --input: transparent;
-  --input-background: #f3f3f5;
+  --input-background: #ffffff;
   --switch-background: #cbced4;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: oklch(0.708 0 0);
+  --ring: rgba(42, 166, 118, 0.40);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: #030213;
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #F5EEE1;
+  --sidebar-foreground: #1F3D2B;
+  --sidebar-primary: #2AA676;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #EDE5D5;
+  --sidebar-accent-foreground: #1F3D2B;
+  --sidebar-border: rgba(31, 61, 43, 0.08);
+  --sidebar-ring: rgba(42, 166, 118, 0.30);
+
+  /* ═══════════════════════════════════════════════
+     بيت الريف — الهوية الرملية ✨
+     Sandy Beige Brand Identity + iOS Glow Style
+     ═══════════════════════════════════════════════ */
+  --bait-bg:                #F5EEE1;
+  --bait-bg-alt:            #EFE7D8;
+  --bait-surface:           #ffffff;
+  --bait-surface-hover:     #FDFBF7;
+  --bait-surface-elevated:  #ffffff;
+  --bait-glass:             rgba(255, 255, 255, 0.85);
+  --bait-glass-border:      rgba(255, 255, 255, 0.60);
+  --bait-green:             #2AA676;
+  --bait-green-bright:      #34C68D;
+  --bait-green-light:       rgba(42, 166, 118, 0.10);
+  --bait-green-dark:        #1F3D2B;
+  --bait-gold:              #C8A86A;
+  --bait-gold-light:        rgba(200, 168, 106, 0.10);
+  --bait-text:              #1F3D2B;
+  --bait-text-secondary:    rgba(31, 61, 43, 0.60);
+  --bait-text-muted:        rgba(31, 61, 43, 0.40);
+  --bait-text-inverse:      #ffffff;
+  --bait-border:            rgba(31, 61, 43, 0.08);
+  --bait-border-strong:     rgba(31, 61, 43, 0.15);
+  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.04);
+  --bait-shadow-lg:         0 8px 24px rgba(0, 0, 0, 0.06);
+  --bait-input-bg:          #ffffff;
+  --bait-header-bg:         rgba(245, 238, 225, 0.85);
+  --bait-skeleton:          #E6DCC8;
+  --bait-badge-bg:          rgba(42, 166, 118, 0.10);
+  --bait-overlay:           rgba(0, 0, 0, 0.45);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --background: #F5EEE1;
+  --foreground: #1F3D2B;
+  --card: #ffffff;
+  --card-foreground: #1F3D2B;
+  --popover: #ffffff;
+  --popover-foreground: #1F3D2B;
+  --primary: #2AA676;
+  --primary-foreground: #ffffff;
+  --secondary: #F5EEE1;
+  --secondary-foreground: #1F3D2B;
+  --muted: #E6DCC8;
+  --muted-foreground: #6B7E73;
+  --accent: #E6DCC8;
+  --accent-foreground: #1F3D2B;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(31, 61, 43, 0.10);
+  --input: transparent;
+  --input-background: #ffffff;
+  --switch-background: #cbced4;
+  --ring: rgba(42, 166, 118, 0.40);
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.269 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #F5EEE1;
+  --sidebar-foreground: #1F3D2B;
+  --sidebar-primary: #2AA676;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #E6DCC8;
+  --sidebar-accent-foreground: #1F3D2B;
+  --sidebar-border: rgba(31, 61, 43, 0.10);
+  --sidebar-ring: rgba(42, 166, 118, 0.30);
+
+  /* ═══════════════════════════════════════════════
+     بيت الريف — الوضع الداكن (Dark = Current Look)
+     Warm Beige + Forest Green + Gold
+     ═══════════════════════════════════════════════ */
+  --bait-bg:                #F5EEE1;
+  --bait-bg-alt:            #FFF8F0;
+  --bait-surface:           #ffffff;
+  --bait-surface-hover:     #F8F5F0;
+  --bait-surface-elevated:  #ffffff;
+  --bait-glass:             rgba(255, 255, 255, 0.80);
+  --bait-glass-border:      rgba(255, 255, 255, 0.60);
+  --bait-green:             #2AA676;
+  --bait-green-bright:      #2AA676;
+  --bait-green-light:       rgba(42, 166, 118, 0.10);
+  --bait-green-dark:        #1F3D2B;
+  --bait-gold:              #C8A86A;
+  --bait-gold-light:        rgba(200, 168, 106, 0.10);
+  --bait-text:              #1F3D2B;
+  --bait-text-secondary:    rgba(31, 61, 43, 0.60);
+  --bait-text-muted:        rgba(31, 61, 43, 0.40);
+  --bait-text-inverse:      #ffffff;
+  --bait-border:            rgba(31, 61, 43, 0.10);
+  --bait-border-strong:     rgba(31, 61, 43, 0.20);
+  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.06);
+  --bait-shadow-lg:         0 10px 30px rgba(0, 0, 0, 0.08);
+  --bait-input-bg:          #ffffff;
+  --bait-header-bg:         rgba(255, 255, 255, 0.80);
+  --bait-skeleton:          #E6DCC8;
+  --bait-badge-bg:          rgba(255, 255, 255, 0.20);
+  --bait-overlay:           rgba(0, 0, 0, 0.50);
 }
 
 @theme inline {
@@ -316,4 +380,226 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+}
+
+/* ==========================================
+   Range Slider Styles (Tools Section)
+   ========================================== */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2AA676;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2AA676;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+  cursor: pointer;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   بيت الريف — Light Mode Global Auto-Overrides
+   
+   The app's hardcoded colors (#F5EEE1, #1F3D2B, #2AA676, #C8A86A)
+   represent the DARK (current) theme. In LIGHT mode, these CSS
+   rules transform them to a modern, clean design.
+   
+   Dark mode (.dark) = current look — NO overrides needed.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ─── Smooth theme transition ─── */
+html {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+/* Exclude animated elements */
+[class*="animate-"],
+[class*="transition-transform"],
+input[type="range"]::-webkit-slider-thumb,
+[style*="preserve-3d"],
+[style*="rotateY"],
+[style*="translateZ"] {
+  transition-property: none !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES  (html:not(.dark))
+   Transform hardcoded "dark theme" colors to
+   the new bright, clean, modern light design.
+   ═══════════════════════════════════════════════════ */
+
+html:not(.dark) {
+  background-color: #F5EEE1;
+}
+html:not(.dark) body {
+  background-color: #F5EEE1;
+  color: #1F3D2B;
+}
+
+/* ─── Page backgrounds ─── */
+/* bg-[#F5EEE1] → KEEP as brand sandy beige (identity!) */
+/* NO override needed — #F5EEE1 stays #F5EEE1 */
+
+/* from-[#F5EEE1] in gradients — keep brand beige */
+/* NO override needed */
+
+/* border-[#F5EEE1] */
+html:not(.dark) [class*="border-\[#F5EEE1\]"],
+html:not(.dark) [class*="border-\[#f5eee1\]"] {
+  border-color: rgba(31, 61, 43, 0.06) !important;
+}
+/* bg-[#FFF8F0] → slightly warmer */
+html:not(.dark) [class*="bg-\[#FFF8F0\]"],
+html:not(.dark) [class*="bg-\[#fff8f0\]"] {
+  background-color: #F0E8D9 !important;
+}
+/* bg-[#E6DCC8] → muted beige */
+html:not(.dark) [class*="bg-\[#E6DCC8\]"],
+html:not(.dark) [class*="bg-\[#e6dcc8\]"] {
+  background-color: #E6DCC8 !important;
+}
+
+/* ─── Text colors — NO override, keep original #1F3D2B ─── */
+/* text-[#1F3D2B] stays as-is in light mode (brand green text) */
+
+/* text-[#2AA676] — keep green accent */
+
+/* text-[#C8A86A] — keep gold accent */
+
+/* ─── Green backgrounds — used ONLY for buttons ─── */
+/* bg-[#2AA676] → keep green for buttons */
+/* bg-[#2AA676]/xx → light green tint */
+/* bg-[#1F3D2B]/10..95 → subtle beige tint (not green bg sections) */
+html:not(.dark) [class*="bg-\[#1F3D2B\]\/"]:not(button):not([role="button"]) {
+  background-color: rgba(31, 61, 43, 0.06) !important;
+}
+
+/* ─── Gold backgrounds — keep ─── */
+
+/* ─── Gradients — keep green for buttons ONLY ─── */
+/* Keep all gradient overrides removed — use original colors */
+
+/* ─── Borders — keep original ─── */
+
+/* ─── Inputs in light mode ─── */
+html:not(.dark) input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
+  background-color: #ffffff !important;
+  color: #1F3D2B !important;
+  border-color: rgba(31, 61, 43, 0.12) !important;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: rgba(31, 61, 43, 0.35) !important;
+}
+
+/* ─── Range slider in light mode ─── */
+html:not(.dark) input[type="range"]::-webkit-slider-thumb {
+  background: #2AA676;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+}
+html:not(.dark) input[type="range"]::-moz-range-thumb {
+  background: #2AA676;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+}
+
+/* ─── Hover states ─── */
+html:not(.dark) [class*="hover\:bg-\[#F5EEE1\]"]:hover,
+html:not(.dark) [class*="hover\:bg-\[#f5eee1\]"]:hover {
+  background-color: #EFE7D8 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   iOS-STYLE GLOW CARDS & SURFACES ✨
+   Premium soft-glow aesthetic on all white cards
+   ═══════════════════════════════════════════════════ */
+
+/* White cards get iOS premium glow */
+html:not(.dark) [class*="bg-white"][class*="rounded"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 1px 3px rgba(31, 61, 43, 0.04),
+    0 4px 16px rgba(31, 61, 43, 0.06),
+    0 0 20px rgba(255, 255, 255, 0.25) !important;
+}
+html:not(.dark) [class*="bg-white"][class*="rounded"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 2px 6px rgba(31, 61, 43, 0.06),
+    0 8px 24px rgba(31, 61, 43, 0.08),
+    0 0 30px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Shadow classes → iOS-style soft glow */
+html:not(.dark) [class*="shadow-sm"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 1px 2px rgba(31, 61, 43, 0.04),
+    0 2px 8px rgba(31, 61, 43, 0.05) !important;
+}
+html:not(.dark) [class*="shadow-lg"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 4px 12px rgba(31, 61, 43, 0.06),
+    0 8px 24px rgba(31, 61, 43, 0.04),
+    0 0 20px rgba(255, 255, 255, 0.2) !important;
+}
+html:not(.dark) [class*="shadow-xl"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 8px 20px rgba(31, 61, 43, 0.06),
+    0 12px 40px rgba(31, 61, 43, 0.04),
+    0 0 30px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─── Colored text — keep vibrant ─── */
+html:not(.dark) .text-gray-600 {
+  color: #4B5563 !important;
+}
+
+/* ─── Scrollbars ─── */
+html:not(.dark) ::-webkit-scrollbar {
+  width: 6px;
+}
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #F5EEE1;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #D5C9B3;
+  border-radius: 3px;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #B8A98E;
 }

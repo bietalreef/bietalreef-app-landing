@@ -134,7 +134,10 @@ export function StoreHome() {
   const [searchQuery, setSearchQuery] = useState('');
   const { language, textAlign } = useTranslation('store');
   const isEn = language === 'en';
-  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const fontFamily = 'Cairo, sans-serif';
+  const fw6: React.CSSProperties = { fontFamily, fontWeight: 600 };
+  const fw7: React.CSSProperties = { fontFamily, fontWeight: 700 };
+  const fw8: React.CSSProperties = { fontFamily, fontWeight: 800 };
   const currency = isEn ? 'AED' : 'د.إ';
   const cats = isEn ? CATEGORIES.en : CATEGORIES.ar;
   const navigate = useNavigate();
@@ -168,27 +171,29 @@ export function StoreHome() {
       <div className="p-5 sticky top-0 bg-[#1A1A1A]/95 backdrop-blur-md z-10">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-xl font-bold text-[#D4AF37]" style={{ fontFamily, textAlign }}>
+            <h1 className="text-2xl text-[#D4AF37]" style={fw8}>
               {isEn ? 'Bait Al Reef Store' : 'متجر بيت الريف'}
             </h1>
-            <p className="text-gray-500 text-xs mt-0.5" style={{ fontFamily, textAlign }}>
+            <p className="text-gray-500 text-sm mt-0.5" style={fw6}>
               {isEn ? `${DEMO_PRODUCTS.length} products available` : `${DEMO_PRODUCTS.length} منتج متاح`}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <div className="bg-[#D4AF37]/10 px-3 py-1.5 rounded-full flex items-center gap-1.5">
-              <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
-              <span className="text-[#D4AF37] text-xs font-bold" style={{ fontFamily }}>
+            <div className="bg-[#D4AF37]/10 px-3.5 py-2 rounded-full flex items-center gap-2">
+              <div className="w-6 h-6 rounded-full bg-[#D4AF37]/20 flex items-center justify-center">
+                <Flame className="w-3.5 h-3.5 text-[#D4AF37]" />
+              </div>
+              <span className="text-[#D4AF37] text-sm" style={fw7}>
                 {isEn ? 'Sale' : 'عروض'}
               </span>
             </div>
             {/* Close Store Button */}
             <button
               onClick={() => navigate('/home')}
-              className="w-9 h-9 bg-white/10 hover:bg-red-500/20 rounded-full flex items-center justify-center transition-all group border border-white/10"
+              className="w-10 h-10 bg-white/10 hover:bg-red-500/20 rounded-full flex items-center justify-center transition-all group border border-white/10"
               aria-label={isEn ? 'Close store' : 'إغلاق المتجر'}
             >
-              <X className="w-4.5 h-4.5 text-gray-400 group-hover:text-red-400 transition-colors" />
+              <X className="w-5 h-5 text-gray-400 group-hover:text-red-400 transition-colors" />
             </button>
           </div>
         </div>
@@ -200,10 +205,12 @@ export function StoreHome() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={isEn ? 'Search for your product...' : 'ابحث عن منتجك المفضل...'} 
-            className="w-full bg-[#252525] border border-white/10 rounded-xl py-3 pr-10 pl-4 text-sm focus:outline-none focus:border-[#D4AF37] transition-colors"
-            style={{ fontFamily, textAlign }}
+            className="w-full bg-[#252525] border border-white/10 rounded-xl py-3.5 pr-11 pl-4 text-base focus:outline-none focus:border-[#D4AF37] transition-colors"
+            style={{ ...fw6, textAlign }}
           />
-          <Search className="absolute right-3 top-3 w-5 h-5 text-gray-500" />
+          <div className="absolute right-3 top-3.5 w-7 h-7 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center">
+            <Search className="w-4 h-4 text-[#D4AF37]" />
+          </div>
         </div>
 
         {/* Categories */}
@@ -212,12 +219,12 @@ export function StoreHome() {
              <button
                key={cat.id}
                onClick={() => setActiveCat(cat.id)}
-               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+               className={`px-4 py-2.5 rounded-xl text-sm whitespace-nowrap transition-all ${
                  activeCat === cat.id 
                  ? 'bg-[#D4AF37] text-black shadow-lg shadow-[#D4AF37]/20' 
                  : 'bg-[#252525] text-gray-400 hover:bg-[#333] border border-white/5'
                }`}
-               style={{ fontFamily }}
+               style={fw7}
              >
                {cat.label}
              </button>
@@ -227,18 +234,18 @@ export function StoreHome() {
 
       {/* Featured Banner */}
       <div className="px-5 mb-6">
-        <div className="w-full h-36 bg-gradient-to-r from-[#D4AF37] to-[#8A701E] rounded-2xl flex items-center justify-between p-6 relative overflow-hidden">
+        <div className="w-full h-40 bg-gradient-to-r from-[#D4AF37] to-[#8A701E] rounded-2xl flex items-center justify-between p-6 relative overflow-hidden">
            <div className="relative z-10">
-              <span className="text-black/60 text-xs font-bold mb-1 block" style={{ fontFamily, textAlign }}>
+              <span className="text-black/60 text-sm mb-1 block" style={fw7}>
                 {isEn ? 'Season Sale' : 'تخفيضات الموسم'}
               </span>
-              <h2 className="text-2xl font-black text-black mb-2" style={{ fontFamily }}>
+              <h2 className="text-3xl text-black mb-3" style={fw8}>
                 {isEn ? '30% OFF' : 'خصم 30%'}
               </h2>
               <button 
                 onClick={() => setActiveCat('all')}
-                className="bg-black text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-black/80 transition-colors" 
-                style={{ fontFamily }}
+                className="bg-black text-white px-5 py-2 rounded-xl text-sm hover:bg-black/80 transition-colors" 
+                style={fw7}
               >
                 {isEn ? 'Shop Now' : 'تسوق الآن'}
               </button>
@@ -270,38 +277,40 @@ export function StoreHome() {
                        e.stopPropagation();
                        toggleFavorite(product.id);
                      }}
-                     className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                     className={`absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center transition-all ${
                        isFav ? 'bg-red-500 text-white' : 'bg-black/50 backdrop-blur-sm text-white hover:bg-[#D4AF37] hover:text-black'
                      }`}
                    >
-                      <Heart className={`w-4 h-4 ${isFav ? 'fill-current' : ''}`} />
+                      <Heart className={`w-4.5 h-4.5 ${isFav ? 'fill-current' : ''}`} />
                    </button>
                    {product.isNew && (
-                     <div className="absolute top-2 left-2 bg-[#2AA676] text-white text-[9px] font-bold px-2 py-0.5 rounded-md">
+                     <div className="absolute top-2 left-2 bg-[#2AA676] text-white text-xs px-2.5 py-0.5 rounded-md" style={fw7}>
                        {isEn ? 'NEW' : 'جديد'}
                      </div>
                    )}
                 </div>
-                <div className="p-3">
-                   <h3 className="font-bold text-sm mb-0.5 truncate" style={{ fontFamily, textAlign }}>
+                <div className="p-3.5">
+                   <h3 className="text-base mb-0.5 truncate" style={{ ...fw7, textAlign }}>
                      {isEn ? product.nameEn : product.name}
                    </h3>
-                   <p className="text-xs text-gray-500 mb-2" style={{ fontFamily, textAlign }}>
+                   <p className="text-sm text-gray-500 mb-2" style={{ ...fw6, textAlign }}>
                      {isEn ? product.categoryEn : product.category}
                    </p>
-                   <div className="flex items-center gap-1 mb-2">
-                     <Star className="w-3 h-3 text-[#D4AF37] fill-current" />
-                     <span className="text-[11px] text-gray-400">4.8</span>
+                   <div className="flex items-center gap-1.5 mb-2">
+                     <div className="w-5 h-5 rounded bg-[#D4AF37]/15 flex items-center justify-center">
+                       <Star className="w-3 h-3 text-[#D4AF37] fill-current" />
+                     </div>
+                     <span className="text-xs text-gray-400" style={fw6}>4.8</span>
                    </div>
                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-[#D4AF37] text-sm" style={{ fontFamily }}>
+                      <span className="text-[#D4AF37] text-base" style={fw8}>
                         {product.price.toLocaleString()} {currency}
                       </span>
                       <button 
                         onClick={(e) => handleAddToCart(e, product)}
-                        className="w-8 h-8 bg-[#D4AF37]/10 rounded-lg flex items-center justify-center hover:bg-[#D4AF37] hover:text-black text-[#D4AF37] transition-all"
+                        className="w-9 h-9 bg-[#D4AF37]/10 rounded-xl flex items-center justify-center hover:bg-[#D4AF37] hover:text-black text-[#D4AF37] transition-all"
                       >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-5 h-5" />
                       </button>
                    </div>
                 </div>
@@ -312,8 +321,8 @@ export function StoreHome() {
 
       {filteredProducts.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-          <Search className="w-12 h-12 mb-4 opacity-30" />
-          <p className="text-sm" style={{ fontFamily }}>{isEn ? 'No products found' : 'لا توجد منتجات'}</p>
+          <Search className="w-14 h-14 mb-4 opacity-30" />
+          <p className="text-base" style={fw7}>{isEn ? 'No products found' : 'لا توجد منتجات'}</p>
         </div>
       )}
     </div>

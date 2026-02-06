@@ -1,8 +1,7 @@
-import { motion } from 'motion/react';
+import { toast } from 'sonner@2.0.3';
 import { Mic, Lock, Users } from 'lucide-react';
 import { useUser } from '../utils/UserContext';
 import { checkPolicy } from '../utils/uiPolicy';
-import { toast } from 'sonner';
 
 export function VoiceRoomsPanel() {
   const { profile } = useUser();

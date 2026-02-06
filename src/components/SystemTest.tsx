@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
 import { useUser } from '../utils/UserContext';
 import { supabase } from '../utils/supabase/client';
 import { checkEntitlement } from '../utils/uiPolicy';
 import { ShieldAlert, ShieldCheck, Database, Lock, Unlock } from 'lucide-react';
-import { toast } from 'sonner';
 
 export default function SystemTest() {
   const { profile, logout } = useUser();

@@ -75,13 +75,6 @@ export const sectionsTree: MainSection[] = [
     route: '/tools',
   },
   {
-    id: 'design',
-    nameAr: 'قسم التصميم',
-    nameEn: 'Design Section',
-    icon: '🎨',
-    route: '/design',
-  },
-  {
     id: 'yak',
     nameAr: 'وياك AI',
     nameEn: 'Weyaak AI',
@@ -89,24 +82,10 @@ export const sectionsTree: MainSection[] = [
     route: '/yak',
   },
   {
-    id: '3d-library',
-    nameAr: 'مكتبة 3D',
-    nameEn: '3D Library',
-    icon: '📦',
-    route: '/3d-library',
-  },
-  {
     id: 'profile',
     nameAr: 'الملف الشخصي',
     nameEn: 'Profile',
     icon: '👤',
     route: '/profile',
-  },
-  {
-    id: 'smart-search',
-    nameAr: 'محرك البحث الذكي',
-    nameEn: 'Smart Search',
-    icon: '🔍',
-    route: '/search',
   },
 ];

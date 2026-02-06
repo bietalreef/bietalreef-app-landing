@@ -1,33 +1,18 @@
-import { useState, useEffect } from 'react';
-import { 
-  AlertCircle
-} from 'lucide-react';
+import { toast } from 'sonner@2.0.3';
+import { AlertCircle } from 'lucide-react';
 import { MapSearch, SearchFilters } from './MapSearch';
 import { useTranslation } from '../../contexts/LanguageContext';
-import { toast } from 'sonner';
+import { useNavigate } from 'react-router';
+import { useLanguage } from '../../contexts/LanguageContext';
 
-// ====================================
-// 📌 Types & Interfaces
-// ====================================
-
-interface MapsScreenProps {
-  onMenuClick?: () => void;
-  activeTab?: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers';
-  onTabChange?: (tab: any) => void;
-  onOpenSearch?: () => void;
-  onOpenDrawer?: () => void;
-}
-
-export function MapsScreen({
-  onMenuClick,
-  activeTab = 'maps',
-  onTabChange,
-}: MapsScreenProps) {
-  
+export function MapsScreen() {
   const { t, dir } = useTranslation('maps');
-  
+  const { language } = useLanguage();
+  const isEn = language === 'en';
+  const navigate = useNavigate();
+
   const handleSearch = (query: string) => {
-    toast.info("البحث في الخريطة غير مفعل حالياً");
+    toast.info(isEn ? 'Map search is currently unavailable' : 'البحث في الخريطة غير مفعل حالياً');
   };
 
   const handleFilterChange = (filters: SearchFilters) => {
@@ -51,16 +36,20 @@ export function MapsScreen({
                 <AlertCircle className="w-8 h-8 text-blue-500" />
             </div>
             <h3 className="text-xl font-bold text-[#1F3D2B] mb-2" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                الخرائط قيد الصيانة
+                {isEn ? 'Maps Under Maintenance' : 'الخرائط قيد الصيانة'}
             </h3>
             <p className="text-gray-600 mb-4" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                نعمل حالياً على تحديث نظام الخرائط لتقديم تجربة أفضل. يرجى المحاولة لاحقاً.
+                {isEn 
+                  ? 'We are currently updating the maps system for a better experience. Please try again later.'
+                  : 'نعمل حالياً على تحديث نظام الخرائط لتقديم تجربة أفضل. يرجى المحاولة لاحقاً.'
+                }
             </p>
             <button 
-                onClick={() => onTabChange && onTabChange('home')}
+                onClick={() => navigate('/home')}
                 className="bg-[#2AA676] text-white px-6 py-2 rounded-xl font-bold hover:bg-[#1F3D2B] transition-colors"
+                style={{ fontFamily: 'Cairo, sans-serif' }}
             >
-                العودة للرئيسية
+                {isEn ? 'Back to Home' : 'العودة للرئيسية'}
             </button>
         </div>
       </div>

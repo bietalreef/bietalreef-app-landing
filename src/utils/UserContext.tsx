@@ -1,9 +1,13 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from './supabase/client';
 import { UserProfile, UserRole, UserTier } from './uiPolicy';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 import { projectId, publicAnonKey } from './supabase/info';
+
+function isAbortError(err: unknown): boolean {
+  return err instanceof DOMException && err.name === 'AbortError';
+}
 
 interface UserContextType {
   profile: UserProfile | null;
@@ -58,23 +62,32 @@ export function UserProvider({ children }: { children: ReactNode }) {
       
       setProfile(mergedProfile);
     } catch (err) {
+      if (isAbortError(err)) return; // Component unmounted — ignore silently
       console.error('Profile load failed', err);
     }
   };
 
   useEffect(() => {
+    let cancelled = false;
+
     // 1. Check active session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
       if (session?.user) {
         fetchProfile(session.user.id);
       } else {
         setProfile(null);
       }
       setIsLoading(false);
+    }).catch((err) => {
+      if (cancelled || isAbortError(err)) return;
+      console.error('Session check failed:', err);
+      setIsLoading(false);
     });
 
     // 2. Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (cancelled) return;
       if (session?.user) {
         fetchProfile(session.user.id);
       } else {
@@ -83,7 +96,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const updateProfile = async (updates: Partial<UserProfile>) => {

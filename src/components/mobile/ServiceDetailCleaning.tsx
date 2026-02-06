@@ -3,6 +3,8 @@ import { ArrowRight, Star, Sparkles } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { ProvidersTabContent } from './ProviderProfileCard';
+import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 
 interface ServiceDetailCleaningProps {
   onBack: () => void;
@@ -52,12 +54,6 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
     { emoji: '⏰', title: t('cleaningServices.items.available247'), description: t('cleaningServices.items.available247Desc') },
     { emoji: '✅', title: t('cleaningServices.items.guarantee'), description: t('cleaningServices.items.guaranteeDesc') },
   ];
-
-  const handleBottomNavChange = (tab: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers') => {
-    if (onNavigate) {
-      onNavigate(tab);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
@@ -152,11 +148,7 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
         )}
         
         {activeTab === 'providers' && (
-          <div className="bg-white rounded-xl p-6 shadow-sm text-center">
-            <p className="text-gray-600" style={{ fontFamily: 'Cairo, sans-serif' }}>
-              {t('cleaningServicesPage.providersCount')}
-            </p>
-          </div>
+          <ProvidersTabContent />
         )}
         
         {activeTab === 'reviews' && (
@@ -188,6 +180,8 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
           </button>
         </div>
       </div>
+
+      <PlatformShowcaseBanner variant="mini" className="py-6" />
     </div>
   );
 }

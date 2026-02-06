@@ -1,193 +1,274 @@
 import { useState } from 'react';
-import { 
-  Building2, Calculator, Ruler, ClipboardCheck, Search, Activity, 
-  Palette, Image as ImageIcon, Box, Layout, Eye, Layers, ScanLine, Trees, Glasses,
-  Scale, FileText, FileSignature, ShieldCheck,
-  DollarSign, CreditCard, TrendingUp, Receipt,
-  Kanban, BarChart2, Users, FolderOpen, Package, CheckSquare,
-  Megaphone, Video, PenTool, MessageCircle, Share2, Target, 
-  ArrowRight, ArrowLeft,
-  Download, Save, Copy
-} from 'lucide-react';
-import { useTranslation } from '../../contexts/LanguageContext';
-import { SmartConstructionTools } from './tools/SmartConstructionTools';
-import { SmartDesignTools } from './tools/SmartDesignTools';
-import { SmartGenericTools } from './tools/SmartGenericTools';
-import { SmartMarketingTools } from './tools/SmartMarketingTools';
+import { motion } from 'motion/react';
+import { ChevronLeft } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
-// Define types
-type ToolId = string;
+// New V2 Tools (working tools)
+import { MaterialCalculatorV2 } from './tools/MaterialCalculatorV2';
+import { PaintFlooringCalc } from './tools/PaintFlooringCalc';
+import { CostEstimatorTool } from './tools/CostEstimatorTool';
+import { QuoteGeneratorTool } from './tools/QuoteGeneratorTool';
+import { MarketingContentTool } from './tools/MarketingContentTool';
+import { ContractGeneratorTool } from './tools/ContractGeneratorTool';
+import { InvoiceGeneratorTool } from './tools/InvoiceGeneratorTool';
+import { SocialMediaManager } from './tools/SocialMediaManager';
+import { ColorPaletteTool } from './tools/ColorPaletteTool';
+import { LightingCalcTool } from './tools/LightingCalcTool';
+import { RoomLayoutTool } from './tools/RoomLayoutTool';
 
-interface ToolItem {
-  id: ToolId;
-  icon: any;
-}
+type ActiveTool = null
+  | 'materials' | 'paint' | 'cost'
+  | 'quote' | 'marketing' | 'contract' | 'invoice'
+  | 'social-media'
+  | 'color-palette' | 'lighting' | 'room-layout';
 
-interface CategoryItem {
-  id: 'construction' | 'design' | 'legal' | 'financial' | 'project' | 'marketing';
-  icon: any;
-  color: string;
+interface ToolDef {
+  id: ActiveTool;
+  icon: string;
+  titleAr: string;
+  titleEn: string;
+  subtitleAr: string;
+  subtitleEn: string;
   gradient: string;
-  tools: ToolItem[];
+  badgeAr?: string;
+  badgeEn?: string;
 }
 
-type ViewState = 'dashboard' | 'category' | 'tool';
+const PRIMARY_TOOLS: ToolDef[] = [
+  {
+    id: 'materials',
+    icon: '🧮',
+    titleAr: 'حاسبة مواد البناء',
+    titleEn: 'Materials Calculator',
+    subtitleAr: 'كميات وتكاليف تقديرية',
+    subtitleEn: 'Quantities & cost estimates',
+    gradient: 'from-emerald-500 to-green-600',
+    badgeAr: 'الأكثر استخداماً',
+    badgeEn: 'Most Used',
+  },
+  {
+    id: 'paint',
+    icon: '🎨',
+    titleAr: 'حاسبة الدهانات والأرضيات',
+    titleEn: 'Paint & Flooring Calculator',
+    subtitleAr: 'دهان + بلاط + نعلات',
+    subtitleEn: 'Paint + tiles + skirting',
+    gradient: 'from-purple-500 to-pink-500',
+  },
+  {
+    id: 'cost',
+    icon: '💰',
+    titleAr: 'مقدّر تكلفة البناء',
+    titleEn: 'Construction Cost Estimator',
+    subtitleAr: 'ميزانية شاملة للمشروع',
+    subtitleEn: 'Complete project budget',
+    gradient: 'from-teal-500 to-cyan-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'quote',
+    icon: '📄',
+    titleAr: 'مولّد عروض الأسعار',
+    titleEn: 'Quotation Generator',
+    subtitleAr: 'عرض سعر احترافي A4',
+    subtitleEn: 'Professional A4 quotation',
+    gradient: 'from-blue-500 to-indigo-500',
+    badgeAr: 'مطوّر',
+    badgeEn: 'Enhanced',
+  },
+  {
+    id: 'invoice',
+    icon: '🧾',
+    titleAr: 'مولّد الفواتير',
+    titleEn: 'Invoice Generator',
+    subtitleAr: 'فواتير ضريبية احترافية',
+    subtitleEn: 'Professional tax invoices',
+    gradient: 'from-teal-600 to-emerald-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'contract',
+    icon: '📝',
+    titleAr: 'مولّد العقود',
+    titleEn: 'Contract Generator',
+    subtitleAr: 'عقود صيانة وبناء واستشارات',
+    subtitleEn: 'Maintenance, construction & consulting',
+    gradient: 'from-violet-500 to-purple-600',
+    badgeAr: 'مطوّر',
+    badgeEn: 'Enhanced',
+  },
+  {
+    id: 'marketing',
+    icon: '📱',
+    titleAr: 'مولّد المحتوى التسويقي',
+    titleEn: 'Marketing Content Generator',
+    subtitleAr: 'منشورات جاهزة للنشر',
+    subtitleEn: 'Ready-to-publish posts',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  {
+    id: 'social-media',
+    icon: '👥',
+    titleAr: 'مدير وسائل التواصل الاجتماعي',
+    titleEn: 'Social Media Manager',
+    subtitleAr: 'إدارة حساباتك على وسائل التواصل الاجتماعي',
+    subtitleEn: 'Manage your social media accounts',
+    gradient: 'from-blue-500 to-indigo-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'color-palette',
+    icon: '🎨',
+    titleAr: ' لوحة الألوان',
+    titleEn: 'Color Palette',
+    subtitleAr: 'اختر الألوان المناسبة لمشروعك',
+    subtitleEn: 'Select the right colors for your project',
+    gradient: 'from-pink-500 to-rose-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'lighting',
+    icon: '💡',
+    titleAr: 'حاسبة الإضاءة',
+    titleEn: 'Lighting Calculator',
+    subtitleAr: 'حساب الإضاءة المناسبة لغرفتك',
+    subtitleEn: 'Calculate the right lighting for your room',
+    gradient: 'from-yellow-500 to-amber-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+  {
+    id: 'room-layout',
+    icon: '🏠',
+    titleAr: 'تخطيط الغرفة',
+    titleEn: 'Room Layout',
+    subtitleAr: 'تصميم تخطيط غرفتك',
+    subtitleEn: 'Design your room layout',
+    gradient: 'from-blue-500 to-indigo-500',
+    badgeAr: 'جديد',
+    badgeEn: 'New',
+  },
+];
 
 interface AIToolsDashboardProps {
   onFullscreenToggle?: (isFullscreen: boolean) => void;
+  onBack?: () => void;
 }
 
-export function AIToolsDashboard({ onFullscreenToggle }: AIToolsDashboardProps) {
-  const { t, dir } = useTranslation('tools'); 
-  
-  const [currentView, setCurrentView] = useState<ViewState>('dashboard');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboardProps) {
+  const [activeTool, setActiveTool] = useState<ActiveTool>(null);
+  const { language } = useLanguage();
+  const isEn = language === 'en';
 
-  // Data Structure
-  // Note: We keep the structure here for the Dashboard Icons, but the tools list is now managed inside the sub-components or config maps
-  const CATEGORIES: CategoryItem[] = [
-    {
-      id: 'construction',
-      icon: Building2,
-      color: 'bg-orange-500',
-      gradient: 'from-orange-400 to-red-500',
-      tools: [] 
-    },
-    {
-      id: 'design',
-      icon: Palette,
-      color: 'bg-purple-500',
-      gradient: 'from-purple-400 to-pink-500',
-      tools: []
-    },
-    {
-      id: 'legal',
-      icon: Scale,
-      color: 'bg-blue-500',
-      gradient: 'from-blue-400 to-indigo-500',
-      tools: []
-    },
-    {
-      id: 'financial',
-      icon: Calculator,
-      color: 'bg-green-500',
-      gradient: 'from-green-400 to-emerald-500',
-      tools: []
-    },
-    {
-      id: 'project',
-      icon: Kanban,
-      color: 'bg-teal-500',
-      gradient: 'from-teal-400 to-cyan-500',
-      tools: []
-    },
-    {
-      id: 'marketing',
-      icon: Megaphone,
-      color: 'bg-rose-500',
-      gradient: 'from-rose-400 to-pink-500',
-      tools: []
-    }
-  ];
+  const handleBack = () => setActiveTool(null);
 
-  const handleCategoryClick = (id: string) => {
-    setSelectedCategoryId(id);
-    setCurrentView('category'); 
-    window.scrollTo(0, 0);
-  };
+  // ══════════ Route to individual tools ══════════
+  if (activeTool === 'materials') return <MaterialCalculatorV2 onBack={handleBack} />;
+  if (activeTool === 'paint') return <PaintFlooringCalc onBack={handleBack} />;
+  if (activeTool === 'cost') return <CostEstimatorTool onBack={handleBack} />;
+  if (activeTool === 'quote') return <QuoteGeneratorTool onBack={handleBack} />;
+  if (activeTool === 'invoice') return <InvoiceGeneratorTool onBack={handleBack} />;
+  if (activeTool === 'marketing') return <MarketingContentTool onBack={handleBack} />;
+  if (activeTool === 'contract') return <ContractGeneratorTool onBack={handleBack} />;
+  if (activeTool === 'social-media') return <SocialMediaManager onBack={handleBack} />;
+  if (activeTool === 'color-palette') return <ColorPaletteTool onBack={handleBack} />;
+  if (activeTool === 'lighting') return <LightingCalcTool onBack={handleBack} />;
+  if (activeTool === 'room-layout') return <RoomLayoutTool onBack={handleBack} />;
 
-  // --- Shared Components ---
+  // ══════════ Main Dashboard ══════════
+  return (
+    <div className="min-h-screen bg-[#FAFAF9] pb-32" dir="rtl">
 
-  const StaticBanner = () => (
-    <div className="px-4 mb-6 mt-4" dir={dir}>
-      <div className="w-full h-[100px] bg-gradient-to-r from-[#2AA676] to-[#C8A86A] rounded-[16px] flex items-center justify-center p-4 shadow-md">
-        <span className="text-white text-center font-cairo font-bold text-sm md:text-base leading-relaxed">
-          {t('poweredBy') || "Powered by Weyaak Intelligent System – الذكاء الاصطناعي بين يديك"}
-        </span>
+      {/* Page Header */}
+      <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] px-5 pt-8 pb-10 relative overflow-hidden">
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full" />
+        <div className="absolute -bottom-16 -right-8 w-32 h-32 bg-white/5 rounded-full" />
+        <div className="relative z-10 text-center">
+          <h1 className="text-white mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '26px' }}>
+            {isEn ? 'Smart Tools' : 'الأدوات الذكية'}
+          </h1>
+          <p className="text-white/80" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 500, fontSize: '13px' }}>
+            {isEn ? 'Real tools with instant results — no signup or waiting' : 'أدوات حقيقية بنتائج فورية — بدون تسجيل أو انتظار'}
+          </p>
+        </div>
       </div>
-    </div>
-  );
 
-  // --- View Renderers ---
+      {/* Primary Tools Grid */}
+      <div className="px-4 -mt-5 relative z-10">
+        <div className="flex items-center justify-between mb-3 px-1">
+          <h3 className="text-[#1A1A1A] font-bold font-cairo text-lg">
+            {isEn ? 'Core Tools' : 'الأدوات الأساسية'}
+          </h3>
+          <span className="text-xs font-bold text-[#2AA676] bg-[#2AA676]/10 px-2.5 py-1 rounded-full font-cairo">
+            {PRIMARY_TOOLS.length} {isEn ? 'tools' : 'أدوات'}
+          </span>
+        </div>
 
-  // Main Dashboard
-  const renderDashboard = () => (
-    <div className="pb-32">
-       <StaticBanner />
-
-       <div className="px-5">
-         <h2 className="text-[#1A1A1A] mb-5" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }} dir={dir}>
-           {t('categories.title') || "Featured Categories"}
-         </h2>
-
-         <div className="grid grid-cols-3 gap-4" dir={dir}>
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon;
+        <div className="space-y-3">
+          {PRIMARY_TOOLS.map((tool, index) => {
+            const badge = isEn ? tool.badgeEn : tool.badgeAr;
             return (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryClick(cat.id)}
-                className="bg-white rounded-[24px] p-4 shadow-md hover:shadow-lg transition-all flex flex-col items-center text-center gap-3 border border-[#F5EEE1] min-h-[140px] relative overflow-hidden group"
+              <motion.button
+                key={tool.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: index * 0.06 }}
+                onClick={() => setActiveTool(tool.id)}
+                className="w-full bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/80 hover:shadow-md transition-all group active:scale-[0.98] flex items-center gap-4 text-right"
               >
-                 <div className={`w-12 h-12 bg-gradient-to-br ${cat.gradient} rounded-[18px] flex items-center justify-center text-white shadow-lg mb-1 group-hover:scale-110 transition-transform`}>
-                   <Icon className="w-6 h-6" />
-                 </div>
-                 <span className="text-[#1A1A1A] text-center line-clamp-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '12px', lineHeight: 1.4 }}>
-                   {t(`categories.${cat.id}.title`)}
-                 </span>
-              </button>
+                <div className={`w-14 h-14 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                  {tool.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <h4 className="font-bold font-cairo text-[15px] text-[#1A1A1A] leading-tight truncate">
+                      {isEn ? tool.titleEn : tool.titleAr}
+                    </h4>
+                    {badge && (
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                        badge === 'جديد' || badge === 'New' ? 'bg-green-100 text-green-700' :
+                        badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
+                        badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {badge}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-400 font-cairo">
+                    {isEn ? tool.subtitleEn : tool.subtitleAr}
+                  </p>
+                </div>
+                <ChevronLeft className="w-5 h-5 text-gray-300 group-hover:text-[#2AA676] transition-colors flex-shrink-0" />
+              </motion.button>
             );
           })}
         </div>
       </div>
-    </div>
-  );
 
-  return (
-    <div className="min-h-screen bg-[#FAFAF9]">
-      <main className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {currentView === 'dashboard' && renderDashboard()}
-        
-        {/* Construction Category */}
-        {(currentView === 'category' || currentView === 'tool') && selectedCategoryId === 'construction' && (
-          <SmartConstructionTools onBack={() => {
-             setCurrentView('dashboard');
-             setSelectedCategoryId(null);
-          }} />
-        )}
-
-        {/* Design Category */}
-        {(currentView === 'category' || currentView === 'tool') && selectedCategoryId === 'design' && (
-          <SmartDesignTools 
-            onBack={() => {
-               setCurrentView('dashboard');
-               setSelectedCategoryId(null);
-            }} 
-            onFullscreenToggle={onFullscreenToggle}
-          />
-        )}
-        
-        {/* Marketing Category */}
-        {(currentView === 'category' || currentView === 'tool') && selectedCategoryId === 'marketing' && (
-          <SmartMarketingTools 
-            onBack={() => {
-               setCurrentView('dashboard');
-               setSelectedCategoryId(null);
-            }} 
-          />
-        )}
-        
-        {/* Other Categories (Generic Logic) */}
-        {(currentView === 'category' || currentView === 'tool') && selectedCategoryId && !['construction', 'design', 'marketing'].includes(selectedCategoryId) && (
-           <SmartGenericTools 
-              categoryId={selectedCategoryId as any}
-              onBack={() => {
-                 setCurrentView('dashboard');
-                 setSelectedCategoryId(null);
-              }}
-           />
-        )}
-      </main>
+      {/* Footer Note */}
+      <div className="px-4 mt-8">
+        <div className="bg-gradient-to-l from-[#F5EEE1] to-[#FFF8F0] rounded-[20px] p-5 border border-[#E8DCC8]">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">💡</span>
+            <div>
+              <h4 className="font-bold font-cairo text-sm text-[#1A1A1A] mb-1">
+                {isEn ? 'Beit Al Reef Tip' : 'نصيحة بيت الريف'}
+              </h4>
+              <p className="text-xs text-gray-600 font-cairo leading-relaxed">
+                {isEn
+                  ? 'All core tools work fully and give you instant results. You can copy results or share them via WhatsApp directly. Print as PDF for professional A4 documents.'
+                  : 'جميع الأدوات الأساسية تعمل بشكل كامل وتعطيك نتائج فورية. يمكنك نسخ النتائج أو مشاركتها عبر واتساب مباشرة. اطبع كـ PDF للحصول على مستندات A4 احترافية.'
+                }
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

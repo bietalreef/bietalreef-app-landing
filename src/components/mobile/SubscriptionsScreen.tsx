@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { toast } from 'sonner@2.0.3';
 import { Check, X, Shield, Star, Zap, Briefcase, ChevronRight, CheckCircle2, Crown, Building2, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useUser } from '../../utils/UserContext';
-import { toast } from 'sonner';
 
 interface PlanFeature {
   label: string;

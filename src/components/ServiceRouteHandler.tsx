@@ -20,7 +20,7 @@ import { ServiceDetailBuildingMaterials } from './mobile/ServiceDetailBuildingMa
 import { ServiceDetailFurnitureDecor } from './mobile/ServiceDetailFurnitureDecor';
 
 export function ServiceRouteHandler() {
-  const { id } = useParams<{ id: string }>();
+  const { id, city } = useParams<{ id: string; city?: string }>();
   const navigate = useNavigate();
   const setOpenSearch = useSearchStore((state) => state.setOpen);
 

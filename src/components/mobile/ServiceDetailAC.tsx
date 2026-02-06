@@ -3,6 +3,9 @@ import { Star, Heart, CheckCircle, Users, Sparkles, Snowflake, BookOpen, Info, T
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
+import { IDCopyBox } from './IDCopyBox';
+import { ProvidersTabContent } from './ProviderProfileCard';
+import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 
 interface ServiceDetailACProps {
   onBack: () => void;
@@ -102,7 +105,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
       availability: 'online',
       responseTime: '8 دقائق',
       projectsCount: 890,
-      image: 'https://i.pravatar.cc/400?img=15',
+      image: 'https://images.unsplash.com/photo-1659353587484-a83a0ddf8aca?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['سبليت', 'مركزي', 'صيانة']
     },
     {
@@ -115,7 +118,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
       availability: 'online',
       responseTime: '12 دقيقة',
       projectsCount: 674,
-      image: 'https://i.pravatar.cc/400?img=22',
+      image: 'https://images.unsplash.com/photo-1675869940341-d495d49010b5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['تركيب', 'إصلاح', 'تنظيف']
     },
     {
@@ -128,7 +131,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
       availability: 'busy',
       responseTime: '25 دقيقة',
       projectsCount: 532,
-      image: 'https://i.pravatar.cc/400?img=44',
+      image: 'https://images.unsplash.com/photo-1560072362-53f3810f8b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['فريون', 'كمبروسر', 'طوارئ']
     }
   ];
@@ -352,7 +355,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
                   ما هي خدمات التكييف والتبريد؟
                 </h3>
                 <p className="text-[#1A1A1A]/70 mb-4" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 500, fontSize: '15px', lineHeight: 1.8 }}>
-                  خدمات التكييف والتبريد تشمل تركيب وصيانة وإصلاح جميع أنواع المكيفات: المكيفات المركزية، السبليت، الشباك، الدولابي، الكاسيت. نوفر فنيين معتمدين لتنظيف وصيانة دورية، إصلاح الأعطال، شحن الفريون، تركيب وحدات جديدة.
+                  خدمات التكييف والتبريد تشمل تركيب وصيانة وإصلاح جميع أنواع المكيفات: المكيفات المركزية، السبليت، الشباك، الدولابي، الكاسيت. نوفر فنيين معتمدين لتنظيف وصيانة دورية، إصلاح الأعطال، شحن الفريون، ��ركيب وحدات جديدة.
                 </p>
                 <div className="bg-gradient-to-br from-[#4A90E2]/10 to-[#56CCF2]/10 rounded-[16px] p-4 border-2 border-[#4A90E2]/20">
                   <p className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}>
@@ -464,7 +467,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
                     { icon: '🧹', text: 'نظف الفلاتر كل أسبوعين - يحسن كفاءة التبريد ويوفر الطاقة' },
                     { icon: '🔍', text: 'افحص الوحدة الخارجية شهرياً - تأكد من عدم وجود أوساخ' },
                     { icon: '❄️', text: 'اطلب صيانة شاملة كل 3-6 أشهر من فني معتمد' },
-                    { icon: '🌡️', text: 'اضبط ال��رارة على 24 درجة - التوازن المثالي بين الراحة والتوفير' },
+                    { icon: '🌡️', text: 'اضبط الرارة على 24 درجة - التوازن المثالي بين الراحة والتوفير' },
                     { icon: '⏰', text: 'استخدم المؤقت الزمني - شغّل المكيف قبل الوصول بساعة' }
                   ].map((tip, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#F5EEE1]/50 to-transparent rounded-[16px]">
@@ -543,89 +546,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
 
         {/* TAB 2: المزودون */}
         {activeTab === 'providers' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '20px' }}>
-                أفضل فنيي التكييف
-              </h3>
-              <span className="bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-4 py-2 rounded-full text-xs shadow-md" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                {topProviders.length} مزود
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {topProviders.map((provider) => (
-                <div
-                  key={provider.id}
-                  className="relative bg-white rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all border-2 border-[#F5EEE1]"
-                >
-                  <div className="flex">
-                    <div className="flex flex-col w-[140px] flex-shrink-0">
-                      <div className="relative w-[140px] h-[120px] overflow-hidden">
-                        <ImageWithFallback 
-                          src={provider.image}
-                          alt={provider.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className={`absolute top-2 left-2 w-3 h-3 ${getAvailabilityColor(provider.availability)} rounded-full shadow-lg animate-pulse`} />
-                        <div className="absolute bottom-2 left-2 right-2">
-                          <div className="bg-white/95 backdrop-blur-sm rounded-[10px] px-2 py-1 text-center">
-                            <p className="text-[#1A1A1A] text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                              {getAvailabilityLabel(provider.availability)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="bg-gradient-to-br from-[#F5EEE1] to-white p-3 flex flex-col items-center justify-center border-t-2 border-white">
-                        <p className="text-[#4A90E2] text-xs mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                          السعر
-                        </p>
-                        <p className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '16px' }}>
-                          {provider.price} د.إ
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 p-4 flex flex-col">
-                      <h3 className="text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '16px' }}>
-                        {provider.name}
-                      </h3>
-                      <p className="text-[#4A90E2] text-xs mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                        ID: {provider.id}
-                      </p>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-[#56CCF2] text-[#56CCF2]" />
-                          <span className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
-                            {provider.rating}
-                          </span>
-                          <span className="text-[#1A1A1A]/40 text-xs">({provider.reviews})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-[#4A90E2]" />
-                          <span className="text-[#1A1A1A]/70 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                            {provider.distance}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-auto">
-                        <button className="flex-1 bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-3 py-2 rounded-[12px] text-xs shadow-md hover:shadow-lg transition-all active:scale-95" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                          طلب الآن
-                        </button>
-                        <button className="w-9 h-9 bg-[#25D366] rounded-[12px] flex items-center justify-center shadow-md hover:shadow-lg transition-all active:scale-95">
-                          <MessageCircle className="w-4.5 h-4.5 text-white" />
-                        </button>
-                        <button className="w-9 h-9 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all active:scale-95">
-                          <Share2 className="w-4.5 h-4.5 text-[#1A1A1A]/50" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ProvidersTabContent />
         )}
 
         {/* TAB 3: التقييمات */}
@@ -904,6 +825,7 @@ export function ServiceDetailAC({ onBack, onOpenSearch }: ServiceDetailACProps) 
 
       </div>
 
+      <PlatformShowcaseBanner variant="mini" className="pb-6" />
     </div>
   );
 }

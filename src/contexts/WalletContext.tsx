@@ -1,8 +1,12 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { supabase } from '../utils/supabase/client';
-import { projectId, publicAnonKey } from '../utils/supabase/info';
+import { projectId } from '../utils/supabase/info';
 
 const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-ad34c09a`;
+
+function isAbortError(err: unknown): boolean {
+  return err instanceof DOMException && err.name === 'AbortError';
+}
 
 interface LedgerEntry {
   type: 'earn' | 'spend' | 'adjust';
@@ -25,9 +29,13 @@ interface WalletContextType {
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-async function getAccessToken(): Promise<string> {
-  const { data: { session } } = await supabase.auth.getSession();
-  return session?.access_token || publicAnonKey;
+async function getAccessToken(): Promise<string | null> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.access_token || null;
+  } catch {
+    return null;
+  }
 }
 
 export function WalletProvider({ children }: { children: ReactNode }) {
@@ -36,39 +44,65 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const [ledger, setLedger] = useState<LedgerEntry[]>([]);
   const [ledgerLoading, setLedgerLoading] = useState(false);
 
-  const fetchBalance = useCallback(async () => {
+  const fetchBalance = useCallback(async (signal?: AbortSignal) => {
     try {
       const token = await getAccessToken();
+      if (!token) {
+        setBalance(0);
+        setIsLoading(false);
+        return;
+      }
       const res = await fetch(`${API_BASE}/wallet/balance`, {
         headers: { 'Authorization': `Bearer ${token}` },
+        signal,
       });
-      const data = await res.json();
-      if (res.ok) {
-        setBalance(data.balance ?? 0);
-      } else {
-        console.error('Wallet balance error:', data.error);
+      if (!res.ok) {
+        // 401 is expected when session is stale — not a real error
+        if (res.status === 401) {
+          console.log('Wallet: user not authenticated, skipping balance fetch');
+        } else {
+          const data = await res.json().catch(() => ({}));
+          console.error('Wallet balance error:', data.error || `HTTP ${res.status}`);
+        }
+        setBalance(0);
+        return;
       }
+      const data = await res.json();
+      setBalance(data.balance ?? 0);
     } catch (err) {
+      if (isAbortError(err)) return; // Component unmounted — ignore
       console.error('Wallet fetch failed:', err);
+      setBalance(0);
     } finally {
       setIsLoading(false);
     }
   }, []);
 
-  const fetchLedger = useCallback(async () => {
+  const fetchLedger = useCallback(async (signal?: AbortSignal) => {
     setLedgerLoading(true);
     try {
       const token = await getAccessToken();
+      if (!token) {
+        setLedgerLoading(false);
+        return;
+      }
       const res = await fetch(`${API_BASE}/wallet/ledger`, {
         headers: { 'Authorization': `Bearer ${token}` },
+        signal,
       });
-      const data = await res.json();
-      if (res.ok) {
-        setLedger(data.entries || []);
-      } else {
-        console.error('Wallet ledger error:', data.error);
+      if (!res.ok) {
+        if (res.status === 401) {
+          console.log('Wallet: user not authenticated, skipping ledger fetch');
+        } else {
+          const data = await res.json().catch(() => ({}));
+          console.error('Wallet ledger error:', data.error || `HTTP ${res.status}`);
+        }
+        return;
       }
+      const data = await res.json();
+      setLedger(data.entries || []);
     } catch (err) {
+      if (isAbortError(err)) return;
       console.error('Ledger fetch failed:', err);
     } finally {
       setLedgerLoading(false);
@@ -78,6 +112,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const spendCoins = useCallback(async (amount: number, reason: string) => {
     try {
       const token = await getAccessToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
       const res = await fetch(`${API_BASE}/wallet/spend`, {
         method: 'POST',
         headers: {
@@ -101,6 +136,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
   const topUpCoins = useCallback(async (amount: number, reason: string) => {
     try {
       const token = await getAccessToken();
+      if (!token) return { success: false, error: 'Not authenticated' };
       const res = await fetch(`${API_BASE}/wallet/topup`, {
         method: 'POST',
         headers: {
@@ -123,19 +159,26 @@ export function WalletProvider({ children }: { children: ReactNode }) {
 
   // Fetch balance on mount + when auth changes
   useEffect(() => {
+    const controller = new AbortController();
+
     const init = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        fetchBalance();
-      } else {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user && !controller.signal.aborted) {
+          fetchBalance(controller.signal);
+        } else {
+          setIsLoading(false);
+        }
+      } catch {
         setIsLoading(false);
       }
     };
     init();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (controller.signal.aborted) return;
       if (session?.user) {
-        fetchBalance();
+        fetchBalance(controller.signal);
       } else {
         setBalance(0);
         setLedger([]);
@@ -143,7 +186,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      controller.abort();
+      subscription.unsubscribe();
+    };
   }, [fetchBalance]);
 
   return (

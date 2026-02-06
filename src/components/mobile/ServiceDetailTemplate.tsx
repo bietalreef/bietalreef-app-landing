@@ -3,6 +3,7 @@ import { ArrowLeft, Star, Heart, Share2, ChevronDown, BookOpen, AlertCircle, Che
 import { NewTopHeader } from './NewTopHeader';
 import { IDCopyBox } from './IDCopyBox';
 import { ServiceSEOHead } from '../SEOHead';
+import { ProvidersTabContent } from './ProviderProfileCard';
 
 interface Provider {
   id: number;
@@ -278,39 +279,7 @@ export function ServiceDetailTemplate({
         )}
 
         {activeTab === 'providers' && (
-          <div className="space-y-3">
-            {providers.map((provider) => (
-              <div key={provider.id} className="bg-white rounded-3xl p-5 shadow-sm">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-[#1F3D2B] mb-1">{provider.name}</h3>
-                    <p className="text-sm text-gray-500 mb-2">{provider.nameEn}</p>
-                    <IDCopyBox id={provider.userId} label="معرف المزود:" size="xs" />
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 fill-[#C8A86A] text-[#C8A86A]" />
-                    <span className="font-bold text-[#1F3D2B]">{provider.rating}</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-                  <div className="text-gray-600">
-                    <span className="font-medium">التقييمات:</span> {provider.reviews}
-                  </div>
-                  <div className="text-gray-600">
-                    <span className="font-medium">المشاريع:</span> {provider.projects}
-                  </div>
-                  <div className="text-gray-600 col-span-2">
-                    <span className="font-medium">الموقع:</span> {provider.location}
-                  </div>
-                </div>
-
-                <button className="w-full bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all">
-                  تواصل مع المزود
-                </button>
-              </div>
-            ))}
-          </div>
+          <ProvidersTabContent providers={providers} />
         )}
 
         {activeTab === 'reviews' && (

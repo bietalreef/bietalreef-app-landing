@@ -50,12 +50,6 @@ export function ServiceDetailConstructionContracting({ onBack, onNavigate, onOpe
     { emoji: '⏰', title: t('constructionContracting_items.ontime'), description: t('constructionContracting_items.ontimeDesc') },
   ];
 
-  const handleBottomNavChange = (tab: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers') => {
-    if (onNavigate) {
-      onNavigate(tab);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />

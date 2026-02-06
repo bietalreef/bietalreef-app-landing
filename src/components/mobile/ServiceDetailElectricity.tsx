@@ -3,6 +3,9 @@ import { ArrowRight, Star, Search, Mic, SlidersHorizontal, Globe, ChevronLeft, H
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
+import { IDCopyBox } from './IDCopyBox';
+import { ProvidersTabContent } from './ProviderProfileCard';
+import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 
 interface ServiceDetailElectricityProps {
   onBack: () => void;
@@ -95,7 +98,7 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
       availability: 'online',
       responseTime: '5 دقائق',
       projectsCount: 234,
-      image: 'https://i.pravatar.cc/400?img=12',
+      image: 'https://images.unsplash.com/photo-1726796065558-aeb93a8709cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['تمديدات', 'إصلاح', 'صيانة']
     },
     {
@@ -108,7 +111,7 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
       availability: 'online',
       responseTime: '10 دقائق',
       projectsCount: 567,
-      image: 'https://i.pravatar.cc/400?img=33',
+      image: 'https://images.unsplash.com/photo-1606309028742-4039c7b625b8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['تركيبات', 'أعطال', 'تجديد']
     },
     {
@@ -121,7 +124,7 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
       availability: 'busy',
       responseTime: '20 دقيقة',
       projectsCount: 189,
-      image: 'https://i.pravatar.cc/400?img=51',
+      image: 'https://images.unsplash.com/photo-1651596082386-f83cfa746e64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=400',
       specialties: ['لوحات', 'تمديدات', 'ذكي']
     }
   ];
@@ -550,98 +553,7 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
 
         {/* TAB 2: المزودون */}
         {activeTab === 'providers' && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '20px' }}>
-                أفضل مزودي الكهرباء
-              </h3>
-              <span className="bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-4 py-2 rounded-full text-xs shadow-md" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                {topProviders.length} مزود
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 gap-4">
-              {topProviders.map((provider) => (
-                <div
-                  key={provider.id}
-                  className="relative bg-white rounded-[28px] overflow-hidden shadow-lg hover:shadow-xl transition-all border-2 border-[#F5EEE1]"
-                >
-                  <div className="flex">
-                    <div className="flex flex-col w-[140px] flex-shrink-0">
-                      <div className="relative w-[140px] h-[120px] overflow-hidden">
-                        <ImageWithFallback 
-                          src={provider.image}
-                          alt={provider.name}
-                          className="w-full h-full object-cover"
-                        />
-                        <div className={`absolute top-2 left-2 w-3 h-3 ${getAvailabilityColor(provider.availability)} rounded-full shadow-lg animate-pulse`} />
-                        <div className="absolute bottom-2 left-2 right-2">
-                          <div className="bg-black/60 backdrop-blur-sm rounded-lg px-2 py-1">
-                            <p className="text-white text-xs text-center" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                              {getAvailabilityLabel(provider.availability)}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="px-2 pt-2">
-                        <button className="w-full bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-2 py-2 rounded-[14px] text-xs shadow-md hover:shadow-lg transition-all active:scale-95" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                          عرض التفاصيل
-                        </button>
-                      </div>
-
-                      <div className="px-2 pt-1.5 pb-2">
-                        <div className="w-full bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-[14px] py-2 px-2 shadow-md flex items-center justify-center gap-1">
-                          <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 900, fontSize: '18px', lineHeight: 1 }}>
-                            {provider.price}
-                          </p>
-                          <p className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '10px' }}>
-                            د.إ
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex-1 p-4 flex flex-col">
-                      <h4 className="text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
-                        {provider.name}
-                      </h4>
-                      <p className="text-[#4A90E2] text-xs mb-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                        ID: {provider.id}
-                      </p>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="flex items-center gap-1">
-                          <Star className="w-4 h-4 fill-[#56CCF2] text-[#56CCF2]" />
-                          <span className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
-                            {provider.rating}
-                          </span>
-                          <span className="text-[#1A1A1A]/40 text-xs">({provider.reviews})</span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MapPin className="w-3.5 h-3.5 text-[#4A90E2]" />
-                          <span className="text-[#1A1A1A]/70 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                            {provider.distance}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 mt-auto">
-                        <button className="flex-1 bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-3 py-2 rounded-[12px] text-xs shadow-md hover:shadow-lg transition-all active:scale-95" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                          طلب الآن
-                        </button>
-                        <button className="w-9 h-9 bg-[#25D366] rounded-[12px] flex items-center justify-center shadow-md hover:shadow-lg transition-all active:scale-95">
-                          <MessageCircle className="w-4.5 h-4.5 text-white" />
-                        </button>
-                        <button className="w-9 h-9 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all active:scale-95">
-                          <Share2 className="w-4.5 h-4.5 text-[#1A1A1A]/50" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          <ProvidersTabContent />
         )}
 
         {/* TAB 3: التقييمات + فورم إضافة تقييم + فورم الشكاوى */}
@@ -935,6 +847,7 @@ export function ServiceDetailElectricity({ onBack, onOpenSearch }: ServiceDetail
 
       </div>
 
+      <PlatformShowcaseBanner variant="mini" className="pb-6" />
     </div>
   );
 }

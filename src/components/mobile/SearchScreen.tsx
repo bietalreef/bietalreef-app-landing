@@ -73,14 +73,6 @@ export function SearchScreen({ onBack, onNavigate }: SearchScreenProps) {
     { id: 'projects', label: language === 'ar' ? 'مشاريع' : 'Projects' },
   ];
 
-  const handleBottomNavChange = (tab: 'home' | 'services' | 'yak' | 'projects' | 'profile' | 'realestate' | 'shop' | 'maps' | 'tools' | 'recommendations' | 'offers') => {
-    if (tab === 'home') {
-      onBack();
-    } else if (onNavigate) {
-      onNavigate(tab);
-    }
-  };
-
   return (
     <div className="flex flex-col h-screen bg-gradient-to-b from-[#F5EEE1] to-white" dir={dir}>
       {/* Header */}

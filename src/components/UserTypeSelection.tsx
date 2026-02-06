@@ -4,7 +4,7 @@ import { ImageWithFallback } from './figma/ImageWithFallback';
 import logoImage from 'figma:asset/d512a20eff8d218ba0eff5a889eac0c02f3553c4.png';
 import { useState } from 'react';
 import { useUser } from '../utils/UserContext';
-import { toast } from 'sonner';
+import { toast } from 'sonner@2.0.3';
 
 interface UserTypeSelectionProps {
   onSelectType: (type: 'client' | 'provider') => void;

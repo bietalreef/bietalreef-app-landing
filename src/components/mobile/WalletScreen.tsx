@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Coins, ArrowDownCircle, ArrowUpCircle, Clock, ChevronLeft,
-  Sparkles, Zap, Crown, Gift, RefreshCw, TrendingUp, Wrench, ShieldCheck
+  Coins, ArrowDownCircle, ArrowUpCircle, Clock,
+  Sparkles, Zap, Crown, Gift, RefreshCw, TrendingUp, Wrench, ShieldCheck,
+  Eye, History, ShoppingCart
 } from 'lucide-react';
 import { useWallet } from '../../contexts/WalletContext';
 import { toast } from 'sonner@2.0.3';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 type WalletTab = 'overview' | 'history' | 'buy';
 
 interface CoinPackage {
   id: string;
   coins: number;
-  price: string;
+  priceAr: string;
+  priceEn: string;
   bonus: number;
   popular?: boolean;
   icon: any;
@@ -23,33 +26,41 @@ export function WalletScreen() {
   const { balance, isLoading, ledger, ledgerLoading, fetchBalance, fetchLedger, topUpCoins, spendCoins } = useWallet();
   const [activeTab, setActiveTab] = useState<WalletTab>('overview');
   const [buyingPackage, setBuyingPackage] = useState<string | null>(null);
+  const { language } = useLanguage();
+  const isEn = language === 'en';
+  const font = 'Cairo, sans-serif';
+  const fw600: React.CSSProperties = { fontFamily: 'Cairo, sans-serif', fontWeight: 600 };
+  const fw700: React.CSSProperties = { fontFamily: 'Cairo, sans-serif', fontWeight: 700 };
+  const fw800: React.CSSProperties = { fontFamily: 'Cairo, sans-serif', fontWeight: 800 };
 
   useEffect(() => {
     fetchLedger();
   }, [fetchLedger]);
 
   const coinPackages: CoinPackage[] = [
-    { id: 'starter', coins: 50, price: '25 د.إ', bonus: 0, icon: Zap, gradient: 'from-blue-400 to-blue-600' },
-    { id: 'basic', coins: 120, price: '50 د.إ', bonus: 20, icon: Sparkles, gradient: 'from-emerald-400 to-emerald-600' },
-    { id: 'popular', coins: 300, price: '100 د.إ', bonus: 50, popular: true, icon: Crown, gradient: 'from-amber-400 to-orange-500' },
-    { id: 'pro', coins: 700, price: '200 د.إ', bonus: 150, icon: Gift, gradient: 'from-purple-400 to-purple-600' },
+    { id: 'starter', coins: 50, priceAr: '25 د.إ', priceEn: '25 AED', bonus: 0, icon: Zap, gradient: 'from-blue-400 to-blue-600' },
+    { id: 'basic', coins: 120, priceAr: '50 د.إ', priceEn: '50 AED', bonus: 20, icon: Sparkles, gradient: 'from-emerald-400 to-emerald-600' },
+    { id: 'popular', coins: 300, priceAr: '100 د.إ', priceEn: '100 AED', bonus: 50, popular: true, icon: Crown, gradient: 'from-amber-400 to-orange-500' },
+    { id: 'pro', coins: 700, priceAr: '200 د.إ', priceEn: '200 AED', bonus: 150, icon: Gift, gradient: 'from-purple-400 to-purple-600' },
   ];
 
   const handleBuyPackage = async (pkg: CoinPackage) => {
     setBuyingPackage(pkg.id);
     try {
       const totalCoins = pkg.coins + pkg.bonus;
-      const result = await topUpCoins(totalCoins, `شراء باقة ${pkg.coins} كوينز`);
+      const reason = isEn ? `Purchase ${pkg.coins} coins package` : `شراء باقة ${pkg.coins} كوينز`;
+      const result = await topUpCoins(totalCoins, reason);
       if (result.success) {
-        toast.success(`تم شحن ${totalCoins} كوينز بنجاح!`, {
-          description: `الرصيد الجديد: ${balance + totalCoins} كوينز`,
-        });
+        toast.success(
+          isEn ? `${totalCoins} coins added successfully!` : `تم شحن ${totalCoins} كوينز بنجاح!`,
+          { description: isEn ? `New balance: ${balance + totalCoins} coins` : `الرصيد الجديد: ${balance + totalCoins} كوينز` }
+        );
         fetchLedger();
       } else {
-        toast.error(result.error || 'فشل في شراء الباقة');
+        toast.error(result.error || (isEn ? 'Failed to purchase package' : 'فشل في شراء الباقة'));
       }
     } catch {
-      toast.error('حدث خطأ أثناء الشراء');
+      toast.error(isEn ? 'An error occurred during purchase' : 'حدث خطأ أثناء الشراء');
     } finally {
       setBuyingPackage(null);
     }
@@ -75,9 +86,9 @@ export function WalletScreen() {
 
   const getEntryLabel = (type: string) => {
     switch (type) {
-      case 'earn': return 'إيداع';
-      case 'spend': return 'خصم';
-      case 'adjust': return 'تعديل';
+      case 'earn': return isEn ? 'Deposit' : 'إيداع';
+      case 'spend': return isEn ? 'Deduction' : 'خصم';
+      case 'adjust': return isEn ? 'Adjustment' : 'تعديل';
       default: return type;
     }
   };
@@ -91,56 +102,83 @@ export function WalletScreen() {
       const diffHours = Math.floor(diffMs / 3600000);
       const diffDays = Math.floor(diffMs / 86400000);
 
-      if (diffMins < 1) return 'الآن';
-      if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
-      if (diffHours < 24) return `منذ ${diffHours} ساعة`;
-      if (diffDays < 7) return `منذ ${diffDays} يوم`;
-      return d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+      if (isEn) {
+        if (diffMins < 1) return 'Just now';
+        if (diffMins < 60) return `${diffMins}m ago`;
+        if (diffHours < 24) return `${diffHours}h ago`;
+        if (diffDays < 7) return `${diffDays}d ago`;
+        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
+      } else {
+        if (diffMins < 1) return 'الآن';
+        if (diffMins < 60) return `منذ ${diffMins} دقيقة`;
+        if (diffHours < 24) return `منذ ${diffHours} ساعة`;
+        if (diffDays < 7) return `منذ ${diffDays} يوم`;
+        return d.toLocaleDateString('ar-EG', { day: 'numeric', month: 'short' });
+      }
     } catch {
       return '';
     }
   };
 
-  const tabs: { id: WalletTab; label: string }[] = [
-    { id: 'overview', label: 'نظرة عامة' },
-    { id: 'history', label: 'السجل' },
-    { id: 'buy', label: 'شراء كوينز' },
+  const tabsData: { id: WalletTab; labelAr: string; labelEn: string; icon: any }[] = [
+    { id: 'overview', labelAr: 'نظرة عامة', labelEn: 'Overview', icon: Eye },
+    { id: 'history', labelAr: 'السجل', labelEn: 'History', icon: History },
+    { id: 'buy', labelAr: 'شراء كوينز', labelEn: 'Buy Coins', icon: ShoppingCart },
   ];
 
   // Stats
   const totalEarned = ledger.filter(e => e.type === 'earn' || e.type === 'adjust').reduce((sum, e) => sum + Math.abs(e.amount), 0);
   const totalSpent = ledger.filter(e => e.type === 'spend').reduce((sum, e) => sum + Math.abs(e.amount), 0);
 
+  // Tool prices data
+  const toolPrices = [
+    { nameAr: 'حاسبة البناء', nameEn: 'Construction Calc', cost: 5 },
+    { nameAr: 'تصميم الغرف', nameEn: 'Room Design', cost: 15 },
+    { nameAr: 'التحليل المالي', nameEn: 'Financial Analysis', cost: 10 },
+    { nameAr: 'مخطط المشروع', nameEn: 'Project Planner', cost: 20 },
+    { nameAr: 'مقارنة الأسعار', nameEn: 'Price Compare', cost: 5 },
+    { nameAr: 'تصميم الواجهات', nameEn: 'Facade Design', cost: 25 },
+  ];
+
+  // How-to steps
+  const howToSteps = [
+    { step: '1', icon: '💰', titleAr: 'اشحن رصيدك', titleEn: 'Top Up', descAr: 'اختر باقة كوينز وادفع', descEn: 'Choose a coin package and pay' },
+    { step: '2', icon: '🛠️', titleAr: 'استخدم الأدوات', titleEn: 'Use Tools', descAr: 'كل أداة لها تكلفة محددة بالكوينز', descEn: 'Each tool has a specific coin cost' },
+    { step: '3', icon: '📊', titleAr: 'تابع رصيدك', titleEn: 'Track Balance', descAr: 'سجل كامل لجميع العمليات', descEn: 'Full record of all transactions' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-8" dir="rtl">
+    <div className="min-h-screen bg-[#F5EEE1] pb-8" dir="rtl">
       {/* Hero Balance Section */}
-      <div className="bg-gradient-to-bl from-[#C8A86A] via-[#B8944A] to-[#A07D35] px-6 pt-8 pb-12 rounded-b-[32px] relative overflow-hidden">
-        {/* Decorative circles */}
-        <div className="absolute top-0 left-0 w-32 h-32 bg-white/5 rounded-full -translate-x-12 -translate-y-12" />
-        <div className="absolute bottom-0 right-0 w-48 h-48 bg-white/5 rounded-full translate-x-16 translate-y-16" />
+      <div className="bg-[#F5EEE1] px-6 pt-8 pb-12 relative overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute top-0 left-0 w-32 h-32 bg-[#C8A86A]/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-0 w-48 h-48 bg-[#2AA676]/8 rounded-full blur-3xl" />
         
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-[#C8A86A] to-[#A07D35] rounded-xl flex items-center justify-center shadow-md">
                 <Coins className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-white text-xl font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                محفظة ريف
+              <h1 className="text-[#1F3D2B] text-2xl font-extrabold" style={fw800}>
+                {isEn ? 'Reef Wallet' : 'محفظة ريف'}
               </h1>
             </div>
             <button
               onClick={() => { fetchBalance(); fetchLedger(); }}
-              className="p-2 bg-white/10 rounded-xl hover:bg-white/20 transition-colors"
-              title="تحديث"
+              className="p-2 bg-white rounded-xl hover:bg-gray-50 transition-colors shadow-sm border border-[#E6DCC8]"
+              title={isEn ? 'Refresh' : 'تحديث'}
             >
-              <RefreshCw className={`w-5 h-5 text-white ${isLoading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-5 h-5 text-[#C8A86A] ${isLoading ? 'animate-spin' : ''}`} />
             </button>
           </div>
 
           {/* Balance Display */}
-          <div className="text-center py-4">
-            <p className="text-white/70 text-sm mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>رصيدك الحالي</p>
+          <div className="text-center py-4 bg-white rounded-3xl shadow-sm border border-[#E6DCC8] mb-4">
+            <p className="text-[#1F3D2B]/50 text-base font-semibold mb-1" style={fw600}>
+              {isEn ? 'Your Balance' : 'رصيدك الحالي'}
+            </p>
             <motion.div
               key={balance}
               initial={{ scale: 0.8, opacity: 0 }}
@@ -148,62 +186,79 @@ export function WalletScreen() {
               className="flex items-center justify-center gap-3"
             >
               {isLoading ? (
-                <div className="animate-pulse bg-white/20 h-14 w-40 rounded-2xl" />
+                <div className="animate-pulse bg-[#E6DCC8] h-14 w-40 rounded-2xl" />
               ) : (
                 <>
-                  <span className="text-5xl md:text-6xl text-white font-black" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                    {balance.toLocaleString('ar-EG')}
+                  <span className="text-5xl md:text-6xl text-[#1F3D2B] font-black" style={{ fontFamily: font }}>
+                    {balance.toLocaleString(isEn ? 'en-US' : 'ar-EG')}
                   </span>
                   <span className="text-2xl">🪙</span>
                 </>
               )}
             </motion.div>
-            <p className="text-white/60 text-xs mt-2" style={{ fontFamily: 'Cairo, sans-serif' }}>
-              عملات ريف كوينز
+            <p className="text-[#C8A86A] text-sm mt-2 font-bold" style={fw700}>
+              {isEn ? 'Reef Coins' : 'عملات ريف كوينز'}
             </p>
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-3 mt-4">
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="w-4 h-4 text-emerald-300" />
-                <span className="text-emerald-300 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>إجمالي الإيداع</span>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-white rounded-2xl p-4 text-center shadow-sm border border-[#E6DCC8]">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                </div>
+                <span className="text-emerald-700 text-sm" style={fw700}>
+                  {isEn ? 'Total Deposited' : 'إجمالي الإيداع'}
+                </span>
               </div>
-              <p className="text-white font-bold text-lg" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                {totalEarned.toLocaleString('ar-EG')}
+              <p className="text-[#1F3D2B] text-2xl" style={fw800}>
+                {totalEarned.toLocaleString(isEn ? 'en-US' : 'ar-EG')}
               </p>
             </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-3 text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Wrench className="w-4 h-4 text-orange-300" />
-                <span className="text-orange-300 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>إجمالي الاستخدام</span>
+            <div className="bg-white rounded-2xl p-4 text-center shadow-sm border border-[#E6DCC8]">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center">
+                  <Wrench className="w-5 h-5 text-orange-600" />
+                </div>
+                <span className="text-orange-700 text-sm" style={fw700}>
+                  {isEn ? 'Total Used' : 'إجمالي الاستخدام'}
+                </span>
               </div>
-              <p className="text-white font-bold text-lg" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                {totalSpent.toLocaleString('ar-EG')}
+              <p className="text-[#1F3D2B] text-2xl" style={fw800}>
+                {totalSpent.toLocaleString(isEn ? 'en-US' : 'ar-EG')}
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Tabs with Icons */}
       <div className="px-4 -mt-5">
-        <div className="bg-white rounded-2xl shadow-lg p-1.5 flex gap-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                activeTab === tab.id
-                  ? 'bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white shadow-md'
-                  : 'text-[#1F3D2B]/60 hover:bg-[#F5EEE1]'
-              }`}
-              style={{ fontFamily: 'Cairo, sans-serif' }}
-            >
-              {tab.label}
-            </button>
-          ))}
+        <div className="bg-white rounded-2xl shadow-lg p-1.5 flex gap-1 border border-[#E6DCC8]">
+          {tabsData.map((tab) => {
+            const TabIcon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-3 rounded-xl text-sm transition-all flex items-center justify-center gap-2 ${
+                  isActive
+                    ? 'bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white shadow-md'
+                    : 'text-[#1F3D2B]/60 hover:bg-[#F5EEE1]'
+                }`}
+                style={fw700}
+              >
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                  isActive ? 'bg-white/20' : 'bg-[#C8A86A]/15'
+                }`}>
+                  <TabIcon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#C8A86A]'}`} />
+                </div>
+                {isEn ? tab.labelEn : tab.labelAr}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -222,37 +277,38 @@ export function WalletScreen() {
               {/* What are Reef Coins */}
               <div className="bg-white rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-10 h-10 bg-[#C8A86A]/10 rounded-xl flex items-center justify-center">
-                    <span className="text-xl">🪙</span>
+                  <div className="w-11 h-11 bg-[#C8A86A]/10 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">🪙</span>
                   </div>
-                  <h3 className="text-[#1F3D2B] font-bold text-lg" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                    ما هي عملات ريف؟
+                  <h3 className="text-[#1F3D2B] text-xl" style={fw800}>
+                    {isEn ? 'What are Reef Coins?' : 'ما هي عملات ريف؟'}
                   </h3>
                 </div>
-                <p className="text-[#1F3D2B]/70 text-sm leading-relaxed" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  عملات ريف هي رصيدك المسبق الدفع لاستخدام أدوات الذكاء الاصطناعي في بيت الريف.
-                  اشحن رصيدك واستخدم الأدوات بسهولة — حاسبات البناء، تصميم الغرف، التحليل المالي والمزيد.
+                <p className="text-[#1F3D2B]/70 text-base leading-relaxed" style={fw600}>
+                  {isEn
+                    ? 'Reef Coins are your prepaid balance for using AI tools in Beit Al Reef. Top up your balance and use tools easily — construction calculators, room design, financial analysis and more.'
+                    : 'عملات ريف هي رصيدك المسبق الدفع لاستخدام أدوات الذكاء الاصطناعي في بيت الريف. اشحن رصيدك واستخدم الأدوات بسهولة — حاسبات البناء، تصميم الغرف، التحليل المالي والمزيد.'}
                 </p>
               </div>
 
               {/* How to use */}
               <div className="bg-white rounded-2xl p-5 shadow-sm">
-                <h3 className="text-[#1F3D2B] font-bold mb-4" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  كيف تستخدم الكوينز؟
+                <h3 className="text-[#1F3D2B] text-lg mb-4" style={fw800}>
+                  {isEn ? 'How to use Coins?' : 'كيف تستخدم الكوينز؟'}
                 </h3>
                 <div className="space-y-3">
-                  {[
-                    { step: '1', icon: '💰', title: 'اشحن رصيدك', desc: 'اختر باقة كوينز وادفع' },
-                    { step: '2', icon: '🛠️', title: 'استخدم الأدوات', desc: 'كل أداة لها تكلفة محددة بالكوينز' },
-                    { step: '3', icon: '📊', title: 'تابع رصيدك', desc: 'سجل كامل لجميع العمليات' },
-                  ].map((item) => (
+                  {howToSteps.map((item) => (
                     <div key={item.step} className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-[#C8A86A]/20 to-[#C8A86A]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-lg">{item.icon}</span>
+                      <div className="w-11 h-11 bg-gradient-to-br from-[#C8A86A]/20 to-[#C8A86A]/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <span className="text-xl">{item.icon}</span>
                       </div>
                       <div className="flex-1">
-                        <p className="text-[#1F3D2B] font-semibold text-sm" style={{ fontFamily: 'Cairo, sans-serif' }}>{item.title}</p>
-                        <p className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>{item.desc}</p>
+                        <p className="text-[#1F3D2B] text-base" style={fw700}>
+                          {isEn ? item.titleEn : item.titleAr}
+                        </p>
+                        <p className="text-[#1F3D2B]/50 text-sm" style={fw600}>
+                          {isEn ? item.descEn : item.descAr}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -261,21 +317,18 @@ export function WalletScreen() {
 
               {/* Tool Prices */}
               <div className="bg-white rounded-2xl p-5 shadow-sm">
-                <h3 className="text-[#1F3D2B] font-bold mb-4" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  أسعار الأدوات
+                <h3 className="text-[#1F3D2B] text-lg mb-4" style={fw800}>
+                  {isEn ? 'Tool Prices' : 'أسعار الأدوات'}
                 </h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { name: 'حاسبة البناء', cost: 5 },
-                    { name: 'تصميم الغرف', cost: 15 },
-                    { name: 'التحليل المالي', cost: 10 },
-                    { name: 'مخطط المشروع', cost: 20 },
-                    { name: 'مقارنة الأسعار', cost: 5 },
-                    { name: 'تصميم الواجهات', cost: 25 },
-                  ].map((tool, i) => (
+                  {toolPrices.map((tool, i) => (
                     <div key={i} className="bg-[#F5EEE1]/50 rounded-xl p-3 flex items-center justify-between">
-                      <span className="text-[#1F3D2B] text-xs font-semibold" style={{ fontFamily: 'Cairo, sans-serif' }}>{tool.name}</span>
-                      <span className="text-[#C8A86A] text-xs font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>{tool.cost} 🪙</span>
+                      <span className="text-[#1F3D2B] text-sm" style={fw700}>
+                        {isEn ? tool.nameEn : tool.nameAr}
+                      </span>
+                      <span className="text-[#C8A86A] text-sm" style={fw800}>
+                        {tool.cost} 🪙
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -283,11 +336,15 @@ export function WalletScreen() {
 
               {/* Security Note */}
               <div className="bg-emerald-50 rounded-2xl p-4 flex items-start gap-3">
-                <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-emerald-800 text-sm font-semibold" style={{ fontFamily: 'Cairo, sans-serif' }}>محفظة آمنة</p>
-                  <p className="text-emerald-600 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                    جميع العمليات محمية ومشفرة. لا يمكن التعديل على الرصيد إلا من خلال السيرفر.
+                  <p className="text-emerald-800 text-base" style={fw700}>
+                    {isEn ? 'Secure Wallet' : 'محفظة آمنة'}
+                  </p>
+                  <p className="text-emerald-600 text-sm" style={fw600}>
+                    {isEn
+                      ? 'All transactions are protected and encrypted. Balance can only be modified through the server.'
+                      : 'جميع العمليات محمية ومشفرة. لا يمكن التعديل على الرصيد إلا من خلال السيرفر.'}
                   </p>
                 </div>
               </div>
@@ -321,11 +378,11 @@ export function WalletScreen() {
               ) : ledger.length === 0 ? (
                 <div className="text-center py-16">
                   <Clock className="w-16 h-16 text-[#1F3D2B]/10 mx-auto mb-4" />
-                  <p className="text-[#1F3D2B]/40 font-semibold" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                    لا توجد عمليات بعد
+                  <p className="text-[#1F3D2B]/40 text-lg" style={fw700}>
+                    {isEn ? 'No transactions yet' : 'لا توجد عمليات بعد'}
                   </p>
-                  <p className="text-[#1F3D2B]/30 text-sm mt-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                    ابدأ بشحن رصيدك لاستخدام الأدوات
+                  <p className="text-[#1F3D2B]/30 text-base mt-1" style={fw600}>
+                    {isEn ? 'Top up your balance to start using tools' : 'ابدأ بشحن رصيدك لاستخدام الأدوات'}
                   </p>
                 </div>
               ) : (
@@ -346,21 +403,21 @@ export function WalletScreen() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-lg ${
+                          <span className={`text-sm px-2.5 py-0.5 rounded-lg ${
                             entry.type === 'earn' ? 'bg-emerald-100 text-emerald-700' :
                             entry.type === 'spend' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-700'
-                          }`} style={{ fontFamily: 'Cairo, sans-serif' }}>
+                          }`} style={fw700}>
                             {getEntryLabel(entry.type)}
                           </span>
-                          <span className="text-[#1F3D2B]/40 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                          <span className="text-[#1F3D2B]/40 text-sm" style={fw600}>
                             {formatDate(entry.created_at)}
                           </span>
                         </div>
-                        <p className="text-[#1F3D2B]/70 text-sm mt-1 truncate" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                        <p className="text-[#1F3D2B]/70 text-base mt-1 truncate" style={fw600}>
                           {entry.reason}
                         </p>
                       </div>
-                      <span className={`font-bold text-lg ${getEntryColor(entry.type)}`} style={{ fontFamily: 'Cairo, sans-serif' }}>
+                      <span className={`text-xl ${getEntryColor(entry.type)}`} style={fw800}>
                         {entry.amount > 0 ? '+' : ''}{entry.amount}
                       </span>
                     </div>
@@ -379,48 +436,64 @@ export function WalletScreen() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-4"
             >
-              <p className="text-[#1F3D2B]/60 text-sm text-center" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                اختر الباقة المناسبة واشحن رصيدك
+              <p className="text-[#1F3D2B]/60 text-base text-center" style={fw600}>
+                {isEn ? 'Choose a package and top up your balance' : 'اختر الباقة المناسبة واشحن رصيدك'}
               </p>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-3">
                 {coinPackages.map((pkg) => {
                   const Icon = pkg.icon;
                   return (
                     <motion.button
                       key={pkg.id}
-                      whileTap={{ scale: 0.95 }}
+                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ scale: 1.01 }}
                       onClick={() => handleBuyPackage(pkg)}
                       disabled={buyingPackage === pkg.id}
-                      className={`relative bg-white rounded-2xl p-4 shadow-sm border-2 transition-all text-right ${
+                      className={`relative w-full bg-white rounded-3xl p-5 border-2 transition-all text-right overflow-hidden group ${
                         pkg.popular 
-                          ? 'border-[#C8A86A] shadow-[0_4px_20px_rgba(200,168,106,0.3)]' 
-                          : 'border-transparent hover:border-[#C8A86A]/30'
+                          ? 'border-[#C8A86A] shadow-lg' 
+                          : 'border-[#E6DCC8] hover:border-[#C8A86A]/40 shadow-sm'
                       } ${buyingPackage === pkg.id ? 'opacity-50' : ''}`}
                     >
+                      {/* Glow effect on active/hover */}
+                      <div className="absolute inset-0 bg-gradient-to-l from-[#C8A86A]/0 to-[#C8A86A]/0 group-hover:from-[#C8A86A]/5 group-hover:to-[#C8A86A]/10 group-active:from-[#C8A86A]/10 group-active:to-[#C8A86A]/20 transition-all duration-300" />
+                      <div className="absolute -top-8 -right-8 w-24 h-24 bg-[#C8A86A]/0 group-active:bg-[#C8A86A]/15 rounded-full blur-2xl transition-all duration-300" />
+                      
                       {pkg.popular && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-xs px-3 py-0.5 rounded-full font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                          الأكثر طلباً
+                        <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-sm px-4 py-1 rounded-b-xl" style={fw700}>
+                          {isEn ? 'Most Popular' : 'الأكثر طلباً'}
                         </div>
                       )}
-                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pkg.gradient} flex items-center justify-center mb-3 mx-auto`}>
-                        <Icon className="w-6 h-6 text-white" />
-                      </div>
-                      <p className="text-2xl font-black text-[#1F3D2B] text-center" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                        {pkg.coins}
-                      </p>
-                      <p className="text-[#1F3D2B]/50 text-xs text-center" style={{ fontFamily: 'Cairo, sans-serif' }}>كوينز</p>
-                      {pkg.bonus > 0 && (
-                        <p className="text-emerald-600 text-xs text-center font-bold mt-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                          + {pkg.bonus} مجاناً
-                        </p>
-                      )}
-                      <div className="mt-3 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-sm py-2 rounded-xl text-center font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                        {buyingPackage === pkg.id ? (
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto" />
-                        ) : (
-                          pkg.price
-                        )}
+                      
+                      <div className="relative flex items-center gap-4">
+                        {/* Icon */}
+                        <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pkg.gradient} flex items-center justify-center shadow-lg flex-shrink-0`}>
+                          <Icon className="w-7 h-7 text-white" />
+                        </div>
+                        
+                        {/* Info */}
+                        <div className="flex-1">
+                          <p className="text-3xl font-black text-[#1F3D2B]" style={fw800}>
+                            {pkg.coins} <span className="text-base text-[#1F3D2B]/40" style={fw700}>{isEn ? 'Coins' : 'كوينز'}</span>
+                          </p>
+                          {pkg.bonus > 0 && (
+                            <p className="text-emerald-600 text-base mt-0.5" style={fw700}>
+                              + {pkg.bonus} {isEn ? 'free' : 'مجاناً'} 🎁
+                            </p>
+                          )}
+                        </div>
+                        
+                        {/* Price Button */}
+                        <div className="flex-shrink-0">
+                          <div className="bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-xl py-3 px-6 rounded-2xl text-center shadow-md group-active:shadow-[0_0_20px_rgba(200,168,106,0.5)] transition-shadow" style={fw800}>
+                            {buyingPackage === pkg.id ? (
+                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto" />
+                            ) : (
+                              isEn ? pkg.priceEn : pkg.priceAr
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </motion.button>
                   );
@@ -429,8 +502,10 @@ export function WalletScreen() {
 
               {/* Note */}
               <div className="bg-amber-50 rounded-2xl p-4 text-center">
-                <p className="text-amber-700 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
-                  ⚠️ حالياً يتم الشحن مباشرة للتجربة. ربط بوابة الدفع قريباً.
+                <p className="text-amber-700 text-sm" style={fw600}>
+                  {isEn
+                    ? '⚠️ Currently coins are added directly for testing. Payment gateway integration coming soon.'
+                    : '⚠️ حالياً يتم الشحن مباشرة للتجربة. ربط بوابة الدفع قريباً.'}
                 </p>
               </div>
             </motion.div>

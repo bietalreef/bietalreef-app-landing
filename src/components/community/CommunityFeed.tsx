@@ -27,7 +27,7 @@ const MOCK_POSTS: Post[] = [
     id: '1',
     user: {
       nameKey: 'communityPost1.userName',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Ahmed',
+      avatar: 'https://images.unsplash.com/photo-1560072362-53f3810f8b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
       roleKey: 'communityPost1.role',
       isVerified: true
     },
@@ -47,7 +47,7 @@ const MOCK_POSTS: Post[] = [
     id: '2',
     user: {
       nameKey: 'communityPost2.userName',
-      avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=AC',
+      avatar: 'https://images.unsplash.com/photo-1726796065558-aeb93a8709cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
       roleKey: 'communityPost2.role',
       isVerified: true
     },
@@ -67,7 +67,7 @@ const MOCK_POSTS: Post[] = [
     id: '3',
     user: {
       nameKey: 'communityPost3.userName',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+      avatar: 'https://images.unsplash.com/photo-1667842503541-965849144d33?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
       roleKey: 'communityPost3.role',
       isVerified: false
     },

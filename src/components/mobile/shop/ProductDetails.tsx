@@ -12,7 +12,10 @@ export function ProductDetails() {
   const [showVR, setShowVR] = useState(false);
   const { language, textAlign } = useTranslation('store');
   const isEn = language === 'en';
-  const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const fontFamily = 'Cairo, sans-serif';
+  const fw6: React.CSSProperties = { fontFamily, fontWeight: 600 };
+  const fw7: React.CSSProperties = { fontFamily, fontWeight: 700 };
+  const fw8: React.CSSProperties = { fontFamily, fontWeight: 800 };
   const currency = isEn ? 'AED' : 'د.إ';
 
   if (!selectedProduct) return null;
@@ -78,58 +81,60 @@ export function ProductDetails() {
       <div className="flex-1 bg-[#1A1A1A] -mt-6 rounded-t-[30px] relative z-10 px-6 py-8">
          <div className="flex justify-between items-start mb-4">
             <div>
-               <h1 className="text-2xl font-bold mb-1" style={{ fontFamily, textAlign }}>{productName}</h1>
-               <div className="flex items-center gap-1 text-[#D4AF37]">
-                  <Star className="w-4 h-4 fill-current" />
-                  <span className="text-sm font-bold">4.8</span>
-                  <span className="text-gray-500 text-xs">({isEn ? '125 reviews' : '125 تقييم'})</span>
+               <h1 className="text-2xl mb-1" style={{ ...fw8, textAlign }}>{productName}</h1>
+               <div className="flex items-center gap-1.5 text-[#D4AF37]">
+                  <div className="w-6 h-6 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+                    <Star className="w-3.5 h-3.5 fill-current" />
+                  </div>
+                  <span className="text-base" style={fw7}>4.8</span>
+                  <span className="text-gray-500 text-sm" style={fw6}>({isEn ? '125 reviews' : '125 تقييم'})</span>
                </div>
             </div>
             <div className="text-left">
-               <div className="text-2xl font-bold text-[#D4AF37]" style={{ fontFamily }}>{selectedProduct.price.toLocaleString()}</div>
-               <div className="text-xs text-gray-500" style={{ fontFamily }}>{currency}</div>
+               <div className="text-2xl text-[#D4AF37]" style={fw8}>{selectedProduct.price.toLocaleString()}</div>
+               <div className="text-sm text-gray-500" style={fw6}>{currency}</div>
             </div>
          </div>
 
          {/* Quantity & Add */}
          <div className="flex gap-3 mb-4">
-            <div className="flex items-center bg-[#252525] rounded-xl px-2 h-12 border border-white/5">
-               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-8 h-full flex items-center justify-center text-gray-400 hover:text-white"><Minus className="w-4 h-4"/></button>
-               <span className="w-8 text-center font-bold">{quantity}</span>
-               <button onClick={() => setQuantity(quantity + 1)} className="w-8 h-full flex items-center justify-center text-gray-400 hover:text-[#D4AF37]"><Plus className="w-4 h-4"/></button>
+            <div className="flex items-center bg-[#252525] rounded-xl px-2 h-13 border border-white/5">
+               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-9 h-full flex items-center justify-center text-gray-400 hover:text-white"><Minus className="w-4.5 h-4.5"/></button>
+               <span className="w-9 text-center text-lg" style={fw7}>{quantity}</span>
+               <button onClick={() => setQuantity(quantity + 1)} className="w-9 h-full flex items-center justify-center text-gray-400 hover:text-[#D4AF37]"><Plus className="w-4.5 h-4.5"/></button>
             </div>
             <button 
                onClick={handleAddToCart}
-               className="flex-1 bg-[#252525] border border-[#D4AF37]/30 text-[#D4AF37] font-bold rounded-xl h-12 flex items-center justify-center gap-2 transition-colors hover:bg-[#D4AF37]/10"
-               style={{ fontFamily }}
+               className="flex-1 bg-[#252525] border border-[#D4AF37]/30 text-[#D4AF37] rounded-xl h-13 flex items-center justify-center gap-2 transition-colors hover:bg-[#D4AF37]/10"
+               style={fw7}
             >
                <ShoppingCart className="w-5 h-5" />
-               <span>{isEn ? 'Add to Cart' : 'أضف للسلة'}</span>
+               <span className="text-base">{isEn ? 'Add to Cart' : 'أضف للسلة'}</span>
             </button>
          </div>
 
          {/* Buy Now Button */}
          <button 
            onClick={handleBuyNow}
-           className="w-full bg-[#D4AF37] hover:bg-[#B5952F] text-black font-bold rounded-xl h-12 flex items-center justify-center gap-2 transition-colors mb-8"
-           style={{ fontFamily }}
+           className="w-full bg-[#D4AF37] hover:bg-[#B5952F] text-black rounded-xl h-13 flex items-center justify-center gap-2 transition-colors mb-8"
+           style={fw8}
          >
-           <span>{isEn ? 'Buy Now' : 'اشتر الآن'}</span>
+           <span className="text-lg">{isEn ? 'Buy Now' : 'اشتر الآن'}</span>
          </button>
 
          {/* Specs */}
          <div className="space-y-6">
             <div>
-               <h3 className="font-bold text-lg mb-3 border-r-4 border-[#D4AF37] pr-3" style={{ fontFamily, textAlign }}>
+               <h3 className="text-xl mb-3 border-r-4 border-[#D4AF37] pr-3" style={{ ...fw8, textAlign }}>
                  {isEn ? 'Specifications' : 'المواصفات الفنية'}
                </h3>
                <div className="grid grid-cols-2 gap-3">
                   {selectedProduct.specs?.map((spec: any, idx: number) => (
-                      <div key={idx} className="bg-[#252525] p-3 rounded-lg border border-white/5">
-                         <span className="text-gray-500 text-xs block mb-1" style={{ fontFamily, textAlign }}>
+                      <div key={idx} className="bg-[#252525] p-3.5 rounded-xl border border-white/5">
+                         <span className="text-gray-500 text-sm block mb-1" style={{ ...fw6, textAlign }}>
                            {isEn ? (spec.labelEn || spec.label) : spec.label}
                          </span>
-                         <span className="font-bold text-sm" style={{ fontFamily, textAlign }}>
+                         <span className="text-base" style={{ ...fw7, textAlign }}>
                            {isEn ? (spec.valueEn || spec.value) : spec.value}
                          </span>
                       </div>
@@ -138,23 +143,32 @@ export function ProductDetails() {
             </div>
 
             <div>
-               <h3 className="font-bold text-lg mb-3 border-r-4 border-[#D4AF37] pr-3" style={{ fontFamily, textAlign }}>
+               <h3 className="text-xl mb-3 border-r-4 border-[#D4AF37] pr-3" style={{ ...fw8, textAlign }}>
                  {isEn ? 'About This Product' : 'عن المنتج'}
                </h3>
-               <p className="text-gray-400 text-sm leading-relaxed" style={{ fontFamily, textAlign }}>
+               <p className="text-gray-400 text-base leading-relaxed" style={{ ...fw6, textAlign }}>
                   {productDesc}
                </p>
             </div>
 
-            <div className="flex gap-4 overflow-x-auto py-4">
-               <div className="flex items-center gap-2 min-w-max text-xs text-gray-400 bg-[#252525] px-3 py-2 rounded-lg" style={{ fontFamily }}>
-                  <Truck className="w-4 h-4 text-[#D4AF37]" /> {isEn ? 'Free Delivery' : 'توصيل مجاني'}
+            <div className="flex gap-3 overflow-x-auto py-4">
+               <div className="flex items-center gap-2.5 min-w-max text-sm text-gray-400 bg-[#252525] px-4 py-2.5 rounded-xl" style={fw6}>
+                  <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+                    <Truck className="w-4 h-4 text-[#D4AF37]" />
+                  </div>
+                  {isEn ? 'Free Delivery' : 'توصيل مجاني'}
                </div>
-               <div className="flex items-center gap-2 min-w-max text-xs text-gray-400 bg-[#252525] px-3 py-2 rounded-lg" style={{ fontFamily }}>
-                  <ShieldCheck className="w-4 h-4 text-[#D4AF37]" /> {isEn ? '2-Year Warranty' : 'ضمان سنتين'}
+               <div className="flex items-center gap-2.5 min-w-max text-sm text-gray-400 bg-[#252525] px-4 py-2.5 rounded-xl" style={fw6}>
+                  <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+                    <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
+                  </div>
+                  {isEn ? '2-Year Warranty' : 'ضمان سنتين'}
                </div>
-               <div className="flex items-center gap-2 min-w-max text-xs text-gray-400 bg-[#252525] px-3 py-2 rounded-lg" style={{ fontFamily }}>
-                  <CreditCard className="w-4 h-4 text-[#D4AF37]" /> {isEn ? 'Secure Payment' : 'دفع آمن'}
+               <div className="flex items-center gap-2.5 min-w-max text-sm text-gray-400 bg-[#252525] px-4 py-2.5 rounded-xl" style={fw6}>
+                  <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/15 flex items-center justify-center">
+                    <CreditCard className="w-4 h-4 text-[#D4AF37]" />
+                  </div>
+                  {isEn ? 'Secure Payment' : 'دفع آمن'}
                </div>
             </div>
          </div>

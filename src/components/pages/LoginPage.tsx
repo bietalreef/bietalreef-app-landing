@@ -3,6 +3,8 @@ import { Mail, ArrowRight } from 'lucide-react';
 import { GoogleIcon } from '../GoogleIcon';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { useState } from 'react';
+import { LegalModals, useLegalModals } from '../LegalModals';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface LoginPageProps {
   onContinue: () => void;
@@ -11,8 +13,12 @@ interface LoginPageProps {
 export function LoginPage({ onContinue }: LoginPageProps) {
   const [email, setEmail] = useState('');
   const [focusedField, setFocusedField] = useState<string | null>(null);
+  const { openModal, openTerms, openPrivacy, closeModal } = useLegalModals();
+  const { language, setLanguage } = useLanguage();
+  const isEn = language === 'en';
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -156,7 +162,7 @@ export function LoginPage({ onContinue }: LoginPageProps) {
               <div className="p-1 bg-white rounded-full">
                 <GoogleIcon />
               </div>
-              <span className="text-amber-900">متابعة عبر جوجل</span>
+              <span className="text-amber-900">{isEn ? 'Continue with Google' : 'متابعة عبر جوجل'}</span>
             </div>
           </motion.button>
 
@@ -189,7 +195,7 @@ export function LoginPage({ onContinue }: LoginPageProps) {
             transition={{ delay: 0.6, duration: 0.6 }}
           >
             <label className="block text-sm text-amber-900/80 mb-2 text-right">
-              البريد الإلكتروني
+              {isEn ? 'Email Address' : 'البريد الإلكتروني'}
             </label>
             <motion.div
               className="relative"
@@ -259,7 +265,7 @@ export function LoginPage({ onContinue }: LoginPageProps) {
             />
 
             <div className="relative flex items-center justify-center gap-2 px-6 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-[20px] shadow-xl border border-green-400/50">
-              <span>إرسال رمز التحقق</span>
+              <span>{isEn ? 'Send Verification Code' : 'إرسال رمز التحقق'}</span>
               <motion.div
                 animate={{ x: [0, 4, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -276,15 +282,48 @@ export function LoginPage({ onContinue }: LoginPageProps) {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.6 }}
           >
-            بالمتابعة، أنت توافق على{' '}
-            <a href="#" className="text-green-600 hover:text-green-700 transition-colors">
-              الشروط والأحكام
-            </a>
-            {' '}و{' '}
-            <a href="#" className="text-green-600 hover:text-green-700 transition-colors">
-              سياسة الخصوصية
-            </a>
+            {isEn ? 'By continuing, you agree to our ' : 'بالمتابعة، أنت توافق على '}
+            <button onClick={openTerms} className="text-green-600 hover:text-green-700 transition-colors underline-offset-2 hover:underline">
+              {isEn ? 'Terms & Conditions' : 'الشروط والأحكام'}
+            </button>
+            {isEn ? ' and ' : ' و '}
+            <button onClick={openPrivacy} className="text-green-600 hover:text-green-700 transition-colors underline-offset-2 hover:underline">
+              {isEn ? 'Privacy Policy' : 'سياسة الخصوصية'}
+            </button>
           </motion.p>
+
+          {/* Language Switcher */}
+          <motion.div
+            className="flex items-center justify-center pt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9, duration: 0.6 }}
+          >
+            <div className="flex items-center bg-white/50 backdrop-blur-sm border border-white/60 rounded-full p-1 shadow-sm">
+              <button
+                onClick={() => setLanguage('ar')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  language === 'ar'
+                    ? 'bg-green-500 text-white shadow-md'
+                    : 'text-amber-900/60 hover:text-green-700'
+                }`}
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              >
+                العربية
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+                  language === 'en'
+                    ? 'bg-green-500 text-white shadow-md'
+                    : 'text-amber-900/60 hover:text-green-700'
+                }`}
+                style={{ fontFamily: 'Inter, sans-serif' }}
+              >
+                English
+              </button>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
 
@@ -309,5 +348,8 @@ export function LoginPage({ onContinue }: LoginPageProps) {
         <span>نظام آمن ومشفر</span>
       </motion.div>
     </motion.div>
+
+    <LegalModals open={openModal} onClose={closeModal} language={language} />
+    </>
   );
 }
