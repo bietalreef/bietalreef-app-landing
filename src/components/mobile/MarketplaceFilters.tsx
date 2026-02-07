@@ -4,8 +4,8 @@
 // ====================================
 
 import { useState } from 'react';
-import { SlidersHorizontal, X } from 'lucide-react';
-import { MarketplaceCategory, MarketplaceFilterState, CATEGORY_LABELS, CATEGORY_LABELS_EN, CATEGORY_ICONS } from '../../data/marketplace';
+import { SlidersHorizontal, X, Flame, CheckCircle, Star, Store as StoreIcon } from 'lucide-react';
+import { MarketplaceCategory, MarketplaceFilterState, CATEGORY_LABELS, CATEGORY_LABELS_EN, CATEGORY_ICONS, CATEGORY_ICON_COLORS } from '../../data/marketplace';
 import { useTranslation } from '../../contexts/LanguageContext';
 
 interface MarketplaceFiltersProps {
@@ -41,14 +41,15 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
         <div className="flex gap-2 min-w-max">
           {categories.map((category) => {
             const isActive = filterState.category === category;
-            const icon = category === 'all' ? '🏪' : CATEGORY_ICONS[category];
+            const IconComp = category === 'all' ? StoreIcon : CATEGORY_ICONS[category];
+            const iconColor = CATEGORY_ICON_COLORS[category];
             
             return (
               <button
                 key={category}
                 onClick={() => onFilterChange({ ...filterState, category })}
                 className={`
-                  px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all
+                  px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all flex items-center gap-1.5
                   ${isActive
                     ? 'bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white shadow-md'
                     : 'bg-[#F5EEE1] text-[#1F3D2B] hover:bg-[#E5DED1]'
@@ -56,7 +57,7 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
                 `}
                 style={{ fontFamily, fontWeight: 700 }}
               >
-                <span className="mr-1">{icon}</span>
+                <IconComp className="w-3.5 h-3.5" style={{ color: isActive ? 'white' : iconColor }} />
                 {catLabels[category]}
               </button>
             );
@@ -78,7 +79,8 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
           `}
           style={{ fontFamily, fontWeight: 700 }}
         >
-          🔥 {isEn ? 'Offers' : 'عروض'}
+          <Flame className="w-3 h-3" />
+          {isEn ? 'Offers' : 'عروض'}
         </button>
 
         {/* In Stock Filter */}
@@ -93,7 +95,8 @@ export function MarketplaceFilters({ filterState, onFilterChange, itemsCount }: 
           `}
           style={{ fontFamily, fontWeight: 700 }}
         >
-          ✅ {isEn ? 'Available' : 'متاح'}
+          <CheckCircle className="w-3 h-3" />
+          {isEn ? 'Available' : 'متاح'}
         </button>
 
         {/* Sort Dropdown */}

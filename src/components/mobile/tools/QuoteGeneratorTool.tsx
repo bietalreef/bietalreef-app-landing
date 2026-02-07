@@ -354,7 +354,7 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
       gradientTo="#3B82F6"
       onBack={onBack}
     >
-      {/* ═══════════ 1. بيانات الشركة ══════════�� */}
+      {/* ═══════════ 1. بيانات الشركة ══════════ */}
       <CollapsibleSection
         isOpen={!!expandedSections.company}
         onToggle={() => toggleSection('company')}

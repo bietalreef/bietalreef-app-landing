@@ -1,11 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Component, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, Search, X, Sparkles, FileText, Calculator, Paintbrush, Megaphone, ArrowLeft, ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { Icon3D, TOOL_ICONS } from '../ui/Icon3D';
-import { Component, type ErrorInfo, type ReactNode } from 'react';
 
-// Tools
+// Tools — static imports
 import { MaterialCalculatorV2 } from './tools/MaterialCalculatorV2';
 import { PaintFlooringCalc } from './tools/PaintFlooringCalc';
 import { CostEstimatorTool } from './tools/CostEstimatorTool';
@@ -208,7 +207,7 @@ class ToolErrorBoundary extends Component<ToolErrorBoundaryProps, ToolErrorBound
   static getDerivedStateFromError(error: Error): ToolErrorBoundaryState {
     return { hasError: true, error };
   }
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  componentDidCatch(error: Error, errorInfo: any) {
     console.error(`❌ Tool Error [${this.props.toolName}]:`, error, errorInfo);
   }
   render() {
@@ -273,30 +272,7 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
 
   const handleBack = () => setActiveTool(null);
 
-  // Helper: wrap tool in error boundary
-  const wrapTool = (toolName: string, component: ReactNode) => (
-    <ToolErrorBoundary onBack={handleBack} toolName={toolName}>
-      {component}
-    </ToolErrorBoundary>
-  );
-
-  // ══════════ Route to individual tools ══════════
-  if (activeTool === 'materials') return wrapTool('حاسبة مواد البناء', <MaterialCalculatorV2 onBack={handleBack} />);
-  if (activeTool === 'paint') return wrapTool('حاسبة الدهانات', <PaintFlooringCalc onBack={handleBack} />);
-  if (activeTool === 'cost') return wrapTool('مقدّر التكلفة', <CostEstimatorTool onBack={handleBack} />);
-  if (activeTool === 'quote') return wrapTool('مولّد عروض الأسعار', <QuoteGeneratorTool onBack={handleBack} />);
-  if (activeTool === 'invoice') return wrapTool('مولّد الفواتير', <InvoiceGeneratorTool onBack={handleBack} />);
-  if (activeTool === 'marketing') return wrapTool('المحتوى التسويقي', <MarketingContentTool onBack={handleBack} />);
-  if (activeTool === 'contract') return wrapTool('مولّد العقود', <ContractGeneratorTool onBack={handleBack} />);
-  if (activeTool === 'social-media') return wrapTool('مدير التواصل', <SocialMediaManager onBack={handleBack} />);
-  if (activeTool === 'color-palette') return wrapTool('لوحة الألوان', <ColorPaletteTool onBack={handleBack} />);
-  if (activeTool === 'lighting') return wrapTool('حاسبة الإضاءة', <LightingCalcTool onBack={handleBack} />);
-  if (activeTool === 'room-layout') return wrapTool('تخطيط الغرفة', <RoomLayoutTool onBack={handleBack} />);
-  if (activeTool === 'design-2d') return wrapTool('تصميم 2D', <Design2DTool onBack={handleBack} />);
-  if (activeTool === 'design-3d') return wrapTool('تصميم 3D', <Design3DTool onBack={handleBack} />);
-  if (activeTool === 'convert-2d-3d') return wrapTool('تحويل 2D→3D', <Convert2Dto3DTool onBack={handleBack} />);
-
-  // ══════════ Filtered tools ══════════
+  // ══════════ Filtered tools (hooks MUST be before any early return) ══════════
   const filteredTools = useMemo(() => {
     return ALL_TOOLS.filter(tool => {
       if (activeCategory !== 'all' && tool.category !== activeCategory) return false;
@@ -321,6 +297,28 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
     }
     return groups;
   }, [activeCategory, filteredTools]);
+
+  const wrapTool = (toolName: string, component: ReactNode) => (
+    <ToolErrorBoundary onBack={handleBack} toolName={toolName}>
+      {component}
+    </ToolErrorBoundary>
+  );
+
+  // ══════════ Route to individual tools ══════════
+  if (activeTool === 'materials') return wrapTool('حاسبة مواد البناء', <MaterialCalculatorV2 onBack={handleBack} />);
+  if (activeTool === 'paint') return wrapTool('حاسبة الدهانات', <PaintFlooringCalc onBack={handleBack} />);
+  if (activeTool === 'cost') return wrapTool('مقدّر التكلفة', <CostEstimatorTool onBack={handleBack} />);
+  if (activeTool === 'quote') return wrapTool('مولّد عروض الأسعار', <QuoteGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'invoice') return wrapTool('مولّد الفواتير', <InvoiceGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'marketing') return wrapTool('المحتوى التسويقي', <MarketingContentTool onBack={handleBack} />);
+  if (activeTool === 'contract') return wrapTool('مولّد العقود', <ContractGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'social-media') return wrapTool('مدير التواصل', <SocialMediaManager onBack={handleBack} />);
+  if (activeTool === 'color-palette') return wrapTool('لوحة الألوان', <ColorPaletteTool onBack={handleBack} />);
+  if (activeTool === 'lighting') return wrapTool('حاسبة الإضاءة', <LightingCalcTool onBack={handleBack} />);
+  if (activeTool === 'room-layout') return wrapTool('تخطيط الغرفة', <RoomLayoutTool onBack={handleBack} />);
+  if (activeTool === 'design-2d') return wrapTool('تصميم 2D', <Design2DTool onBack={handleBack} />);
+  if (activeTool === 'design-3d') return wrapTool('تصميم 3D', <Design3DTool onBack={handleBack} />);
+  if (activeTool === 'convert-2d-3d') return wrapTool('تحويل 2D→3D', <Convert2Dto3DTool onBack={handleBack} />);
 
   // ══════════ Main Dashboard ══════════
   return (

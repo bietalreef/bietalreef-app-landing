@@ -3,6 +3,8 @@
 // بيت الريف - نظام المتجر (UAE)
 // ====================================
 
+import { Package, Wrench, Armchair, Palette, Settings, Truck, Store, type LucideIcon } from 'lucide-react';
+
 export type MarketplaceCategory = 
   | 'materials'    // مواد بناء
   | 'tools'        // أدوات
@@ -416,11 +418,21 @@ export const CATEGORY_LABELS_EN: Record<MarketplaceCategory | 'all', string> = {
   equipment: 'Equipment Rental'
 };
 
-export const CATEGORY_ICONS: Record<MarketplaceCategory, string> = {
-  materials: '🧱',
-  tools: '🔧',
-  furniture: '🪑',
-  decor: '🎨',
-  services: '⚙️',
-  equipment: '🚜'
+export const CATEGORY_ICONS: Record<MarketplaceCategory, LucideIcon> = {
+  materials: Package,
+  tools: Wrench,
+  furniture: Armchair,
+  decor: Palette,
+  services: Settings,
+  equipment: Truck,
+};
+
+export const CATEGORY_ICON_COLORS: Record<MarketplaceCategory | 'all', string> = {
+  all: '#4A90E2',
+  materials: '#D97706',
+  tools: '#2AA676',
+  furniture: '#8B5CF6',
+  decor: '#EC4899',
+  services: '#6B7280',
+  equipment: '#059669',
 };

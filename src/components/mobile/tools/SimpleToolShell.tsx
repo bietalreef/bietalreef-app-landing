@@ -126,7 +126,7 @@ export function InputCard({ children, title, titleEn }: { children: React.ReactN
   } catch { /* LanguageContext not available */ }
 
   return (
-    <div className="bg-white rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100/80 mb-4">
+    <div className="bg-white rounded-[20px] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.06)] border-[4px] border-gray-200/60 mb-4 transition-all hover:border-[#2AA676]/30">
       {displayTitle && (
         <h3 className="text-[#1A1A1A] font-cairo font-bold text-base mb-4 flex items-center gap-2">
           {displayTitle}
@@ -181,7 +181,7 @@ export function InputField({
           placeholder={displayPlaceholder}
           min={min}
           max={max}
-          className="w-full p-3.5 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-[#2AA676] focus:ring-2 focus:ring-[#2AA676]/10 transition-all font-cairo text-[#1A1A1A]"
+          className="w-full p-3.5 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-[#2AA676] focus:ring-2 focus:ring-[#2AA676]/10 transition-all font-cairo text-[#1A1A1A]"
           style={{ fontFamily: 'Cairo, sans-serif' }}
         />
         {suffix && (
@@ -282,10 +282,10 @@ export function OptionSelector({
           <button
             key={opt.id}
             onClick={() => onChange(opt.id)}
-            className={`p-3 rounded-xl border-2 transition-all text-center ${
+            className={`p-3 rounded-xl border-[4px] transition-all text-center ${
               value === opt.id
                 ? 'border-[#2AA676] bg-[#2AA676]/5 shadow-sm'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                : 'border-gray-200/60 bg-white hover:border-gray-300'
             }`}
           >
             {opt.icon && <div className="text-xl mb-1">{opt.icon}</div>}
@@ -330,12 +330,12 @@ export function CounterInput({
   } catch { /* LanguageContext not available */ }
 
   return (
-    <div className="flex items-center justify-between mb-3 bg-gray-50/80 rounded-xl p-3 border border-gray-100">
+    <div className="flex items-center justify-between mb-3 bg-gray-50/80 rounded-xl p-3 border-[4px] border-gray-200/60">
       <span className="text-sm font-bold text-gray-600 font-cairo">{displayLabel}</span>
       <div className="flex items-center gap-3">
         <button
           onClick={() => onChange(Math.max(min, value - 1))}
-          className="w-9 h-9 rounded-full bg-white border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors text-lg font-bold"
+          className="w-9 h-9 rounded-full bg-white border-[4px] border-gray-200/60 flex items-center justify-center text-gray-500 hover:bg-gray-100 transition-colors text-lg font-bold"
         >
           −
         </button>
@@ -377,11 +377,11 @@ export function ActionButton({
   } catch { /* LanguageContext not available */ }
 
   const baseClass =
-    'w-full py-4 rounded-2xl font-bold font-cairo text-base flex items-center justify-center gap-2 transition-all active:scale-[0.97] disabled:opacity-50 shadow-lg';
+    'w-full py-4 rounded-2xl font-bold font-cairo text-base flex items-center justify-center gap-2 transition-all active:scale-[0.97] disabled:opacity-50 shadow-lg border-[4px] border-transparent';
   const variants = {
-    primary: 'bg-[#2AA676] hover:bg-[#238c63] text-white shadow-[#2AA676]/20',
-    secondary: 'bg-[#C8A86A] hover:bg-[#b8984f] text-white shadow-[#C8A86A]/20',
-    dark: 'bg-[#1A1A1A] hover:bg-black text-white shadow-black/10',
+    primary: 'bg-[#2AA676] hover:bg-[#238c63] text-white shadow-[#2AA676]/20 border-[#238c63]/30',
+    secondary: 'bg-[#C8A86A] hover:bg-[#b8984f] text-white shadow-[#C8A86A]/20 border-[#b8984f]/30',
+    dark: 'bg-[#1A1A1A] hover:bg-black text-white shadow-black/10 border-gray-800/30',
   };
 
   return (
@@ -430,10 +430,10 @@ export function ResultCard({
 
   return (
     <div
-      className={`rounded-2xl p-4 flex items-center gap-3 ${
+      className={`rounded-2xl p-4 flex items-center gap-3 border-[4px] ${
         highlight
-          ? 'bg-gradient-to-l from-[#2AA676] to-[#1F8A5E] text-white shadow-lg'
-          : 'bg-white border border-gray-100 shadow-sm'
+          ? 'bg-gradient-to-l from-[#2AA676] to-[#1F8A5E] text-white shadow-lg border-[#1F8A5E]/50'
+          : 'bg-white border-gray-200/60 shadow-sm'
       }`}
     >
       {(IconComp || icon) && (

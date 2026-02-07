@@ -7,7 +7,17 @@ import {
   MapPin,
   Clock,
   Star,
-  CheckCircle
+  CheckCircle,
+  Building2,
+  Compass,
+  Wrench,
+  HardHat,
+  Settings,
+  Package,
+  Armchair,
+  Truck,
+  Home,
+  Sparkles,
 } from 'lucide-react';
 
 // ====================================
@@ -56,17 +66,17 @@ export function MapSearch({
   // ====================================
   
   const categories = [
-    { id: 'all', label: 'الكل', icon: '🏗️' },
-    { id: 'construction', label: 'مقاولات', icon: '🏗️' },
-    { id: 'engineering', label: 'استشارات هندسية', icon: '📐' },
-    { id: 'maintenance', label: 'شركات صيانة', icon: '🔧' },
-    { id: 'craftsmen', label: 'العمالة الحرفية', icon: '👷' },
-    { id: 'workshops', label: 'الورش', icon: '⚙️' },
-    { id: 'building-materials', label: 'مواد البناء', icon: '🧱' },
-    { id: 'furniture', label: 'الأثاث والديكور', icon: '🪑' },
-    { id: 'equipment', label: 'تأجير معدات', icon: '🚜' },
-    { id: 'realestate', label: 'عقارات', icon: '🏢' },
-    { id: 'cleaning', label: 'خدمات النظافة', icon: '🧹' },
+    { id: 'all', label: 'الكل', Icon: Sparkles, color: '#2AA676' },
+    { id: 'construction', label: 'مقاولات', Icon: Building2, color: '#1F3D2B' },
+    { id: 'engineering', label: 'استشارات هندسية', Icon: Compass, color: '#4A90E2' },
+    { id: 'maintenance', label: 'شركات صيانة', Icon: Wrench, color: '#F59E0B' },
+    { id: 'craftsmen', label: 'العمالة الحرفية', Icon: HardHat, color: '#EF4444' },
+    { id: 'workshops', label: 'الورش', Icon: Settings, color: '#6B7280' },
+    { id: 'building-materials', label: 'مواد البناء', Icon: Package, color: '#D97706' },
+    { id: 'furniture', label: 'الأثاث والديكور', Icon: Armchair, color: '#8B5CF6' },
+    { id: 'equipment', label: 'تأجير معدات', Icon: Truck, color: '#059669' },
+    { id: 'realestate', label: 'عقارات', Icon: Home, color: '#0EA5E9' },
+    { id: 'cleaning', label: 'خدمات النظافة', Icon: Sparkles, color: '#14B8A6' },
   ];
 
   const recentSearches = [
@@ -153,13 +163,13 @@ export function MapSearch({
               <button
                 key={cat.id}
                 onClick={() => handleCategorySelect(cat.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex-shrink-0 ${
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all flex-shrink-0 flex items-center gap-1.5 ${
                   selectedCategory === cat.id
                     ? 'bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] text-white'
                     : 'bg-[#F5EEE1] text-[#1F3D2B] hover:bg-[#2AA676]/10'
                 }`}
               >
-                <span className="mr-1">{cat.icon}</span>
+                <cat.Icon className="w-3.5 h-3.5" style={{ color: selectedCategory === cat.id ? 'white' : cat.color }} />
                 {cat.label}
               </button>
             ))}
@@ -204,7 +214,9 @@ export function MapSearch({
                         : 'bg-[#F5EEE1] text-[#1F3D2B]'
                     }`}
                   >
-                    {rating === 0 ? 'الكل' : `${rating}+ ⭐`}
+                    {rating === 0 ? 'الكل' : (
+                      <span className="flex items-center gap-1">{rating}+ <Star className="w-3 h-3 fill-amber-400 text-amber-400" /></span>
+                    )}
                   </button>
                 ))}
               </div>
