@@ -4,6 +4,7 @@ import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router';
 import { Sparkles, ChevronLeft, Crown, Shield, Video, FolderKanban, Wallet as WalletIcon } from 'lucide-react';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServicesContentProps {
   onServiceClick?: (serviceId: string) => void;
@@ -156,8 +157,19 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
             >
               <div className="w-full h-[70%] flex items-center justify-center bg-gradient-to-br from-[#F5EEE1] to-white relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#4A90E2]/5 to-[#56CCF2]/10 group-hover:from-[#4A90E2]/10 group-hover:to-[#56CCF2]/20 transition-all" />
-                <div className="relative w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-[16px] md:rounded-[20px] bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] flex items-center justify-center shadow-[0_8px_24px_rgba(74,144,226,0.4)] transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
-                  <span className="text-2xl md:text-3xl relative z-10 filter drop-shadow-lg">{service.icon}</span>
+                <div className="relative transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                  {SERVICE_ICONS[service.id] ? (
+                    <Icon3D
+                      icon={SERVICE_ICONS[service.id].icon}
+                      theme={SERVICE_ICONS[service.id].theme}
+                      size="lg"
+                      hoverable={false}
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-[16px] bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] flex items-center justify-center shadow-[0_8px_24px_rgba(74,144,226,0.4)]">
+                      <span className="text-2xl">{service.icon}</span>
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="w-full h-[30%] flex items-center justify-center px-2 bg-white">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronLeft } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { Icon3D, TOOL_ICONS } from '../ui/Icon3D';
 
 // Tools
 import { MaterialCalculatorV2 } from './tools/MaterialCalculatorV2';
@@ -266,8 +267,19 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
                 )}
 
                 {/* Icon */}
-                <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg mb-2.5 group-hover:scale-110 transition-transform`}>
-                  {tool.icon}
+                <div className="mb-2.5 group-hover:scale-110 transition-transform">
+                  {TOOL_ICONS[tool.id as string] ? (
+                    <Icon3D
+                      icon={TOOL_ICONS[tool.id as string].icon}
+                      theme={TOOL_ICONS[tool.id as string].theme}
+                      size="lg"
+                      hoverable={false}
+                    />
+                  ) : (
+                    <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg`}>
+                      {tool.icon}
+                    </div>
+                  )}
                 </div>
 
                 {/* Title */}
@@ -289,7 +301,7 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
       <div className="px-4 mt-8">
         <div className="bg-gradient-to-l from-[#F5EEE1] to-[#FFF8F0] rounded-[20px] p-5 border border-[#E8DCC8]">
           <div className="flex items-start gap-3">
-            <span className="text-2xl">💡</span>
+            <Icon3D icon={TOOL_ICONS['lighting'].icon} theme="amber" size="md" hoverable={false} />
             <div>
               <h4 className="font-bold font-cairo text-sm text-[#1A1A1A] mb-1">
                 {isEn ? 'Beit Al Reef Tip' : 'نصيحة بيت الريف'}

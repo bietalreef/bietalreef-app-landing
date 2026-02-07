@@ -14,6 +14,7 @@ import { AboutScreen, TermsScreen } from './AboutTermsScreens';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useZoom } from '../../contexts/ZoomContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { Icon3D } from '../ui/Icon3D';
 
 // ─── Content Protection Hook ───
 function useContentProtection() {
@@ -689,8 +690,8 @@ export function ProfileScreen() {
           className="w-full bg-white rounded-2xl p-4 shadow-md flex items-center gap-3 border border-[#E6DCC8] relative overflow-hidden group"
         >
           <div className="absolute inset-0 bg-[#C8A86A]/5 group-hover:bg-[#C8A86A]/10 transition-colors" />
-          <div className="relative w-12 h-12 bg-gradient-to-br from-[#C8A86A] to-[#A07D35] rounded-xl flex items-center justify-center shadow-md">
-            <span className="text-2xl">🪙</span>
+          <div className="relative">
+            <Icon3D icon={Coins} theme="gold" size="md" hoverable={false} />
           </div>
           <div className="relative flex-1 text-right">
             <p className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
@@ -707,14 +708,14 @@ export function ProfileScreen() {
       {/* Menu Items */}
       <div className="px-4 space-y-3">
         {[
-          { icon: <Edit3 className="w-5 h-5" />, label: isEn ? 'Edit Profile' : 'تعديل الملف الشخصي', color: 'text-[#2AA676]', bg: 'bg-[#2AA676]/10', action: () => setSection('edit') },
-          { icon: <MapPin className="w-5 h-5" />, label: isEn ? 'Set Location' : 'تحديد الموقع', color: 'text-blue-500', bg: 'bg-blue-50', action: () => setSection('location') },
-          { icon: <ShoppingBag className="w-5 h-5" />, label: isEn ? 'My Orders' : 'طلباتي', color: 'text-orange-500', bg: 'bg-orange-50', action: () => setSection('orders') },
-          { icon: <Star className="w-5 h-5" />, label: isEn ? 'Subscriptions' : 'الاشتراكات', color: 'text-[#C8A86A]', bg: 'bg-[#C8A86A]/10', action: () => setSection('subscriptions') },
-          { icon: <Settings className="w-5 h-5" />, label: isEn ? 'Settings' : 'الإعدادات', color: 'text-gray-600', bg: 'bg-gray-100', action: () => setSection('settings') },
-          { icon: <HelpCircle className="w-5 h-5" />, label: isEn ? 'Support' : 'الدعم الفني', color: 'text-purple-500', bg: 'bg-purple-50', action: () => setSection('support') },
-          { icon: <Info className="w-5 h-5" />, label: isEn ? 'About Beit Al Reef' : 'من نحن', color: 'text-[#1F3D2B]', bg: 'bg-[#1F3D2B]/10', action: () => setSection('about') },
-          { icon: <Scale className="w-5 h-5" />, label: isEn ? 'Terms & Conditions' : 'الشروط والأحكام', color: 'text-[#C8A86A]', bg: 'bg-[#C8A86A]/10', action: () => setSection('terms') },
+          { iconComp: Edit3, theme: 'green', label: isEn ? 'Edit Profile' : 'تعديل الملف الشخصي', action: () => setSection('edit') },
+          { iconComp: MapPin, theme: 'blue', label: isEn ? 'Set Location' : 'تحديد الموقع', action: () => setSection('location') },
+          { iconComp: ShoppingBag, theme: 'orange', label: isEn ? 'My Orders' : 'طلباتي', action: () => setSection('orders') },
+          { iconComp: Star, theme: 'gold', label: isEn ? 'Subscriptions' : 'الاشتراكات', action: () => setSection('subscriptions') },
+          { iconComp: Settings, theme: 'teal', label: isEn ? 'Settings' : 'الإعدادات', action: () => setSection('settings') },
+          { iconComp: HelpCircle, theme: 'purple', label: isEn ? 'Support' : 'الدعم الفني', action: () => setSection('support') },
+          { iconComp: Info, theme: 'emerald', label: isEn ? 'About Beit Al Reef' : 'من نحن', action: () => setSection('about') },
+          { iconComp: Scale, theme: 'amber', label: isEn ? 'Terms & Conditions' : 'الشروط والأحكام', action: () => setSection('terms') },
         ].map((item, i) => (
           <motion.button
             key={i}
@@ -722,9 +723,7 @@ export function ProfileScreen() {
             onClick={item.action}
             className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3"
           >
-            <div className={`w-10 h-10 ${item.bg} rounded-xl flex items-center justify-center ${item.color}`}>
-              {item.icon}
-            </div>
+            <Icon3D icon={item.iconComp} theme={item.theme} size="sm" hoverable={false} />
             <span className="flex-1 text-right text-[#1F3D2B] font-semibold" style={{ fontFamily: 'Cairo, sans-serif' }}>{item.label}</span>
             <ChevronLeft className="w-4 h-4 text-[#1F3D2B]/30 rotate-180" />
           </motion.button>
@@ -739,9 +738,7 @@ export function ProfileScreen() {
           }}
           className="w-full bg-white rounded-2xl p-4 shadow-sm flex items-center gap-3 mt-6"
         >
-          <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500">
-            <LogOut className="w-5 h-5" />
-          </div>
+          <Icon3D icon={LogOut} theme="red" size="sm" hoverable={false} />
           <span className="flex-1 text-right text-red-500 font-semibold" style={{ fontFamily: 'Cairo, sans-serif' }}>
             {isEn ? 'Log Out' : 'تسجيل الخروج'}
           </span>

@@ -1,11 +1,13 @@
 import { motion } from 'motion/react';
 import { toast } from 'sonner@2.0.3';
 import { useShopStore } from './ShopStore';
-import { Search, Heart, Plus, Star, Flame, X } from 'lucide-react';
+import { Search, Heart, Plus, Star, Flame, X, Box, Glasses } from 'lucide-react';
 import { ImageWithFallback } from '../../figma/ImageWithFallback';
 import { useTranslation } from '../../../contexts/LanguageContext';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { VR3DShowroom } from './VR3DShowroom';
+import { IsometricShowcase, IsometricBanner } from './IsometricShowcase';
 
 // Products relevant to construction & home finishing — UAE market
 const DEMO_PRODUCTS = [
@@ -132,6 +134,8 @@ export function StoreHome() {
   const { setSelectedProduct, setCurrentView, addToCart, favorites, toggleFavorite } = useShopStore();
   const [activeCat, setActiveCat] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [show3DShowroom, setShow3DShowroom] = useState(false);
+  const [showIsometric, setShowIsometric] = useState(false);
   const { language, textAlign } = useTranslation('store');
   const isEn = language === 'en';
   const fontFamily = 'Cairo, sans-serif';
@@ -233,7 +237,7 @@ export function StoreHome() {
       </div>
 
       {/* Featured Banner */}
-      <div className="px-5 mb-6">
+      <div className="px-5 mb-4">
         <div className="w-full h-40 bg-gradient-to-r from-[#D4AF37] to-[#8A701E] rounded-2xl flex items-center justify-between p-6 relative overflow-hidden">
            <div className="relative z-10">
               <span className="text-black/60 text-sm mb-1 block" style={fw7}>
@@ -253,6 +257,68 @@ export function StoreHome() {
            <ImageWithFallback src={DEMO_PRODUCTS[0].image} className="absolute right-0 top-0 h-full w-2/3 object-cover opacity-30 mix-blend-multiply" />
         </div>
       </div>
+
+      {/* ═══ 3D VR Showroom Banner ═══ */}
+      <div className="px-5 mb-6">
+        <motion.button
+          onClick={() => setShow3DShowroom(true)}
+          className="w-full rounded-2xl overflow-hidden relative group"
+          style={{ height: 100 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          {/* Animated gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#111318] via-[#1a2e24] to-[#111318] group-hover:via-[#1f3d2b] transition-all duration-500" />
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iZyIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj48cGF0aCBkPSJNIDYwIDAgTCAwIDAgMCA2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJyZ2JhKDQyLDE2NiwxMTgsMC4wNikiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNnKSIvPjwvc3ZnPg==')] opacity-50" />
+          
+          {/* Floating 3D cubes decoration */}
+          <div className="absolute top-3 right-6 w-8 h-8 border border-[#2AA676]/30 rounded-lg rotate-12 group-hover:rotate-45 transition-transform duration-700" />
+          <div className="absolute bottom-4 right-14 w-5 h-5 border border-[#D4AF37]/20 rounded rotate-45 group-hover:rotate-90 transition-transform duration-500" />
+          <div className="absolute top-6 right-28 w-4 h-4 bg-[#2AA676]/10 rounded group-hover:scale-150 transition-transform duration-500" />
+          
+          <div className="relative z-10 flex items-center h-full px-5 gap-4">
+            {/* 3D Icon */}
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#2AA676]/20 to-[#2AA676]/5 border border-[#2AA676]/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+              <div className="relative">
+                <Box className="w-7 h-7 text-[#2AA676]" />
+                <Glasses className="w-4 h-4 text-[#D4AF37] absolute -bottom-1 -right-1.5" />
+              </div>
+            </div>
+            
+            <div className="flex-1 text-right">
+              <h3 className="text-white text-base mb-0.5" style={{ fontWeight: 800, fontFamily }}>
+                {isEn ? '3D VR Showroom' : 'المعرض ثلاثي الأبعاد'}
+              </h3>
+              <p className="text-white/40 text-xs" style={{ fontWeight: 600, fontFamily }}>
+                {isEn ? '6 Premium Models · Interactive VR' : '٦ نماذج فاخرة · واقع افتراضي تفاعلي'}
+              </p>
+            </div>
+
+            {/* CTA */}
+            <div className="flex-shrink-0 px-4 py-2 rounded-xl bg-gradient-to-r from-[#2AA676] to-[#1d8a5e] text-white text-sm group-hover:shadow-[0_0_20px_rgba(42,166,118,0.3)] transition-all" style={{ fontWeight: 700, fontFamily }}>
+              {isEn ? 'Enter' : 'ادخل'}
+            </div>
+          </div>
+
+          {/* Top shine line */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#2AA676]/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#D4AF37]/20 to-transparent" />
+        </motion.button>
+      </div>
+
+      {/* 3D Showroom Modal */}
+      {show3DShowroom && (
+        <VR3DShowroom onClose={() => setShow3DShowroom(false)} isEn={isEn} />
+      )}
+
+      {/* ═══ Isometric Interior Gallery Banner ═══ */}
+      <div className="px-5 mb-6">
+        <IsometricBanner onClick={() => setShowIsometric(true)} isEn={isEn} />
+      </div>
+
+      {/* Isometric Showcase Modal */}
+      {showIsometric && (
+        <IsometricShowcase onClose={() => setShowIsometric(false)} isEn={isEn} />
+      )}
 
       {/* Products Grid */}
       <div className="px-5 grid grid-cols-2 gap-3">

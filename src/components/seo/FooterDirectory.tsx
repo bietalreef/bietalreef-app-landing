@@ -2,6 +2,8 @@ import { Link } from 'react-router';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { Icon3D, SERVICE_ICONS, TOOL_ICONS } from '../ui/Icon3D';
+import { Bot, Home as HomeIcon } from 'lucide-react';
 import {
   SITE_NAME_AR,
   SITE_NAME_EN,
@@ -79,9 +81,18 @@ export function FooterDirectory() {
                 <Link
                   key={service.slug}
                   to={generateServiceUrl(service.slug)}
-                  className="group flex items-center gap-2 bg-white hover:bg-white rounded-xl p-3 transition-all border border-[#E6DCC8] hover:border-[#2AA676]/40 shadow-sm hover:shadow-md"
+                  className="group flex items-center gap-2.5 bg-white hover:bg-white rounded-xl p-3 transition-all border border-[#E6DCC8] hover:border-[#2AA676]/40 shadow-sm hover:shadow-md"
                 >
-                  <span className="text-xl flex-shrink-0">{service.icon}</span>
+                  {SERVICE_ICONS[service.slug] ? (
+                    <Icon3D
+                      icon={SERVICE_ICONS[service.slug].icon}
+                      theme={SERVICE_ICONS[service.slug].theme}
+                      size="xs"
+                      hoverable={false}
+                    />
+                  ) : (
+                    <span className="text-xl flex-shrink-0">{service.icon}</span>
+                  )}
                   <span className="text-[#1F3D2B]/70 group-hover:text-[#2AA676] text-xs font-semibold transition-colors" style={{ fontFamily }}>
                     {isEn ? service.nameEn : service.nameAr}
                   </span>
@@ -238,9 +249,7 @@ export function FooterDirectory() {
             className="block bg-white rounded-2xl p-4 border border-[#E6DCC8] shadow-sm hover:shadow-md transition-all group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
-                <span className="text-xl">🤖</span>
-              </div>
+              <Icon3D icon={Bot} theme="emerald" size="md" hoverable={false} />
               <div className="flex-1">
                 <h3 className="text-[#1F3D2B] font-bold text-sm group-hover:text-[#2AA676] transition-colors" style={{ fontFamily }}>
                   {isEn ? 'Weyaak – Smart Assistant' : 'وياك - المساعد الذكي'}
@@ -258,13 +267,16 @@ export function FooterDirectory() {
         <div className="border-t border-[#E6DCC8] pt-6 mt-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo & tagline */}
-            <div className="text-center md:text-right">
-              <h2 className="text-xl font-black text-[#1F3D2B] mb-1" style={{ fontFamily }}>
-                🏠 {isEn ? SITE_NAME_EN : SITE_NAME_AR}
-              </h2>
-              <p className="text-[#1F3D2B]/40 text-xs" style={{ fontFamily }}>
-                {isEn ? SITE_TAGLINE_EN : SITE_TAGLINE_AR}
-              </p>
+            <div className="text-center md:text-right flex items-center gap-3">
+              <Icon3D icon={HomeIcon} theme="green" size="md" hoverable={false} />
+              <div>
+                <h2 className="text-xl font-black text-[#1F3D2B] mb-0.5" style={{ fontFamily }}>
+                  {isEn ? SITE_NAME_EN : SITE_NAME_AR}
+                </h2>
+                <p className="text-[#1F3D2B]/40 text-xs" style={{ fontFamily }}>
+                  {isEn ? SITE_TAGLINE_EN : SITE_TAGLINE_AR}
+                </p>
+              </div>
             </div>
 
             {/* Coverage note — important for Google */}

@@ -198,7 +198,7 @@ export function ServicesCylinder({ isEn = false }: ServicesCylinderProps) {
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden"
-      style={{ height: 240, perspective: '1000px', perspectiveOrigin: '50% 50%' }}
+      style={{ height: 170, perspective: '1000px', perspectiveOrigin: '50% 50%' }}
       onMouseDown={(e) => handleDragStart(e.clientX)}
       onMouseMove={(e) => handleDragMove(e.clientX)}
       onMouseUp={handleDragEnd}

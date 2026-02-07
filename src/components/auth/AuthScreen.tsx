@@ -6,8 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import logoImg from "figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png";
 import { useLanguage } from '../../contexts/LanguageContext';
 import { LegalModals, useLegalModals } from '../LegalModals';
-import { HeroCylinder } from './HeroCylinder';
-import { ServicesCylinder } from './ServicesCylinder';
+import { Unified3DScene } from './Unified3DScene';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface AuthScreenProps {
@@ -253,20 +252,20 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
       className="flex-1 flex flex-col"
     >
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-[#F5EEE1] px-6 pt-8 pb-4 md:pt-12 md:pb-6">
+      <div className="relative overflow-hidden bg-[#F5EEE1] px-6 pt-4 pb-2 md:pt-8 md:pb-4">
         {/* Decorative circles */}
         <div className="absolute top-[-40px] right-[-40px] w-48 h-48 bg-[#C8A86A]/10 rounded-full blur-3xl" />
         <div className="absolute bottom-[-20px] left-[-30px] w-36 h-36 bg-[#2AA676]/8 rounded-full blur-3xl" />
         
         <div className="relative z-10 max-w-lg mx-auto text-center">
           {/* Logo + Text Row */}
-          <div className="flex items-center justify-center gap-4 mb-3">
+          <div className="flex items-center justify-center gap-4 mb-2">
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20, delay: 0.1 }}
             >
-              <div className="w-20 h-20 md:w-24 md:h-24 bg-white rounded-2xl border border-[#E6DCC8] shadow-lg flex items-center justify-center p-2">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white rounded-2xl border border-[#E6DCC8] shadow-lg flex items-center justify-center p-1.5">
                 <img 
                   src={logoImg} 
                   alt="بيت الريف" 
@@ -279,7 +278,7 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-[#C8A86A] text-lg md:text-xl mb-1"
+                className="text-[#C8A86A] text-base md:text-lg mb-0.5"
                 style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}
               >
                 {isEn ? 'Welcome Home' : 'مرحباً بك في الدار'}
@@ -288,7 +287,7 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.3 }}
-                className="text-[#1F3D2B]/60 text-sm md:text-base leading-relaxed max-w-[220px]"
+                className="text-[#1F3D2B]/60 text-xs md:text-sm leading-relaxed max-w-[220px]"
                 style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}
               >
                 {isEn ? 'Your smart digital platform — services, store & tools' : 'منصتك الرقمية الذكية — خدمات، متجر، وأدوات احترافية'}
@@ -301,7 +300,7 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
-            className="flex flex-wrap justify-center gap-2.5 mb-2"
+            className="flex flex-wrap justify-center gap-2 mb-1"
           >
             {[
               { icon: Shield, label: isEn ? 'Verified' : 'موثوق' },
@@ -318,86 +317,54 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
           </motion.div>
         </div>
 
-        {/* 3D Rotating Cylinder — Offers & Featured Providers */}
+        {/* ═══ Unified 3D Scene — Both Rings ═══ */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
+          initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.5, duration: 0.6 }}
+          transition={{ delay: 0.45, duration: 0.6 }}
           className="relative z-10 -mx-6"
         >
-          <HeroCylinder isEn={isEn} />
-        </motion.div>
-
-        {/* Label under cylinder */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="relative z-10 flex items-center justify-center gap-5 mt-2 mb-1"
-        >
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#2AA676] shadow-[0_0_6px_rgba(42,166,118,0.4)]" />
-            <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Live Offers' : 'عروض حية'}</span>
+          <div className="flex items-center justify-center gap-3 px-6 mb-0">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#2AA676]" />
+              <span className="text-[#1F3D2B]/40 text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Offers' : 'عروض'}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#C8A86A]" />
+              <span className="text-[#1F3D2B]/40 text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Pros' : 'مميزون'}</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 rounded-full bg-[#D4AF37]" />
+              <span className="text-[#1F3D2B]/40 text-[9px]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Services' : 'خدمات'}</span>
+            </div>
+            <span className="text-[#2AA676] text-[8px] font-black bg-[#2AA676]/10 px-1.5 py-0.5 rounded-full">22</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#C8A86A] shadow-[0_0_6px_rgba(200,168,106,0.4)]" />
-            <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Featured Pros' : 'مميزون'}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#8B5CF6] shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
-            <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Platform' : 'المنصة'}</span>
-          </div>
-        </motion.div>
-
-        {/* 3D Rotating Cylinder #2 — خدمات بيت الريف */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.9, duration: 0.6 }}
-          className="relative z-10 -mx-6"
-        >
-          <ServicesCylinder isEn={isEn} />
-        </motion.div>
-
-        {/* Label under services cylinder */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.1 }}
-          className="relative z-10 flex items-center justify-center gap-2 mt-1 mb-1"
-        >
-          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full border border-[#E6DCC8] shadow-sm">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
-            <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-              {isEn ? 'Beit Al Reef Services' : 'خدمات بيت الريف'}
-            </span>
-            <span className="text-[#2AA676] text-[10px] font-black bg-[#2AA676]/10 px-1.5 py-0.5 rounded-full">9</span>
-          </div>
+          <Unified3DScene isEn={isEn} />
         </motion.div>
       </div>
 
       {/* Bottom Section */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 py-8 md:py-12 -mt-8">
+      <div className="flex-1 flex flex-col items-center justify-start px-6 py-4 md:py-6">
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="w-full max-w-md space-y-4"
+          className="w-full max-w-md space-y-3"
         >
           {/* Welcome info card */}
-          <div className="bg-white rounded-2xl shadow-lg shadow-black/5 border border-[#E6DCC8]/50 p-5 mb-2">
+          <div className="bg-white rounded-2xl shadow-lg shadow-black/5 border border-[#E6DCC8]/50 p-3 mb-1">
             <div className="flex gap-2">
-              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-3 text-center">
-                <span className="text-xs text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Services' : 'خدمات'}</span>
-                <span className="text-lg font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>+50</span>
+              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-2 text-center">
+                <span className="text-[10px] text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Services' : 'خدمات'}</span>
+                <span className="text-base font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>+50</span>
               </div>
-              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-3 text-center">
-                <span className="text-xs text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Providers' : 'مزود خدمة'}</span>
-                <span className="text-lg font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>+200</span>
+              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-2 text-center">
+                <span className="text-[10px] text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Providers' : 'مزود خدمة'}</span>
+                <span className="text-base font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>+200</span>
               </div>
-              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-3 text-center">
-                <span className="text-xs text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Emirates' : 'إمارة'}</span>
-                <span className="text-lg font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>7</span>
+              <div className="flex-1 bg-[#F5EEE1] rounded-xl px-3 py-2 text-center">
+                <span className="text-[10px] text-gray-500 block" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{isEn ? 'Emirates' : 'إمارة'}</span>
+                <span className="text-base font-black text-[#2E7D50]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800 }}>7</span>
               </div>
             </div>
           </div>
@@ -406,7 +373,7 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
           <button
             onClick={onGoogleLogin}
             disabled={isLoading}
-            className="w-full bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#4285F4] text-gray-700 py-3.5 px-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-200 shadow-sm disabled:opacity-70"
+            className="w-full bg-white hover:bg-gray-50 border-2 border-gray-200 hover:border-[#4285F4] text-gray-700 py-3 px-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-200 shadow-sm disabled:opacity-70"
             style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}
           >
             {isLoading ? (

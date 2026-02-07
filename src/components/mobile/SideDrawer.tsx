@@ -5,6 +5,8 @@ import { useTranslation } from '../../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { supabase } from '../../utils/supabase/client';
+import { Icon3D, NAV_ICONS, SERVICE_ICONS } from '../ui/Icon3D';
+import { FolderKanban, Wallet, Bot, BarChart3 } from 'lucide-react';
 
 interface SideDrawerProps {
   isOpen: boolean;
@@ -125,14 +127,14 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 {/* App-only features list */}
                 <div className="w-full space-y-2 mb-6">
                   {[
-                    { icon: '📁', ar: 'إدارة المشاريع', en: 'Project Management' },
-                    { icon: '🪙', ar: 'محفظة ريف', en: 'Reef Wallet' },
-                    { icon: '🤖', ar: 'وكيل ذكي متكامل', en: 'Full AI Agent' },
-                    { icon: '👤', ar: 'ملف شخصي محترف', en: 'Professional Profile' },
-                    { icon: '📊', ar: 'CRM والأتمتة', en: 'CRM & Automation' },
+                    { iconComp: FolderKanban, theme: 'indigo', ar: 'إدارة المشاريع', en: 'Project Management' },
+                    { iconComp: Wallet, theme: 'gold', ar: 'محفظة ريف', en: 'Reef Wallet' },
+                    { iconComp: Bot, theme: 'emerald', ar: 'وكيل ذكي متكامل', en: 'Full AI Agent' },
+                    { iconComp: User, theme: 'blue', ar: 'ملف شخصي محترف', en: 'Professional Profile' },
+                    { iconComp: BarChart3, theme: 'purple', ar: 'CRM والأتمتة', en: 'CRM & Automation' },
                   ].map((feat) => (
                     <div key={feat.en} className="flex items-center gap-3 bg-[#F5EEE1] px-4 py-2.5 rounded-xl">
-                      <span className="text-lg">{feat.icon}</span>
+                      <Icon3D icon={feat.iconComp} theme={feat.theme} size="xs" hoverable={false} />
                       <span className="text-sm font-bold text-[#1F3D2B]" style={{ fontFamily }}>
                         {isEn ? feat.en : feat.ar}
                       </span>
@@ -211,9 +213,18 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                         currentRoute?.includes(sub.id) ? 'border-[#2AA676] bg-[#2AA676]/5' : 'border-[#F5EEE1] hover:border-[#2AA676]/30'
                       }`}
                     >
-                      <div className="w-12 h-12 bg-gradient-to-br from-[#F5EEE1] to-white rounded-xl flex items-center justify-center shadow-inner">
-                        <span className="text-2xl">{sub.icon}</span>
-                      </div>
+                      {SERVICE_ICONS[sub.id] ? (
+                        <Icon3D
+                          icon={SERVICE_ICONS[sub.id].icon}
+                          theme={SERVICE_ICONS[sub.id].theme}
+                          size="md"
+                          hoverable={false}
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#F5EEE1] to-white rounded-xl flex items-center justify-center shadow-inner">
+                          <span className="text-2xl">{sub.icon}</span>
+                        </div>
+                      )}
                       <span className="text-[#1F3D2B] text-center leading-tight line-clamp-2"
                         style={{ fontFamily, fontWeight: 600, fontSize: '11px' }}>
                         {isEn ? sub.nameEn : sub.nameAr}
@@ -275,7 +286,16 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 }`}
               >
                 <div className="flex items-center gap-3 flex-1">
-                  <span className="text-2xl">{section.icon}</span>
+                  {NAV_ICONS[section.id] ? (
+                    <Icon3D
+                      icon={NAV_ICONS[section.id].icon}
+                      theme={NAV_ICONS[section.id].theme}
+                      size="sm"
+                      hoverable={false}
+                    />
+                  ) : (
+                    <span className="text-2xl">{section.icon}</span>
+                  )}
                   <span className="font-medium text-base" style={{ fontFamily }}>
                     {isEn ? section.nameEn : section.nameAr}
                   </span>
@@ -307,7 +327,18 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 hover:bg-[#F5EEE1] text-[#1F3D2B]/30"
               >
                 <div className="flex items-center gap-3 flex-1">
-                  <span className="text-2xl grayscale opacity-40">{section.icon}</span>
+                  <div className="opacity-30 grayscale">
+                    {NAV_ICONS[section.id] ? (
+                      <Icon3D
+                        icon={NAV_ICONS[section.id].icon}
+                        theme={NAV_ICONS[section.id].theme}
+                        size="xs"
+                        hoverable={false}
+                      />
+                    ) : (
+                      <span className="text-2xl">{section.icon}</span>
+                    )}
+                  </div>
                   <span className="font-medium text-sm" style={{ fontFamily }}>
                     {isEn ? section.nameEn : section.nameAr}
                   </span>
