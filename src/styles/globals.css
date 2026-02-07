@@ -1,0 +1,938 @@
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-size: 16px;
+  --background: #F5EEE1;
+  --foreground: #1F3D2B;
+  --card: #ffffff;
+  --card-foreground: #1F3D2B;
+  --popover: #ffffff;
+  --popover-foreground: #1F3D2B;
+  --primary: #2AA676;
+  --primary-foreground: #ffffff;
+  --secondary: #F5EEE1;
+  --secondary-foreground: #1F3D2B;
+  --muted: #EDE5D5;
+  --muted-foreground: #6B7E73;
+  --accent: #EDE5D5;
+  --accent-foreground: #1F3D2B;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(31, 61, 43, 0.10);
+  --input: transparent;
+  --input-background: #ffffff;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: rgba(42, 166, 118, 0.40);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: #F5EEE1;
+  --sidebar-foreground: #1F3D2B;
+  --sidebar-primary: #2AA676;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #EDE5D5;
+  --sidebar-accent-foreground: #1F3D2B;
+  --sidebar-border: rgba(31, 61, 43, 0.08);
+  --sidebar-ring: rgba(42, 166, 118, 0.30);
+
+  /* ═══════════════════════════════════════════════
+     بيت الريف — الهوية الرملية ✨
+     Sandy Beige Brand Identity + iOS Glow Style
+     ═══════════════════════════════════════════════ */
+  --bait-bg:                #F5EEE1;
+  --bait-bg-alt:            #EFE7D8;
+  --bait-surface:           #ffffff;
+  --bait-surface-hover:     #FDFBF7;
+  --bait-surface-elevated:  #ffffff;
+  --bait-glass:             rgba(255, 255, 255, 0.85);
+  --bait-glass-border:      rgba(255, 255, 255, 0.60);
+  --bait-green:             #2AA676;
+  --bait-green-bright:      #34C68D;
+  --bait-green-light:       rgba(42, 166, 118, 0.10);
+  --bait-green-dark:        #1F3D2B;
+  --bait-gold:              #C8A86A;
+  --bait-gold-light:        rgba(200, 168, 106, 0.10);
+  --bait-text:              #1F3D2B;
+  --bait-text-secondary:    rgba(31, 61, 43, 0.60);
+  --bait-text-muted:        rgba(31, 61, 43, 0.40);
+  --bait-text-inverse:      #ffffff;
+  --bait-border:            rgba(31, 61, 43, 0.08);
+  --bait-border-strong:     rgba(31, 61, 43, 0.15);
+  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.04);
+  --bait-shadow-lg:         0 8px 24px rgba(0, 0, 0, 0.06);
+  --bait-input-bg:          #ffffff;
+  --bait-header-bg:         rgba(245, 238, 225, 0.85);
+  --bait-skeleton:          #E6DCC8;
+  --bait-badge-bg:          rgba(42, 166, 118, 0.10);
+  --bait-overlay:           rgba(0, 0, 0, 0.45);
+}
+
+.dark {
+  --background: #111318;
+  --foreground: #F0E8DA;
+  --card: #1C2026;
+  --card-foreground: #F0E8DA;
+  --popover: #1C2026;
+  --popover-foreground: #F0E8DA;
+  --primary: #2AA676;
+  --primary-foreground: #ffffff;
+  --secondary: #1C2026;
+  --secondary-foreground: #F0E8DA;
+  --muted: #252A32;
+  --muted-foreground: #8B9084;
+  --accent: #252A32;
+  --accent-foreground: #F0E8DA;
+  --destructive: #EF4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(245, 238, 225, 0.06);
+  --input: transparent;
+  --input-background: #1C2026;
+  --switch-background: #3A3F48;
+  --ring: rgba(42, 166, 118, 0.40);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #181B20;
+  --sidebar-foreground: #F0E8DA;
+  --sidebar-primary: #2AA676;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #252A32;
+  --sidebar-accent-foreground: #F0E8DA;
+  --sidebar-border: rgba(245, 238, 225, 0.06);
+  --sidebar-ring: rgba(42, 166, 118, 0.30);
+
+  /* ═══════════════════════════════════════════════
+     بيت الريف — الوضع الداكن الحقيقي 🌙
+     True Dark Mode — Warm Dark + Green + Gold
+     ═══════════════════════════════════════════════ */
+  --bait-bg:                #111318;
+  --bait-bg-alt:            #181B20;
+  --bait-surface:           #1C2026;
+  --bait-surface-hover:     #252A32;
+  --bait-surface-elevated:  #222730;
+  --bait-glass:             rgba(28, 32, 38, 0.90);
+  --bait-glass-border:      rgba(245, 238, 225, 0.06);
+  --bait-green:             #2AA676;
+  --bait-green-bright:      #34D68D;
+  --bait-green-light:       rgba(42, 166, 118, 0.12);
+  --bait-green-dark:        #1F3D2B;
+  --bait-gold:              #D4AF37;
+  --bait-gold-light:        rgba(212, 175, 55, 0.12);
+  --bait-text:              #F0E8DA;
+  --bait-text-secondary:    rgba(240, 232, 218, 0.65);
+  --bait-text-muted:        rgba(240, 232, 218, 0.40);
+  --bait-text-inverse:      #111318;
+  --bait-border:            rgba(245, 238, 225, 0.06);
+  --bait-border-strong:     rgba(245, 238, 225, 0.12);
+  --bait-shadow:            0 1px 3px rgba(0, 0, 0, 0.30);
+  --bait-shadow-lg:         0 8px 24px rgba(0, 0, 0, 0.40);
+  --bait-input-bg:          #1C2026;
+  --bait-header-bg:         rgba(17, 19, 24, 0.92);
+  --bait-skeleton:          #252A32;
+  --bait-badge-bg:          rgba(42, 166, 118, 0.12);
+  --bait-overlay:           rgba(0, 0, 0, 0.70);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-input-background: var(--input-background);
+  --color-switch-background: var(--switch-background);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/**
+ * Base typography. This is not applied to elements which have an ancestor with a Tailwind text class.
+ */
+@layer base {
+  :where(:not(:has([class*=' text-']), :not(:has([class^='text-'])))) {
+    h1 {
+      font-size: var(--text-2xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h2 {
+      font-size: var(--text-xl);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h3 {
+      font-size: var(--text-lg);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    h4 {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    p {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+
+    label {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    button {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-medium);
+      line-height: 1.5;
+    }
+
+    input {
+      font-size: var(--text-base);
+      font-weight: var(--font-weight-normal);
+      line-height: 1.5;
+    }
+  }
+}
+
+html {
+  font-size: var(--font-size);
+}
+
+/* ==========================================
+   Language-aware text alignment
+   Layout is ALWAYS RTL — only text changes
+   ========================================== */
+html[data-text-dir="ltr"] {
+  --bait-text-align: left;
+  --bait-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+html[data-text-dir="rtl"] {
+  --bait-text-align: right;
+  --bait-font-family: 'Cairo', 'Tajawal', system-ui, sans-serif;
+}
+
+/* Auto text alignment for common text elements when English */
+html[lang="en"] p,
+html[lang="en"] h1,
+html[lang="en"] h2,
+html[lang="en"] h3,
+html[lang="en"] h4,
+html[lang="en"] h5,
+html[lang="en"] h6,
+html[lang="en"] label,
+html[lang="en"] span:not(.no-auto-align),
+html[lang="en"] input::placeholder,
+html[lang="en"] textarea::placeholder {
+  text-align: left;
+}
+
+html[lang="en"] input,
+html[lang="en"] textarea {
+  text-align: left;
+}
+
+/* Force text-center to still work */
+html[lang="en"] .text-center,
+html[lang="en"] [class*="text-center"] {
+  text-align: center !important;
+}
+
+/* ==========================================
+   SECURITY: Anti-download & screenshot protection
+   ========================================== */
+
+/* Disable text selection globally (except inputs) */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  /* Prevent iOS callout on long-press */
+  touch-action: manipulation;
+}
+
+/* Re-enable selection for inputs/textareas */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+
+/* Prevent images from being saved via long-press */
+img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  pointer-events: none;
+}
+
+/* Re-enable pointer events for clickable images */
+img.clickable,
+button img,
+a img,
+.allow-zoom img {
+  pointer-events: auto;
+}
+
+/* Disable zoom via touch-action globally */
+html {
+  touch-action: manipulation;
+}
+
+/* Allow zoom ONLY inside image viewer */
+.allow-zoom {
+  touch-action: auto !important;
+}
+
+/* Print protection — blank page when printed */
+@media print {
+  body {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  html::after {
+    content: 'الطباعة غير مسموحة — Printing is not allowed';
+    display: block;
+    text-align: center;
+    padding: 50px;
+    font-size: 24px;
+    color: #999;
+  }
+}
+
+/* Prevent screenshot (limited CSS approach — works on some browsers) */
+@media screen {
+  .security-shield {
+    -webkit-backdrop-filter: blur(0);
+    backdrop-filter: blur(0);
+  }
+}
+
+/* Mobile-first responsive foundation */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Safe area insets for notched devices */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ==========================================
+   Range Slider Styles (Tools Section)
+   ========================================== */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2AA676;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #2AA676;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+  cursor: pointer;
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   بيت الريف — Light Mode Global Auto-Overrides
+   
+   The app's hardcoded colors (#F5EEE1, #1F3D2B, #2AA676, #C8A86A)
+   represent the DARK (current) theme. In LIGHT mode, these CSS
+   rules transform them to a modern, clean design.
+   
+   Dark mode (.dark) = current look — NO overrides needed.
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ─── Smooth theme transition ─── */
+html {
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+  transition-duration: 0.3s;
+  transition-timing-function: ease;
+}
+/* Exclude animated elements */
+[class*="animate-"],
+[class*="transition-transform"],
+input[type="range"]::-webkit-slider-thumb,
+[style*="preserve-3d"],
+[style*="rotateY"],
+[style*="translateZ"] {
+  transition-property: none !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   LIGHT MODE OVERRIDES  (html:not(.dark))
+   Transform hardcoded "dark theme" colors to
+   the new bright, clean, modern light design.
+   ═══════════════════════════════════════════════════ */
+
+html:not(.dark) {
+  background-color: #F5EEE1;
+}
+html:not(.dark) body {
+  background-color: #F5EEE1;
+  color: #1F3D2B;
+}
+
+/* ─── Page backgrounds ─── */
+/* bg-[#F5EEE1] → KEEP as brand sandy beige (identity!) */
+/* NO override needed — #F5EEE1 stays #F5EEE1 */
+
+/* from-[#F5EEE1] in gradients — keep brand beige */
+/* NO override needed */
+
+/* border-[#F5EEE1] */
+html:not(.dark) [class*="border-\[#F5EEE1\]"],
+html:not(.dark) [class*="border-\[#f5eee1\]"] {
+  border-color: rgba(31, 61, 43, 0.06) !important;
+}
+/* bg-[#FFF8F0] → slightly warmer */
+html:not(.dark) [class*="bg-\[#FFF8F0\]"],
+html:not(.dark) [class*="bg-\[#fff8f0\]"] {
+  background-color: #F0E8D9 !important;
+}
+/* bg-[#E6DCC8] → muted beige */
+html:not(.dark) [class*="bg-\[#E6DCC8\]"],
+html:not(.dark) [class*="bg-\[#e6dcc8\]"] {
+  background-color: #E6DCC8 !important;
+}
+
+/* ─── Text colors — NO override, keep original #1F3D2B ─── */
+/* text-[#1F3D2B] stays as-is in light mode (brand green text) */
+
+/* text-[#2AA676] — keep green accent */
+
+/* text-[#C8A86A] — keep gold accent */
+
+/* ─── Green backgrounds — used ONLY for buttons ─── */
+/* bg-[#2AA676] → keep green for buttons */
+/* bg-[#2AA676]/xx → light green tint */
+/* bg-[#1F3D2B]/10..95 → subtle beige tint (not green bg sections) */
+html:not(.dark) [class*="bg-\[#1F3D2B\]\/"]:not(button):not([role="button"]) {
+  background-color: rgba(31, 61, 43, 0.06) !important;
+}
+
+/* ─── Gold backgrounds — keep ─── */
+
+/* ─── Gradients — keep green for buttons ONLY ─── */
+/* Keep all gradient overrides removed — use original colors */
+
+/* ─── Borders — keep original ─── */
+
+/* ─── Inputs in light mode ─── */
+html:not(.dark) input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+html:not(.dark) textarea,
+html:not(.dark) select {
+  background-color: #ffffff !important;
+  color: #1F3D2B !important;
+  border-color: rgba(31, 61, 43, 0.12) !important;
+}
+html:not(.dark) input::placeholder,
+html:not(.dark) textarea::placeholder {
+  color: rgba(31, 61, 43, 0.35) !important;
+}
+
+/* ─── Range slider in light mode ─── */
+html:not(.dark) input[type="range"]::-webkit-slider-thumb {
+  background: #2AA676;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+}
+html:not(.dark) input[type="range"]::-moz-range-thumb {
+  background: #2AA676;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.35);
+}
+
+/* ─── Hover states ─── */
+html:not(.dark) [class*="hover\:bg-\[#F5EEE1\]"]:hover,
+html:not(.dark) [class*="hover\:bg-\[#f5eee1\]"]:hover {
+  background-color: #EFE7D8 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   iOS-STYLE GLOW CARDS & SURFACES ✨
+   Premium soft-glow aesthetic on all white cards
+   ═══════════════════════════════════════════════════ */
+
+/* White cards get iOS premium glow */
+html:not(.dark) [class*="bg-white"][class*="rounded"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 1px 3px rgba(31, 61, 43, 0.04),
+    0 4px 16px rgba(31, 61, 43, 0.06),
+    0 0 20px rgba(255, 255, 255, 0.25) !important;
+}
+html:not(.dark) [class*="bg-white"][class*="rounded"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.8),
+    0 2px 6px rgba(31, 61, 43, 0.06),
+    0 8px 24px rgba(31, 61, 43, 0.08),
+    0 0 30px rgba(255, 255, 255, 0.35) !important;
+}
+
+/* Shadow classes → iOS-style soft glow */
+html:not(.dark) [class*="shadow-sm"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.5),
+    0 1px 2px rgba(31, 61, 43, 0.04),
+    0 2px 8px rgba(31, 61, 43, 0.05) !important;
+}
+html:not(.dark) [class*="shadow-lg"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.6),
+    0 4px 12px rgba(31, 61, 43, 0.06),
+    0 8px 24px rgba(31, 61, 43, 0.04),
+    0 0 20px rgba(255, 255, 255, 0.2) !important;
+}
+html:not(.dark) [class*="shadow-xl"] {
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 8px 20px rgba(31, 61, 43, 0.06),
+    0 12px 40px rgba(31, 61, 43, 0.04),
+    0 0 30px rgba(255, 255, 255, 0.3) !important;
+}
+
+/* ─── Colored text — keep vibrant ─── */
+html:not(.dark) .text-gray-600 {
+  color: #4B5563 !important;
+}
+
+/* ─── Scrollbars ─── */
+html:not(.dark) ::-webkit-scrollbar {
+  width: 6px;
+}
+html:not(.dark) ::-webkit-scrollbar-track {
+  background: #F5EEE1;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb {
+  background: #D5C9B3;
+  border-radius: 3px;
+}
+html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+  background: #B8A98E;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   بيت الريف — DARK MODE OVERRIDES  (html.dark) 🌙
+   Transform hardcoded light-mode inline colors (#F5EEE1, bg-white,
+   text-[#1F3D2B], border-[#E6DCC8], etc.) to proper dark equivalents.
+   Maintains brand identity: Green #2AA676 + Gold #D4AF37
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Page & Section Backgrounds ─── */
+html.dark {
+  background-color: #111318;
+}
+html.dark body {
+  background-color: #111318;
+  color: #F0E8DA;
+}
+
+/* bg-[#F5EEE1] → dark background */
+html.dark [class*="bg-\[#F5EEE1\]"],
+html.dark [class*="bg-\[#f5eee1\]"] {
+  background-color: #111318 !important;
+}
+
+/* bg-white → dark card surface */
+html.dark [class*="bg-white"]:not([class*="bg-white/"]) {
+  background-color: #1C2026 !important;
+}
+/* bg-white/xx (translucent white) → dark glass */
+html.dark [class*="bg-white/"] {
+  background-color: rgba(28, 32, 38, 0.70) !important;
+}
+
+/* bg-[#E6DCC8] → dark muted surface */
+html.dark [class*="bg-\[#E6DCC8\]"],
+html.dark [class*="bg-\[#e6dcc8\]"] {
+  background-color: #252A32 !important;
+}
+/* bg-[#FFF8F0] → dark alt bg */
+html.dark [class*="bg-\[#FFF8F0\]"],
+html.dark [class*="bg-\[#fff8f0\]"] {
+  background-color: #181B20 !important;
+}
+/* bg-[#EFE7D8] / bg-[#F0E8D9] → dark alt bg */
+html.dark [class*="bg-\[#EFE7D8\]"],
+html.dark [class*="bg-\[#F0E8D9\]"],
+html.dark [class*="bg-\[#efe7d8\]"],
+html.dark [class*="bg-\[#f0e8d9\]"] {
+  background-color: #181B20 !important;
+}
+/* bg-[#FAFAF9] → dark bg */
+html.dark [class*="bg-\[#FAFAF9\]"],
+html.dark [class*="bg-\[#fafaf9\]"] {
+  background-color: #111318 !important;
+}
+
+/* bg-gray-50, bg-gray-100, bg-gray-200 → dark surfaces */
+html.dark .bg-gray-50 {
+  background-color: #181B20 !important;
+}
+html.dark .bg-gray-100 {
+  background-color: #1C2026 !important;
+}
+html.dark .bg-gray-200 {
+  background-color: #252A32 !important;
+}
+
+/* Gradients from beige → dark */
+html.dark [class*="from-\[#F5EEE1\]"],
+html.dark [class*="from-\[#f5eee1\]"] {
+  --tw-gradient-from: #111318 !important;
+}
+html.dark [class*="to-\[#F5EEE1\]"],
+html.dark [class*="to-white"],
+html.dark [class*="to-\[#f5eee1\]"] {
+  --tw-gradient-to: #181B20 !important;
+}
+html.dark [class*="via-\[#F8F3EB\]"],
+html.dark [class*="via-\[#f8f3eb\]"] {
+  --tw-gradient-via: #151820 !important;
+}
+html.dark [class*="from-white"] {
+  --tw-gradient-from: #1C2026 !important;
+}
+
+/* ─── Green accents — KEEP for buttons, adjust bg sections ─── */
+/* bg-[#2AA676] → keep green for buttons */
+/* bg-[#2E7D50] → keep green for buttons */
+/* bg-[#1F3D2B] large sections → dark surface */
+html.dark [class*="bg-\[#1F3D2B\]"]:not(button):not([role="button"]):not([class*="bg-\[#1F3D2B\]/"]) {
+  background-color: #181B20 !important;
+}
+/* bg-[#1F3D2B]/xx → dark tint */
+html.dark [class*="bg-\[#1F3D2B\]/"]:not(button):not([role="button"]) {
+  background-color: rgba(42, 166, 118, 0.08) !important;
+}
+/* bg-[#2E7D50]/10 etc. → green tint on dark */
+html.dark [class*="bg-\[#2E7D50\]/"] {
+  background-color: rgba(42, 166, 118, 0.10) !important;
+}
+/* bg-[#2AA676]/xx → green tint on dark */
+html.dark [class*="bg-\[#2AA676\]/"] {
+  background-color: rgba(42, 166, 118, 0.12) !important;
+}
+
+/* ─── Gold accents — brighten on dark ─── */
+html.dark [class*="text-\[#C8A86A\]"],
+html.dark [class*="text-\[#c8a86a\]"] {
+  color: #D4AF37 !important;
+}
+html.dark [class*="bg-\[#C8A86A\]/"]:not(button) {
+  background-color: rgba(212, 175, 55, 0.12) !important;
+}
+html.dark [class*="bg-\[#D4AF37\]/"]:not(button) {
+  background-color: rgba(212, 175, 55, 0.15) !important;
+}
+
+/* ─── Text Colors ─── */
+/* text-[#1F3D2B] → warm light text */
+html.dark [class*="text-\[#1F3D2B\]"]:not([class*="text-\[#1F3D2B\]/"]) {
+  color: #F0E8DA !important;
+}
+/* text-[#1F3D2B]/60 etc. → warm muted text */
+html.dark [class*="text-\[#1F3D2B\]/"] {
+  color: rgba(240, 232, 218, 0.65) !important;
+}
+/* text-[#1A1A1A] → light text */
+html.dark [class*="text-\[#1A1A1A\]"],
+html.dark [class*="text-\[#1a1a1a\]"] {
+  color: #F0E8DA !important;
+}
+/* text-[#2E7D50] → brighter green on dark */
+html.dark [class*="text-\[#2E7D50\]"],
+html.dark [class*="text-\[#2e7d50\]"] {
+  color: #34D68D !important;
+}
+
+/* Gray text series → lighter for dark bg */
+html.dark .text-gray-400 {
+  color: rgba(240, 232, 218, 0.40) !important;
+}
+html.dark .text-gray-500 {
+  color: rgba(240, 232, 218, 0.50) !important;
+}
+html.dark .text-gray-600 {
+  color: rgba(240, 232, 218, 0.60) !important;
+}
+html.dark .text-gray-700 {
+  color: rgba(240, 232, 218, 0.70) !important;
+}
+html.dark .text-gray-800 {
+  color: rgba(240, 232, 218, 0.85) !important;
+}
+html.dark .text-gray-900 {
+  color: #F0E8DA !important;
+}
+html.dark .text-black {
+  color: #F0E8DA !important;
+}
+
+/* ─── Border Colors ─── */
+/* border-[#E6DCC8] → dark border */
+html.dark [class*="border-\[#E6DCC8\]"],
+html.dark [class*="border-\[#e6dcc8\]"] {
+  border-color: rgba(245, 238, 225, 0.08) !important;
+}
+/* border-gray-200 → dark border */
+html.dark .border-gray-200 {
+  border-color: rgba(245, 238, 225, 0.08) !important;
+}
+html.dark .border-gray-300 {
+  border-color: rgba(245, 238, 225, 0.10) !important;
+}
+/* border-white/xx → subtle dark border */
+html.dark [class*="border-white/"] {
+  border-color: rgba(245, 238, 225, 0.06) !important;
+}
+
+/* ─── Inputs in Dark Mode ─── */
+html.dark input:not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: #1C2026 !important;
+  color: #F0E8DA !important;
+  border-color: rgba(245, 238, 225, 0.10) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: rgba(240, 232, 218, 0.35) !important;
+}
+html.dark input:focus,
+html.dark textarea:focus,
+html.dark select:focus {
+  border-color: rgba(42, 166, 118, 0.50) !important;
+  box-shadow: 0 0 0 3px rgba(42, 166, 118, 0.15) !important;
+}
+
+/* ─── Range slider in dark mode ─── */
+html.dark input[type="range"] {
+  background: #252A32 !important;
+}
+html.dark input[type="range"]::-webkit-slider-thumb {
+  background: #2AA676;
+  border-color: #1C2026;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.50);
+}
+html.dark input[type="range"]::-moz-range-thumb {
+  background: #2AA676;
+  border-color: #1C2026;
+  box-shadow: 0 2px 8px rgba(42, 166, 118, 0.50);
+}
+
+/* ─── Hover states ─── */
+html.dark [class*="hover\:bg-gray-50"]:hover {
+  background-color: #222730 !important;
+}
+html.dark [class*="hover\:bg-\[#F5EEE1\]"]:hover,
+html.dark [class*="hover\:bg-\[#f5eee1\]"]:hover {
+  background-color: #181B20 !important;
+}
+html.dark [class*="hover\:bg-white"]:hover {
+  background-color: #252A32 !important;
+}
+html.dark [class*="hover\:border-\[#4285F4\]"]:hover {
+  border-color: #4285F4 !important;
+}
+
+/* ═══════════════════════════════════════════════════
+   DARK MODE — Card Glow (Subtle inner light) ✨
+   ═══════════════════════════════════════════════════ */
+
+/* Dark cards get subtle edge glow */
+html.dark [class*="bg-white"][class*="rounded"],
+html.dark [class*="bg-\[#1C2026\]"][class*="rounded"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.30),
+    0 4px 16px rgba(0, 0, 0, 0.20),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03) !important;
+}
+html.dark [class*="bg-white"][class*="rounded"]:hover {
+  box-shadow:
+    0 0 0 1px rgba(42, 166, 118, 0.10),
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Shadow classes → dark depth */
+html.dark [class*="shadow-sm"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.03),
+    0 1px 2px rgba(0, 0, 0, 0.25),
+    0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+html.dark [class*="shadow-lg"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.30),
+    0 8px 24px rgba(0, 0, 0, 0.20) !important;
+}
+html.dark [class*="shadow-xl"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.05),
+    0 8px 20px rgba(0, 0, 0, 0.35),
+    0 16px 40px rgba(0, 0, 0, 0.25) !important;
+}
+html.dark [class*="shadow-2xl"] {
+  box-shadow:
+    0 0 0 1px rgba(245, 238, 225, 0.05),
+    0 12px 30px rgba(0, 0, 0, 0.40),
+    0 20px 50px rgba(0, 0, 0, 0.30) !important;
+}
+
+/* ─── Backdrop blur glass panels ─── */
+html.dark [class*="backdrop-blur"] {
+  background-color: rgba(17, 19, 24, 0.85) !important;
+}
+/* Allow specific bg-white backdrop elements to be dark glass */
+html.dark [class*="backdrop-blur"][class*="bg-white/"] {
+  background-color: rgba(28, 32, 38, 0.75) !important;
+}
+
+/* ─── Overlays & Modals ─── */
+html.dark [class*="bg-black/40"],
+html.dark [class*="bg-black/50"] {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}
+
+/* ─── Dark Scrollbar ─── */
+html.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+html.dark ::-webkit-scrollbar-track {
+  background: #111318;
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: #2A2F38;
+  border-radius: 3px;
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3A4048;
+}
+
+/* ─── Keep specific button colors in dark ─── */
+/* Green buttons stay green */
+html.dark button[class*="bg-\[#2E7D50\]"],
+html.dark button[class*="bg-\[#2AA676\]"],
+html.dark [role="button"][class*="bg-\[#2E7D50\]"],
+html.dark [role="button"][class*="bg-\[#2AA676\]"] {
+  background-color: unset !important;
+}
+/* Gold accent dot in legend stays */
+html.dark [class*="bg-\[#C8A86A\]"]:not([class*="/"]),
+html.dark [class*="bg-\[#D4AF37\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+/* Green dot stays */
+html.dark [class*="bg-\[#2AA676\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+/* Purple dot stays */
+html.dark [class*="bg-\[#8B5CF6\]"]:not([class*="/"]) {
+  background-color: unset !important;
+}
+
+/* ─── Divider lines ─── */
+html.dark .border-t {
+  border-color: rgba(245, 238, 225, 0.06) !important;
+}
+html.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgba(245, 238, 225, 0.06) !important;
+}

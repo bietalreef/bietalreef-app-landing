@@ -1,60 +1,11 @@
-# بيت الريف - تطبيق المنصة الذكية
 
-تطبيق منصة بيت الريف الذكي - صفحة تحميل وترحيب للمستخدمين الجدد.
+  # app biet alreef (Community)
 
-## الوصف
+  This is a code bundle for app biet alreef (Community). The original project is available at https://www.figma.com/design/U7HBWQ0VWluoIZARIK0eOB/app-biet-alreef--Community-.
 
-هذا المشروع يوفر صفحة هبوط (Landing Page) احترافية للتطبيق الرئيسي لمنصة بيت الريف على النطاق `app.bietalreef.ae`.
+  ## Running the code
 
-## الميزات
+  Run `npm i` to install the dependencies.
 
-- ✅ صفحة ترحيب احترافية
-- ✅ رسالة "قريباً سيكون متاح" واضحة
-- ✅ عرض الميزات الرئيسية للتطبيق
-- ✅ أزرار تحميل (معطلة حالياً)
-- ✅ رابط للموقع الرئيسي
-- ✅ تصميم متجاوب (Responsive)
-- ✅ دعم اللغة العربية
-
-## التثبيت والتشغيل
-
-```bash
-# تثبيت المتطلبات
-npm install
-
-# تشغيل الخادم المحلي
-npm run dev
-
-# بناء المشروع للإنتاج
-npm run build
-
-# تشغيل الخادم في الإنتاج
-npm start
-```
-
-## البنية
-
-```
-bietalreef-app-landing/
-├── pages/
-│   ├── _app.js
-│   └── index.js
-├── styles/
-│   ├── globals.css
-│   └── Home.module.css
-├── public/
-├── next.config.js
-├── package.json
-└── README.md
-```
-
-## التكنولوجيا المستخدمة
-
-- Next.js 16
-- React 19
-- CSS Modules
-- Responsive Design
-
-## الترخيص
-
-جميع الحقوق محفوظة © 2024 بيت الريف
+  Run `npm run dev` to start the development server.
+  
