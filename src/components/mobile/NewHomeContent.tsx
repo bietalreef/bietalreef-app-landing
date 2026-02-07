@@ -4,7 +4,8 @@ import {
   Star, Award, Zap, FileText, ChevronLeft, ChevronRight,
   MessageSquareText, ClipboardList, Sparkles, Tag, Clock,
   Percent, ArrowUp, Check, ShieldCheck, Crown, UserPlus,
-  Building2, User as UserIcon, Layout, Pencil, Download
+  Building2, User as UserIcon, Layout, Pencil, Download,
+  CheckCircle, Phone
 } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'motion/react';
@@ -251,7 +252,7 @@ export function NewHomeContent() {
       userName: isEn ? 'Al Noor Company' : 'شركة النور للمقاولات',
       role: isEn ? 'Enterprise Partner' : 'شريك مؤسسي',
       avatar: 'https://images.unsplash.com/photo-1726796065558-aeb93a8709cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
-      text: isEn ? 'Infrastructure project in Sharjah successfully completed: roads & drainage systems.' : 'مشروع بنية تحتية في الشارقة — تنفيذ شبكات الطرق والصرف.',
+      text: isEn ? 'Infrastructure project in Sharjah successfully completed: roads & drainage systems.' : 'مشروع بنية تحتية في الشارقة — تنفيذ شبكات الطر�� والصرف.',
       image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800',
       likes: 189, comments: 15,
       tags: isEn ? ['infrastructure','sharjah'] : ['بنية_تحتية','الشارقة'],
@@ -575,24 +576,35 @@ export function NewHomeContent() {
                 </div>
 
                 {/* Rating + Badge */}
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-1">
                     <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                     <span className="text-xs font-bold text-[#1A1A1A]">{rec.rating}</span>
                     <span className="text-[10px] text-gray-400">({rec.reviews})</span>
+                    <CheckCircle className="w-3.5 h-3.5 text-[#4A90E2] ml-1" />
                   </div>
                   <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-l ${rec.gradient} text-white`}>
                     {rec.badge}
                   </span>
                 </div>
 
-                {/* CTA */}
+                {/* Verification Badge */}
+                <div className="mb-3">
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#4A90E2]/10 text-[#4A90E2]"
+                    style={{ fontFamily: fontCairo }}>
+                    <CheckCircle className="w-3 h-3" />
+                    {isEn ? 'Verified Provider' : 'مزود موثق'}
+                  </span>
+                </div>
+
+                {/* CTA - Contact Now */}
                 <button
                   onClick={() => handleActionClick('contact_providers')}
-                  className="w-full bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] text-white py-2.5 rounded-xl text-xs font-bold"
+                  className="w-full bg-gradient-to-r from-[#2AA676] to-[#6FCF97] text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 active:scale-95 transition-all"
                   style={{ fontFamily: fontCairo }}
                 >
-                  {isEn ? 'View Profile' : 'عرض الملف'}
+                  <Phone className="w-3.5 h-3.5" />
+                  {isEn ? 'Contact Now' : 'تواصل الآن'}
                 </button>
               </div>
             );
@@ -604,7 +616,7 @@ export function NewHomeContent() {
       <div className="py-4">
         <div className="flex items-center justify-between px-4 mb-3">
           <h2 className="text-[#1A1A1A] text-xl font-bold" style={{ fontFamily: fontCairo }}>
-            {isEn ? 'Special Offers' : 'العروض والخصومات'} 🎁
+            {isEn ? 'Special Offers' : 'العروض والخصومات'}
           </h2>
           <button
             onClick={() => navigate('/offers')}
@@ -647,7 +659,7 @@ export function NewHomeContent() {
                     <span className="text-[10px]" style={{ fontFamily: fontCairo }}>{isEn ? 'Valid until' : 'صالح حتى'} {offer.validUntil}</span>
                   </div>
                   <button className="text-[#2AA676] text-[11px] font-bold" style={{ fontFamily: fontCairo }}>
-                    {isEn ? 'Claim' : '��حصل عليه'}
+                    {isEn ? 'Claim' : 'حصل عليه'}
                   </button>
                 </div>
               </div>

@@ -4,8 +4,9 @@ import {
   MapPin, Search, Filter, Star, Phone, Clock, ChevronLeft,
   ChevronRight, Store, Hammer, Paintbrush, Wrench, Sofa,
   Building2, Truck, X, Navigation, ExternalLink, Sparkles,
-  ShoppingBag, ArrowLeft, ArrowRight,
+  ShoppingBag, ArrowLeft, ArrowRight, CheckCircle,
 } from 'lucide-react';
+import { Icon3D } from '../ui/Icon3D';
 
 const f = 'Cairo, sans-serif';
 
@@ -102,25 +103,32 @@ const EMIRATES: EmirateRegion[] = [
 const STORES: StoreItem[] = [
   // Abu Dhabi
   { id:'s1', name_ar:'مصنع الإمارات لمواد البناء', name_en:'Emirates Building Materials Factory', category:'building_materials', emirate:'abu_dhabi', area_ar:'مصفح الصناعية', area_en:'Musaffah Industrial', rating:4.8, reviews:312, phone:'+971-2-555-1234', hours_ar:'٨ص - ٩م', hours_en:'8AM - 9PM', verified:true, lat:24.35, lng:54.50, tags_ar:['اسمنت','حديد','رمل'], tags_en:['cement','steel','sand'] },
-  { id:'s2', name_ar:'معرض الخليج للأثاث', name_en:'Gulf Furniture Gallery', category:'furniture', emirate:'abu_dhabi', area_ar:'شارع المطار', area_en:'Airport Road', rating:4.6, reviews:189, phone:'+971-2-555-2345', hours_ar:'١٠ص - ١٠م', hours_en:'10AM - 10PM', verified:true, lat:24.45, lng:54.65, tags_ar:['أثاث','ديكور','مفروشات'], tags_en:['furniture','decor','furnishings'] },
+  { id:'s2', name_ar:'معرض الخليج للأثاث', name_en:'Gulf Furniture Gallery', category:'furniture', emirate:'abu_dhabi', area_ar:'شارع المطار', area_en:'Airport Road', rating:4.6, reviews:189, phone:'+971-2-555-2345', hours_ar:'٠ص - ٢م', hours_en:'10AM - 12AM', verified:true, lat:24.45, lng:54.65, tags_ar:['أثاث','ديكور','مفروشات'], tags_en:['furniture','decor','furnishings'] },
   { id:'s3', name_ar:'مركز النخبة للدهانات', name_en:'Elite Paints Center', category:'paint', emirate:'abu_dhabi', area_ar:'المرور', area_en:'Al Muroor', rating:4.5, reviews:156, phone:'+971-2-555-3456', hours_ar:'٩ص - ٨م', hours_en:'9AM - 8PM', verified:false, lat:24.46, lng:54.37, tags_ar:['جوتن','ناشيونال','دهانات'], tags_en:['jotun','national','paints'] },
   // Dubai  
   { id:'s4', name_ar:'سوق الراس للأدوات', name_en:'Al Ras Tools Market', category:'tools', emirate:'dubai', area_ar:'ديرة', area_en:'Deira', rating:4.9, reviews:428, phone:'+971-4-222-1111', hours_ar:'٧ص - ١١م', hours_en:'7AM - 11PM', verified:true, lat:25.27, lng:55.30, tags_ar:['عدد يدوية','كهربائية','لحام'], tags_en:['hand tools','electric','welding'] },
-  { id:'s5', name_ar:'الفارس لمواد البناء', name_en:'Al Fares Building Materials', category:'building_materials', emirate:'dubai', area_ar:'القوز الصناعية', area_en:'Al Quoz Industrial', rating:4.7, reviews:367, phone:'+971-4-222-2222', hours_ar:'٦ص - ١٠م', hours_en:'6AM - 10PM', verified:true, lat:25.15, lng:55.22, tags_ar:['بلاط','سيراميك','رخام'], tags_en:['tiles','ceramic','marble'] },
-  { id:'s6', name_ar:'هوم سنتر', name_en:'Home Centre', category:'furniture', emirate:'dubai', area_ar:'فستيفال سيتي', area_en:'Festival City', rating:4.4, reviews:892, phone:'+971-4-222-3333', hours_ar:'١٠ص - ١٢م', hours_en:'10AM - 12AM', verified:true, lat:25.22, lng:55.35, tags_ar:['أثاث','مطابخ','حمامات'], tags_en:['furniture','kitchens','bathrooms'] },
-  { id:'s7', name_ar:'دراغون مارت', name_en:'Dragon Mart', category:'building_materials', emirate:'dubai', area_ar:'المنطقة العالمية', area_en:'International City', rating:4.3, reviews:1200, phone:'+971-4-222-4444', hours_ar:'١٠ص - ١٠م', hours_en:'10AM - 10PM', verified:true, lat:25.17, lng:55.40, tags_ar:['جملة','إضاءة','أرضيات'], tags_en:['wholesale','lighting','flooring'] },
+  { id:'s5', name_ar:'الفارس لمواد البناء', name_en:'Al Fares Building Materials', category:'building_materials', emirate:'dubai', area_ar:'القوز الصناعية', area_en:'Al Quoz Industrial', rating:4.7, reviews:367, phone:'+971-4-222-2222', hours_ar:'٦ص - ٠م', hours_en:'6AM - 10PM', verified:true, lat:25.15, lng:55.22, tags_ar:['بلاط','سيراميك','رخام'], tags_en:['tiles','ceramic','marble'] },
+  { id:'s6', name_ar:'هوم سنتر', name_en:'Home Centre', category:'furniture', emirate:'dubai', area_ar:'فستيفال سيتي', area_en:'Festival City', rating:4.4, reviews:892, phone:'+971-4-222-3333', hours_ar:'٠ص - ٢م', hours_en:'10AM - 12AM', verified:true, lat:25.22, lng:55.35, tags_ar:['أثاث','مطابخ','حمامات'], tags_en:['furniture','kitchens','bathrooms'] },
+  { id:'s7', name_ar:'دراغون مارت', name_en:'Dragon Mart', category:'building_materials', emirate:'dubai', area_ar:'المنطقة العالمية', area_en:'International City', rating:4.3, reviews:1200, phone:'+971-4-222-4444', hours_ar:'٠ص - ٠م', hours_en:'10AM - 10PM', verified:true, lat:25.17, lng:55.40, tags_ar:['جملة','إضاءة','أرضيات'], tags_en:['wholesale','lighting','flooring'] },
   // Sharjah
   { id:'s8', name_ar:'سوق الجبيل للأدوات', name_en:'Jubail Tools Souk', category:'tools', emirate:'sharjah', area_ar:'الجبيل', area_en:'Al Jubail', rating:4.6, reviews:245, phone:'+971-6-555-1111', hours_ar:'٨ص - ٩م', hours_en:'8AM - 9PM', verified:true, lat:25.36, lng:55.39, tags_ar:['أدوات','مسامير','براغي'], tags_en:['tools','nails','screws'] },
   { id:'s9', name_ar:'الصفا للأدوات الصحية', name_en:'Al Safa Sanitary', category:'plumbing', emirate:'sharjah', area_ar:'المنطقة الصناعية', area_en:'Industrial Area', rating:4.5, reviews:178, phone:'+971-6-555-2222', hours_ar:'٨ص - ٨م', hours_en:'8AM - 8PM', verified:true, lat:25.32, lng:55.41, tags_ar:['حنفيات','مراحيض','سخانات'], tags_en:['faucets','toilets','heaters'] },
   { id:'s10', name_ar:'ناشيونال بينتس الشارقة', name_en:'National Paints Sharjah', category:'paint', emirate:'sharjah', area_ar:'المنطقة الصناعية ١٨', area_en:'Industrial Area 18', rating:4.8, reviews:334, phone:'+971-6-555-3333', hours_ar:'٧:٣٠ص - ٧م', hours_en:'7:30AM - 7PM', verified:true, lat:25.30, lng:55.43, tags_ar:['دهانات','عوازل','ألوان'], tags_en:['paints','insulation','colors'] },
   // Ajman
-  { id:'s11', name_ar:'سوق الصين عجمان', name_en:'China Mall Ajman', category:'building_materials', emirate:'ajman', area_ar:'الجرف', area_en:'Al Jurf', rating:4.2, reviews:567, phone:'+971-6-777-1111', hours_ar:'١٠ص - ١٠م', hours_en:'10AM - 10PM', verified:true, lat:25.42, lng:55.43, tags_ar:['جملة','إكسسوارات','إضاءة'], tags_en:['wholesale','accessories','lighting'] },
+  { id:'s11', name_ar:'سوق الصين عجمان', name_en:'China Mall Ajman', category:'building_materials', emirate:'ajman', area_ar:'الجرف', area_en:'Al Jurf', rating:4.2, reviews:567, phone:'+971-6-777-1111', hours_ar:'٠ص - ٠م', hours_en:'10AM - 10PM', verified:true, lat:25.42, lng:55.43, tags_ar:['جملة','إكسسوارات','إضاءة'], tags_en:['wholesale','accessories','lighting'] },
   // RAK
   { id:'s12', name_ar:'RAK سيراميكس شوروم', name_en:'RAK Ceramics Showroom', category:'building_materials', emirate:'ras_al_khaimah', area_ar:'المنطقة الحرة', area_en:'Free Zone', rating:4.9, reviews:445, phone:'+971-7-244-1111', hours_ar:'٩ص - ٦م', hours_en:'9AM - 6PM', verified:true, lat:25.78, lng:55.95, tags_ar:['سيراميك','بورسلين','بلاط'], tags_en:['ceramics','porcelain','tiles'] },
   // UAQ
   { id:'s13', name_ar:'مؤسسة الأمان للمعدات', name_en:'Al Aman Equipment Est.', category:'equipment', emirate:'umm_al_quwain', area_ar:'المنطقة الصناعية', area_en:'Industrial Area', rating:4.3, reviews:89, phone:'+971-6-766-1111', hours_ar:'٨ص - ٦م', hours_en:'8AM - 6PM', verified:false, lat:25.56, lng:55.55, tags_ar:['حفارات','رافعات','كمبريسور'], tags_en:['excavators','cranes','compressor'] },
   // Fujairah
   { id:'s14', name_ar:'معرض الفجيرة للبناء', name_en:'Fujairah Building Exhibition', category:'building_materials', emirate:'fujairah', area_ar:'مدينة الفجيرة', area_en:'Fujairah City', rating:4.4, reviews:123, phone:'+971-9-222-1111', hours_ar:'٩ص - ٨م', hours_en:'9AM - 8PM', verified:true, lat:25.12, lng:56.33, tags_ar:['بلوك','اسمنت','حصى'], tags_en:['blocks','cement','gravel'] },
+  // Extra stores for more coverage
+  { id:'s15', name_ar:'أنصار جاليري للديكور', name_en:'Ansar Gallery Decor', category:'furniture', emirate:'sharjah', area_ar:'الخان', area_en:'Al Khan', rating:4.7, reviews:534, phone:'+971-6-555-4444', hours_ar:'٠ص - ٢م', hours_en:'10AM - 11PM', verified:true, lat:25.34, lng:55.38, tags_ar:['ديكور','ستائر','سجاد'], tags_en:['decor','curtains','carpets'] },
+  { id:'s16', name_ar:'الصقر للأدوات الكهربائية', name_en:'Al Saqr Electrical Tools', category:'tools', emirate:'dubai', area_ar:'نايف', area_en:'Naif', rating:4.5, reviews:278, phone:'+971-4-222-5555', hours_ar:'٨ص - ٠م', hours_en:'8AM - 10PM', verified:true, lat:25.26, lng:55.31, tags_ar:['كهرباء','أسلاك','لمبات'], tags_en:['electrical','wires','bulbs'] },
+  { id:'s17', name_ar:'أبوظبي كو-أوب للبناء', name_en:'Abu Dhabi Co-op Building', category:'building_materials', emirate:'abu_dhabi', area_ar:'الخالدية', area_en:'Al Khalidiyah', rating:4.6, reviews:201, phone:'+971-2-555-5555', hours_ar:'٧ص - ٩م', hours_en:'7AM - 9PM', verified:true, lat:24.47, lng:54.35, tags_ar:['خرسانة','حديد','خشب'], tags_en:['concrete','steel','wood'] },
+  { id:'s18', name_ar:'جوتن شوروم', name_en:'Jotun Showroom', category:'paint', emirate:'dubai', area_ar:'شارع الشيخ زايد', area_en:'Sheikh Zayed Rd', rating:4.9, reviews:445, phone:'+971-4-222-6666', hours_ar:'٩ص - ٩م', hours_en:'9AM - 9PM', verified:true, lat:25.20, lng:55.27, tags_ar:['دهانات','ألوان','ديكور'], tags_en:['paints','colors','decoration'] },
+  { id:'s19', name_ar:'الإمارات لتأجير المعدات', name_en:'Emirates Equipment Rental', category:'equipment', emirate:'dubai', area_ar:'جبل علي', area_en:'Jebel Ali', rating:4.4, reviews:167, phone:'+971-4-222-7777', hours_ar:'٦ص - ٨م', hours_en:'6AM - 8PM', verified:true, lat:25.01, lng:55.09, tags_ar:['حفارات','رافعات','كمبريسور'], tags_en:['excavators','cranes','compressor'] },
+  { id:'s20', name_ar:'كيرامو سيراميكس', name_en:'Keramo Ceramics', category:'building_materials', emirate:'ras_al_khaimah', area_ar:'المنطقة الصناعية', area_en:'Industrial Area', rating:4.7, reviews:312, phone:'+971-7-244-2222', hours_ar:'٨ص - ٥م', hours_en:'8AM - 5PM', verified:true, lat:25.80, lng:55.98, tags_ar:['سيراميك','حمامات','مطابخ'], tags_en:['ceramics','bathrooms','kitchens'] },
 ];
 
 /* ═══════════════════ COMPONENT ═══════════════════ */
@@ -152,36 +160,41 @@ export function StoresMap({ isEn = false }: { isEn?: boolean }) {
   return (
     <div className="min-h-screen bg-[#F5EEE1]" dir={isEn ? 'ltr' : 'rtl'}>
       {/* ── Header ── */}
-      <div className="bg-white border-b border-[#E6E0D4] px-4 py-3 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 bg-[#2AA676]/10 rounded-xl flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-[#2AA676]" />
-            </div>
-            <div>
-              <h1 className="text-lg font-extrabold text-[#1F3D2B]" style={{ fontFamily: f }}>
+      <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] px-4 pt-6 pb-8 sticky top-0 z-20 relative overflow-hidden">
+        <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full" />
+        <div className="absolute -bottom-12 -right-8 w-32 h-32 bg-white/5 rounded-full" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="flex items-center gap-3 mb-4">
+            <Icon3D icon={MapPin} theme="red" size="md" hoverable={false} />
+            <div className="flex-1">
+              <h1 className="text-xl font-extrabold text-white" style={{ fontFamily: f }}>
                 {isEn ? 'Stores & Shops Map' : 'خريطة المحلات والمتاجر'}
               </h1>
-              <p className="text-[11px] text-[#1F3D2B]/40" style={{ fontFamily: f }}>
-                {filteredStores.length} {isEn ? 'stores across the UAE' : 'محل في الإمارات'}
+              <p className="text-[11px] text-white/50" style={{ fontFamily: f }}>
+                {STORES.length} {isEn ? 'verified stores across all 7 emirates' : 'محل موثق في جميع الإمارات السبع'}
               </p>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+              <span className="text-white/90 text-xs font-bold" style={{ fontFamily: f }}>
+                {filteredStores.length} {isEn ? 'results' : 'نتيجة'}
+              </span>
             </div>
           </div>
 
           {/* Search */}
           <div className="relative mb-3">
-            <Search className="absolute top-1/2 -translate-y-1/2 start-3 w-4 h-4 text-[#1F3D2B]/30" />
+            <Search className="absolute top-1/2 -translate-y-1/2 start-3.5 w-4.5 h-4.5 text-white/30" />
             <input
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               placeholder={isEn ? 'Search stores, materials, areas...' : 'ابحث عن محل، مادة، منطقة...'}
-              className="w-full ps-10 pe-4 py-2.5 bg-[#F5EEE1] border border-[#1F3D2B]/8 rounded-xl text-sm text-[#1F3D2B] placeholder:text-[#1F3D2B]/30 focus:outline-none focus:border-[#2AA676] focus:ring-2 focus:ring-[#2AA676]/10"
+              className="w-full ps-11 pe-10 py-3 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-sm text-white placeholder:text-white/25 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all"
               style={{ fontFamily: f }}
             />
             {searchQuery && (
               <button onClick={() => setSearchQuery('')}
                 className="absolute top-1/2 -translate-y-1/2 end-3">
-                <X className="w-4 h-4 text-[#1F3D2B]/30" />
+                <X className="w-4 h-4 text-white/40 hover:text-white/70 transition-colors" />
               </button>
             )}
           </div>
@@ -194,10 +207,10 @@ export function StoresMap({ isEn = false }: { isEn?: boolean }) {
               return (
                 <button key={cat.id} onClick={() => setSelectedCategory(cat.id)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap shrink-0 transition-all ${
-                    active ? 'text-white shadow-md' : 'bg-white text-[#1F3D2B]/60 border border-[#1F3D2B]/8 hover:bg-[#F5EEE1]'
+                    active ? 'bg-white text-[#1F3D2B] shadow-md' : 'bg-white/10 text-white/70 border border-white/10 hover:bg-white/15'
                   }`}
-                  style={{ fontFamily: f, backgroundColor: active ? cat.color : undefined }}>
-                  <Icon className="w-3.5 h-3.5" />
+                  style={{ fontFamily: f }}>
+                  <Icon className="w-3.5 h-3.5" style={{ color: active ? cat.color : undefined }} />
                   {isEn ? cat.en : cat.ar}
                 </button>
               );
@@ -207,6 +220,23 @@ export function StoresMap({ isEn = false }: { isEn?: boolean }) {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-6">
+        {/* Quick Stats */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          {[
+            { ar: 'إمارة', en: 'Emirates', value: '7', color: '#2AA676' },
+            { ar: 'محل موثق', en: 'Verified', value: String(STORES.filter(s => s.verified).length), color: '#3498DB' },
+            { ar: 'فئة', en: 'Categories', value: String(CATEGORIES.length - 1), color: '#E67E22' },
+            { ar: 'متوسط التقييم', en: 'Avg Rating', value: (STORES.reduce((a, s) => a + s.rating, 0) / STORES.length).toFixed(1), color: '#D4AF37' },
+          ].map((stat, i) => (
+            <div key={i} className="bg-white rounded-2xl p-3 border border-[#1F3D2B]/6 text-center shadow-sm">
+              <div className="text-xl font-bold" style={{ fontFamily: f, color: stat.color }}>{stat.value}</div>
+              <div className="text-[10px] text-[#1F3D2B]/40 font-bold" style={{ fontFamily: f }}>
+                {isEn ? stat.en : stat.ar}
+              </div>
+            </div>
+          ))}
+        </div>
+
         <div className="flex flex-col lg:flex-row gap-6">
           {/* ═══ MAP SECTION ═══ */}
           <div className="flex-1">
@@ -522,7 +552,7 @@ export function StoresMap({ isEn = false }: { isEn?: boolean }) {
               {isEn ? 'Want to list your store?' : 'تبي تضيف محلك؟'}
             </h3>
             <p className="text-white/40 text-xs" style={{ fontFamily: f }}>
-              {isEn ? 'Download the app and register as a provider' : 'حمّل التطبيق وسجّل كمزوّد خدمة'}
+              {isEn ? 'Download the app and register as a provider' : 'حمّل التطبيق وسجّل كمزوّد خد��ة'}
             </p>
           </div>
           <button className="bg-[#D4AF37] text-[#1F3D2B] px-5 py-2 rounded-xl text-xs font-bold hover:bg-[#E5C048] transition-colors shrink-0"

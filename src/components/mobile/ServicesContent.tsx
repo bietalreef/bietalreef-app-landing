@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { Star, MapPin, Heart } from 'lucide-react';
+import { Star, MapPin, Heart, CheckCircle, MessageCircle, Phone } from 'lucide-react';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
+import { Star as StarIcon, Flame, MapPin as MapPinIcon, DollarSign, Trophy } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router';
 import { Sparkles, ChevronLeft, Crown, Shield, Video, FolderKanban, Wallet as WalletIcon } from 'lucide-react';
-import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServicesContentProps {
   onServiceClick?: (serviceId: string) => void;
@@ -42,6 +43,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       rating: 4.9,
       hourly_rate: 150,
       location: language === 'ar' ? 'دبي' : 'Dubai',
+      providerType: language === 'ar' ? 'حرفي موثق' : 'Verified Craftsman',
     },
     {
       id: 'demo-srv-2',
@@ -53,6 +55,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       rating: 5.0,
       hourly_rate: 200,
       location: language === 'ar' ? 'أبوظبي' : 'Abu Dhabi',
+      providerType: language === 'ar' ? 'شركة موثقة' : 'Verified Company',
     },
     {
       id: 'demo-srv-3',
@@ -64,6 +67,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       rating: 4.7,
       hourly_rate: 120,
       location: language === 'ar' ? 'الشارقة' : 'Sharjah',
+      providerType: language === 'ar' ? 'شركة موثقة' : 'Verified Company',
     },
     {
       id: 'demo-srv-4',
@@ -75,34 +79,17 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
       rating: 4.8,
       hourly_rate: 180,
       location: language === 'ar' ? 'عجمان' : 'Ajman',
+      providerType: language === 'ar' ? 'حرفي موثق' : 'Verified Craftsman',
     },
   ];
 
   const filters = [
-    { id: 'recommended', label: t('recommended'), icon: '⭐' },
-    { id: 'offers', label: t('offers'), icon: '🔥' },
-    { id: 'nearby', label: t('nearMe'), icon: '📍' },
-    { id: 'cheapest', label: t('cheapest'), icon: '💰' },
-    { id: 'toprated', label: t('topRated'), icon: '🏆' },
+    { id: 'recommended', label: t('recommended'), icon: StarIcon, theme: 'gold' },
+    { id: 'offers', label: t('offers'), icon: Flame, theme: 'red' },
+    { id: 'nearby', label: t('nearMe'), icon: MapPinIcon, theme: 'blue' },
+    { id: 'cheapest', label: t('cheapest'), icon: DollarSign, theme: 'green' },
+    { id: 'toprated', label: t('topRated'), icon: Trophy, theme: 'amber' },
   ];
-
-  const getAvailabilityColor = (status: string) => {
-    switch (status) {
-      case 'online': return 'bg-[#4A90E2]';
-      case 'busy': return 'bg-[#F2994A]';
-      case 'offline': return 'bg-[#EB5757]';
-      default: return 'bg-[#6B7280]';
-    }
-  };
-
-  const getAvailabilityText = (status: string) => {
-    switch (status) {
-      case 'online': return t('online');
-      case 'busy': return t('busy');
-      case 'offline': return t('offline');
-      default: return t('unavailable');
-    }
-  };
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
@@ -133,7 +120,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
               }`}
               style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px', height: '44px' }}
             >
-              <span>{filter.icon}</span>
+              <Icon3D icon={filter.icon} theme={activeFilter === filter.id ? 'blue' : filter.theme} size="xs" hoverable={false} />
               <span>{filter.label}</span>
             </button>
           ))}
@@ -252,15 +239,10 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
                       className="w-full h-full object-cover"
                     />
                     {provider.is_verified && (
-                      <div className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg">
-                        <span className="text-white text-xs">✓</span>
+                      <div className="absolute top-2 right-2 w-7 h-7 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+                        <CheckCircle className="w-4.5 h-4.5 text-white fill-white/20" />
                       </div>
                     )}
-                    <div className="absolute bottom-2 left-2 right-2">
-                      <div className={`${getAvailabilityColor(provider.status)} text-white px-2 py-1 rounded-lg text-xs text-center shadow-md`} style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
-                        {getAvailabilityText(provider.status)}
-                      </div>
-                    </div>
                   </div>
                   
                   {/* Button */}
@@ -288,17 +270,22 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
                   <h3 className="text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '16px' }}>
                     {provider.full_name}
                   </h3>
-                  <p className="text-[#1A1A1A]/70 text-sm mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+                  <p className="text-[#1A1A1A]/70 text-sm mb-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
                     {provider.specialty}
                   </p>
 
-                  <div className="flex items-center gap-3 mb-3">
+                  <div className="flex items-center gap-3 mb-2">
                     <div className="flex items-center gap-1">
                       <Star className="w-4 h-4 fill-[#56CCF2] text-[#56CCF2]" />
                       <span className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
                         {provider.rating}
                       </span>
                     </div>
+                    {provider.is_verified && (
+                      <div className="flex items-center gap-0.5">
+                        <CheckCircle className="w-3.5 h-3.5 text-[#4A90E2] fill-[#4A90E2]/10" />
+                      </div>
+                    )}
                     <div className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-[#4A90E2]" />
                       <span className="text-[#1A1A1A]/70 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
@@ -307,13 +294,33 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
                     </div>
                   </div>
 
+                  {/* Provider Type Badge */}
+                  <div className="mb-3">
+                    <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs ${
+                      provider.is_verified 
+                        ? 'bg-[#4A90E2]/10 text-[#4A90E2]' 
+                        : 'bg-[#F2994A]/10 text-[#F2994A]'
+                    }`} style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                      {provider.is_verified && <CheckCircle className="w-3 h-3" />}
+                      {provider.providerType}
+                    </span>
+                  </div>
+
+                  {/* Contact Now + Favorite */}
                   <div className="flex items-center gap-2 mt-auto">
+                    <button 
+                      className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#2AA676] to-[#6FCF97] text-white py-2.5 rounded-[14px] shadow-md hover:shadow-lg transition-all active:scale-95"
+                      style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px' }}
+                    >
+                      <Phone className="w-4 h-4" />
+                      <span>{language === 'ar' ? 'تواصل الآن' : 'Contact Now'}</span>
+                    </button>
                     <button 
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(provider.id);
                       }}
-                      className="w-9 h-9 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all"
+                      className="w-10 h-10 bg-white border-2 border-[#F5EEE1] rounded-[12px] flex items-center justify-center shadow-sm hover:shadow-md transition-all flex-shrink-0"
                     >
                       <Heart className={`w-4.5 h-4.5 ${favorites.has(provider.id) ? 'fill-[#56CCF2] text-[#56CCF2]' : 'text-[#1A1A1A]/30'}`} />
                     </button>

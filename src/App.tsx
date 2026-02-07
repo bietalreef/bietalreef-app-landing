@@ -6,8 +6,8 @@
  *
  * • شاشة الدخول مطلوبة لكل المستخدمين
  * • بعد الدخول: المستخدم = زائر بصلاحيات محدودة
- * • الراوتات المسموحة: تصفح، متجر، خدمات، خرائط، تصميم، عروض
- * • الراوتات المحظورة: مشاريع، محفظة، ملف شخصي → صفحة "حمّل التطبيق"
+ * • الراوتات المسموحة: تصفح، متجر، خدمات، خرائط، تصميم، عروض، محفظة الدار
+ * • الراوتات المحظورة: مشاريع → صفحة "حمّل التطبيق"
  * • كل request يُوسَم بـ platform: "web_guest"
  */
 
@@ -47,6 +47,8 @@ import { OffersScreen } from './components/mobile/OffersScreen';
 import { MarketplaceScreen } from './components/mobile/MarketplaceScreen';
 import { PlatformShowcase } from './components/mobile/PlatformShowcase';
 import { DesignStudio } from './components/browser/DesignStudio';
+import { ProfileScreen } from './components/mobile/ProfileScreen';
+import { WalletScreen } from './components/mobile/WalletScreen';
 
 // App-Only gate (for verified-only routes)
 import { AppOnlyPage } from './components/browser/GuestGuard';
@@ -143,12 +145,16 @@ function AppInner() {
                 {/* ✅ Guest-Allowed: Platform Showcase */}
                 <Route path="/platform" element={<PlatformShowcase onBack={() => window.history.back()} />} />
                 
-                {/* ❌ App-Only: Projects, Wallet, Profile, RFQ → Download CTA */}
+                {/* ✅ Guest-Allowed: Profile (view only in browser) */}
+                <Route path="/profile" element={<ProfileScreen />} />
+                
+                {/* ✅ Guest-Allowed: Dar Wallet */}
+                <Route path="/wallet" element={<WalletScreen />} />
+                
+                {/* ❌ App-Only: Projects, RFQ → Download CTA */}
                 <Route path="/projects" element={<AppOnlyPage />} />
                 <Route path="/projects/:id" element={<AppOnlyPage />} />
                 <Route path="/rfq" element={<AppOnlyPage />} />
-                <Route path="/wallet" element={<AppOnlyPage />} />
-                <Route path="/profile" element={<AppOnlyPage />} />
                 
                 {/* Fallback */}
                 <Route path="*" element={<Navigate to="/home" replace />} />

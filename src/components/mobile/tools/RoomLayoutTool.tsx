@@ -88,10 +88,9 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
       title={isEn ? 'Room Layout Planner' : 'مخطط تأثيث الغرف'}
       subtitle={isEn ? 'Check if furniture fits your room' : 'تحقّق من ملاءمة الأثاث لغرفتك'}
       onBack={onBack}
-      icon="🏠"
-      gradientFrom="#6366F1"
-      gradientTo="#4F46E5"
-      backLabel={isEn ? 'Back' : 'رجوع'}
+      toolId="room-layout"
+      gradientFrom="#3730A3"
+      gradientTo="#6366F1"
     >
       <div className="space-y-5 p-4" dir="rtl">
         {/* Room Type */}

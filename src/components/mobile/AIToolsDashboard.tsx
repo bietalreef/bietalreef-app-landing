@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { motion } from 'motion/react';
-import { ChevronLeft } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
+import { ChevronLeft, Search, X, Sparkles, FileText, Calculator, Paintbrush, Megaphone, ArrowLeft, ArrowRight, AlertTriangle, RefreshCw } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { Icon3D, TOOL_ICONS } from '../ui/Icon3D';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 // Tools
 import { MaterialCalculatorV2 } from './tools/MaterialCalculatorV2';
@@ -27,161 +28,160 @@ type ActiveTool = null
   | 'color-palette' | 'lighting' | 'room-layout'
   | 'design-2d' | 'design-3d' | 'convert-2d-3d';
 
+type Category = 'all' | 'documents' | 'calculators' | 'design' | 'marketing';
+
 interface ToolDef {
   id: ActiveTool;
-  icon: string;
   titleAr: string;
   titleEn: string;
   subtitleAr: string;
   subtitleEn: string;
-  gradient: string;
+  category: Category;
   badgeAr?: string;
   badgeEn?: string;
 }
 
+const CATEGORIES: { id: Category; ar: string; en: string; icon: any; color: string }[] = [
+  { id: 'all', ar: 'الكل', en: 'All', icon: Sparkles, color: '#2AA676' },
+  { id: 'documents', ar: 'المستندات', en: 'Documents', icon: FileText, color: '#5B9CF6' },
+  { id: 'calculators', ar: 'الحاسبات', en: 'Calculators', icon: Calculator, color: '#4ECDC4' },
+  { id: 'design', ar: 'التصميم', en: 'Design', icon: Paintbrush, color: '#9B7AED' },
+  { id: 'marketing', ar: 'التسويق', en: 'Marketing', icon: Megaphone, color: '#FF8AAE' },
+];
+
 // ═══════════════════════════════════════════════
 // ترتيب الأدوات حسب الأهمية — الأهم أولاً
 // ═══════════════════════════════════════════════
-const PRIMARY_TOOLS: ToolDef[] = [
+const ALL_TOOLS: ToolDef[] = [
+  // Documents
   {
     id: 'quote',
-    icon: '📄',
     titleAr: 'مولّد عروض الأسعار',
     titleEn: 'Quotation Generator',
-    subtitleAr: 'عرض سعر احترافي A4',
-    subtitleEn: 'Professional A4 quotation',
-    gradient: 'from-blue-500 to-indigo-500',
+    subtitleAr: 'عرض سعر احترافي A4 جاهز للطباعة',
+    subtitleEn: 'Professional A4 quotation ready to print',
+    category: 'documents',
     badgeAr: 'مطوّر',
     badgeEn: 'Enhanced',
   },
   {
     id: 'invoice',
-    icon: '🧾',
     titleAr: 'مولّد الفواتير',
     titleEn: 'Invoice Generator',
-    subtitleAr: 'فواتير ضريبية احترافية',
-    subtitleEn: 'Professional tax invoices',
-    gradient: 'from-teal-600 to-emerald-500',
+    subtitleAr: 'فواتير ضريبية احترافية بضغطة واحدة',
+    subtitleEn: 'Professional tax invoices in one click',
+    category: 'documents',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
   {
     id: 'contract',
-    icon: '📝',
     titleAr: 'مولّد العقود',
     titleEn: 'Contract Generator',
     subtitleAr: 'عقود صيانة وبناء واستشارات',
     subtitleEn: 'Maintenance, construction & consulting',
-    gradient: 'from-violet-500 to-purple-600',
+    category: 'documents',
     badgeAr: 'مطوّر',
     badgeEn: 'Enhanced',
   },
+  // Calculators
   {
     id: 'materials',
-    icon: '🧮',
     titleAr: 'حاسبة مواد البناء',
     titleEn: 'Materials Calculator',
-    subtitleAr: 'كميات وتكاليف تقديرية',
-    subtitleEn: 'Quantities & cost estimates',
-    gradient: 'from-emerald-500 to-green-600',
+    subtitleAr: 'كميات وتكاليف تقديرية دقيقة',
+    subtitleEn: 'Accurate quantities & cost estimates',
+    category: 'calculators',
     badgeAr: 'الأكثر استخداماً',
     badgeEn: 'Most Used',
   },
   {
     id: 'cost',
-    icon: '💰',
     titleAr: 'مقدّر تكلفة البناء',
     titleEn: 'Cost Estimator',
-    subtitleAr: 'ميزانية شاملة للمشروع',
-    subtitleEn: 'Complete project budget',
-    gradient: 'from-teal-500 to-cyan-500',
+    subtitleAr: 'ميزانية شاملة لمشروعك بالكامل',
+    subtitleEn: 'Complete project budget breakdown',
+    category: 'calculators',
   },
   {
     id: 'paint',
-    icon: '🎨',
     titleAr: 'حاسبة الدهانات والأرضيات',
-    titleEn: 'Paint & Flooring',
-    subtitleAr: 'دهان + بلاط + نعلات',
-    subtitleEn: 'Paint + tiles + skirting',
-    gradient: 'from-purple-500 to-pink-500',
+    titleEn: 'Paint & Flooring Calculator',
+    subtitleAr: 'دهان + بلاط + نعلات بدقة',
+    subtitleEn: 'Paint + tiles + skirting accurately',
+    category: 'calculators',
   },
   {
+    id: 'lighting',
+    titleAr: 'حاسبة الإضاءة',
+    titleEn: 'Lighting Calculator',
+    subtitleAr: 'حساب الإضاءة المثالية لكل غرفة',
+    subtitleEn: 'Calculate optimal room lighting',
+    category: 'calculators',
+  },
+  // Design
+  {
     id: 'design-2d',
-    icon: '✏️',
     titleAr: 'تصميم ثنائي الأبعاد',
-    titleEn: '2D Floor Plan',
-    subtitleAr: 'ارسم مخططات الغرف والأثاث',
-    subtitleEn: 'Draw rooms, walls & furniture',
-    gradient: 'from-indigo-500 to-blue-600',
+    titleEn: '2D Floor Plan Designer',
+    subtitleAr: 'ارسم مخططات الغرف والجدران والأثاث',
+    subtitleEn: 'Draw rooms, walls & furniture layouts',
+    category: 'design',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
   {
     id: 'design-3d',
-    icon: '🧊',
     titleAr: 'تصميم ثلاثي الأبعاد',
     titleEn: '3D Room Visualizer',
-    subtitleAr: 'تصوّر الغرف بشكل ثلاثي',
-    subtitleEn: 'Visualize rooms in 3D',
-    gradient: 'from-purple-500 to-violet-600',
+    subtitleAr: 'تصوّر الغرف بشكل ثلاثي واقعي',
+    subtitleEn: 'Visualize rooms in realistic 3D',
+    category: 'design',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
   {
     id: 'convert-2d-3d',
-    icon: '🔄',
     titleAr: 'تحويل 2D إلى 3D',
     titleEn: '2D to 3D Converter',
-    subtitleAr: 'حوّل المخططات لنماذج ثلاثية',
-    subtitleEn: 'Convert plans to 3D models',
-    gradient: 'from-green-500 to-teal-600',
+    subtitleAr: 'حوّل المخططات لنماذج ثلاثية الأبعاد',
+    subtitleEn: 'Convert floor plans to 3D models',
+    category: 'design',
     badgeAr: 'جديد',
     badgeEn: 'New',
   },
   {
     id: 'room-layout',
-    icon: '🏠',
     titleAr: 'تخطيط الغرفة',
-    titleEn: 'Room Layout',
-    subtitleAr: 'تصميم تخطيط غرفتك',
-    subtitleEn: 'Design your room layout',
-    gradient: 'from-indigo-500 to-blue-500',
+    titleEn: 'Room Layout Planner',
+    subtitleAr: 'صمم تخطيط غرفتك واحسب المساحات',
+    subtitleEn: 'Design your room layout & calculate areas',
+    category: 'design',
   },
   {
     id: 'color-palette',
-    icon: '🎨',
     titleAr: 'لوحة الألوان',
-    titleEn: 'Color Palette',
-    subtitleAr: 'اختر الألوان المناسبة لمشروعك',
-    subtitleEn: 'Select colors for your project',
-    gradient: 'from-pink-500 to-rose-500',
+    titleEn: 'Color Palette Designer',
+    subtitleAr: 'اختر الألوان المثالية لكل غرفة',
+    subtitleEn: 'Choose perfect colors for every room',
+    category: 'design',
   },
-  {
-    id: 'lighting',
-    icon: '💡',
-    titleAr: 'حاسبة الإضاءة',
-    titleEn: 'Lighting Calculator',
-    subtitleAr: 'حساب الإضاءة المناسبة',
-    subtitleEn: 'Calculate room lighting',
-    gradient: 'from-amber-400 to-yellow-600',
-  },
+  // Marketing
   {
     id: 'marketing',
-    icon: '📱',
     titleAr: 'مولّد المحتوى التسويقي',
-    titleEn: 'Marketing Content',
-    subtitleAr: 'منشورات جاهزة للنشر',
-    subtitleEn: 'Ready-to-publish posts',
-    gradient: 'from-pink-500 to-rose-500',
+    titleEn: 'Marketing Content Generator',
+    subtitleAr: 'منشورات جاهزة للنشر على السوشيال',
+    subtitleEn: 'Ready-to-publish social media posts',
+    category: 'marketing',
   },
   {
     id: 'social-media',
-    icon: '👥',
     titleAr: 'مدير وسائل التواصل',
     titleEn: 'Social Media Manager',
-    subtitleAr: 'إدارة حساباتك على التواصل',
-    subtitleEn: 'Manage social accounts',
-    gradient: 'from-blue-500 to-indigo-500',
+    subtitleAr: 'إدارة حساباتك ومتابعة الأداء',
+    subtitleEn: 'Manage accounts & track performance',
+    category: 'marketing',
   },
 ];
 
@@ -190,126 +190,352 @@ interface AIToolsDashboardProps {
   onBack?: () => void;
 }
 
+/* ── Tool Error Boundary — يمنع crash الأداة من تعطيل الداشبورد ── */
+interface ToolErrorBoundaryProps {
+  children: ReactNode;
+  onBack: () => void;
+  toolName: string;
+}
+interface ToolErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+class ToolErrorBoundary extends Component<ToolErrorBoundaryProps, ToolErrorBoundaryState> {
+  constructor(props: ToolErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error): ToolErrorBoundaryState {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error(`❌ Tool Error [${this.props.toolName}]:`, error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-background flex items-center justify-center p-6" dir="rtl">
+          <div className="bg-white rounded-3xl shadow-xl p-8 max-w-sm w-full text-center border border-red-100">
+            <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <AlertTriangle className="w-8 h-8 text-red-500" />
+            </div>
+            <h3 className="text-lg font-extrabold text-[#1F3D2B] mb-2" style={{ fontFamily: 'Cairo, sans-serif' }}>
+              حدث خطأ في الأداة
+            </h3>
+            <p className="text-sm text-gray-500 mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
+              {this.props.toolName}
+            </p>
+            <p className="text-xs text-gray-400 mb-6" style={{ fontFamily: 'Cairo, sans-serif' }}>
+              حدث خطأ أثناء تحميل هذه الأداة. جرّب مرة ثانية أو ارجع لقائمة الأدوات.
+            </p>
+            {this.state.error && (
+              <details className="text-left mb-4 bg-red-50 border border-red-200 rounded-xl p-3">
+                <summary className="cursor-pointer text-xs font-bold text-red-700 mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                  تفاصيل تقنية
+                </summary>
+                <pre className="text-[10px] text-red-600 overflow-auto mt-1 whitespace-pre-wrap">
+                  {this.state.error.toString()}
+                </pre>
+              </details>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={() => this.setState({ hasError: false, error: null })}
+                className="flex-1 py-3 bg-[#2AA676] text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-[#238c63] transition-colors"
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              >
+                <RefreshCw className="w-4 h-4" />
+                إعادة المحاولة
+              </button>
+              <button
+                onClick={this.props.onBack}
+                className="flex-1 py-3 bg-gray-100 text-[#1F3D2B] rounded-xl font-bold text-sm flex items-center justify-center gap-2 hover:bg-gray-200 transition-colors"
+                style={{ fontFamily: 'Cairo, sans-serif' }}
+              >
+                <ArrowRight className="w-4 h-4" />
+                رجوع
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboardProps) {
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
+  const [activeCategory, setActiveCategory] = useState<Category>('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const { language } = useLanguage();
   const isEn = language === 'en';
 
   const handleBack = () => setActiveTool(null);
 
+  // Helper: wrap tool in error boundary
+  const wrapTool = (toolName: string, component: ReactNode) => (
+    <ToolErrorBoundary onBack={handleBack} toolName={toolName}>
+      {component}
+    </ToolErrorBoundary>
+  );
+
   // ══════════ Route to individual tools ══════════
-  if (activeTool === 'materials') return <MaterialCalculatorV2 onBack={handleBack} />;
-  if (activeTool === 'paint') return <PaintFlooringCalc onBack={handleBack} />;
-  if (activeTool === 'cost') return <CostEstimatorTool onBack={handleBack} />;
-  if (activeTool === 'quote') return <QuoteGeneratorTool onBack={handleBack} />;
-  if (activeTool === 'invoice') return <InvoiceGeneratorTool onBack={handleBack} />;
-  if (activeTool === 'marketing') return <MarketingContentTool onBack={handleBack} />;
-  if (activeTool === 'contract') return <ContractGeneratorTool onBack={handleBack} />;
-  if (activeTool === 'social-media') return <SocialMediaManager onBack={handleBack} />;
-  if (activeTool === 'color-palette') return <ColorPaletteTool onBack={handleBack} />;
-  if (activeTool === 'lighting') return <LightingCalcTool onBack={handleBack} />;
-  if (activeTool === 'room-layout') return <RoomLayoutTool onBack={handleBack} />;
-  if (activeTool === 'design-2d') return <Design2DTool onBack={handleBack} />;
-  if (activeTool === 'design-3d') return <Design3DTool onBack={handleBack} />;
-  if (activeTool === 'convert-2d-3d') return <Convert2Dto3DTool onBack={handleBack} />;
+  if (activeTool === 'materials') return wrapTool('حاسبة مواد البناء', <MaterialCalculatorV2 onBack={handleBack} />);
+  if (activeTool === 'paint') return wrapTool('حاسبة الدهانات', <PaintFlooringCalc onBack={handleBack} />);
+  if (activeTool === 'cost') return wrapTool('مقدّر التكلفة', <CostEstimatorTool onBack={handleBack} />);
+  if (activeTool === 'quote') return wrapTool('مولّد عروض الأسعار', <QuoteGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'invoice') return wrapTool('مولّد الفواتير', <InvoiceGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'marketing') return wrapTool('المحتوى التسويقي', <MarketingContentTool onBack={handleBack} />);
+  if (activeTool === 'contract') return wrapTool('مولّد العقود', <ContractGeneratorTool onBack={handleBack} />);
+  if (activeTool === 'social-media') return wrapTool('مدير التواصل', <SocialMediaManager onBack={handleBack} />);
+  if (activeTool === 'color-palette') return wrapTool('لوحة الألوان', <ColorPaletteTool onBack={handleBack} />);
+  if (activeTool === 'lighting') return wrapTool('حاسبة الإضاءة', <LightingCalcTool onBack={handleBack} />);
+  if (activeTool === 'room-layout') return wrapTool('تخطيط الغرفة', <RoomLayoutTool onBack={handleBack} />);
+  if (activeTool === 'design-2d') return wrapTool('تصميم 2D', <Design2DTool onBack={handleBack} />);
+  if (activeTool === 'design-3d') return wrapTool('تصميم 3D', <Design3DTool onBack={handleBack} />);
+  if (activeTool === 'convert-2d-3d') return wrapTool('تحويل 2D→3D', <Convert2Dto3DTool onBack={handleBack} />);
+
+  // ══════════ Filtered tools ══════════
+  const filteredTools = useMemo(() => {
+    return ALL_TOOLS.filter(tool => {
+      if (activeCategory !== 'all' && tool.category !== activeCategory) return false;
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        const title = isEn ? tool.titleEn.toLowerCase() : tool.titleAr;
+        const subtitle = isEn ? tool.subtitleEn.toLowerCase() : tool.subtitleAr;
+        if (!title.includes(q) && !subtitle.includes(q)) return false;
+      }
+      return true;
+    });
+  }, [activeCategory, searchQuery, isEn]);
+
+  // Group tools by category for display
+  const groupedTools = useMemo(() => {
+    if (activeCategory !== 'all') return [{ category: activeCategory, tools: filteredTools }];
+    const groups: { category: Category; tools: ToolDef[] }[] = [];
+    const cats: Category[] = ['documents', 'calculators', 'design', 'marketing'];
+    for (const cat of cats) {
+      const tools = filteredTools.filter(t => t.category === cat);
+      if (tools.length > 0) groups.push({ category: cat, tools });
+    }
+    return groups;
+  }, [activeCategory, filteredTools]);
 
   // ══════════ Main Dashboard ══════════
   return (
     <div className="min-h-screen bg-background pb-32" dir="rtl">
 
       {/* Page Header */}
-      <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] px-5 pt-8 pb-10 relative overflow-hidden">
+      <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] px-5 pt-8 pb-14 relative overflow-hidden">
         <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full" />
         <div className="absolute -bottom-16 -right-8 w-32 h-32 bg-white/5 rounded-full" />
-        <div className="relative z-10 text-center">
-          <h1 className="text-white mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '26px' }}>
-            {isEn ? 'Smart Tools' : 'الأدوات الذكية'}
-          </h1>
-          <p className="text-white/80" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 500, fontSize: '13px' }}>
-            {isEn ? 'Real tools with instant results — no signup or waiting' : 'أدوات حقيقية بنتائج فورية — بدون تسجيل أو انتظار'}
-          </p>
+        <div className="absolute top-20 right-1/4 w-60 h-60 bg-white/3 rounded-full blur-3xl" />
+        <div className="relative z-10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Icon3D icon={Sparkles} theme="gold" size="md" hoverable={false} />
+              <div>
+                <h1 className="text-white" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '24px' }}>
+                  {isEn ? 'Smart Tools' : 'الأدوات الذكية'}
+                </h1>
+                <p className="text-white/60 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 500 }}>
+                  {isEn ? 'Real tools with instant results' : 'أدوات حقيقية بنتائج فورية'}
+                </p>
+              </div>
+            </div>
+            <div className="bg-white/15 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10">
+              <span className="text-white/90 text-xs font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {ALL_TOOLS.length} {isEn ? 'tools' : 'أداة'}
+              </span>
+            </div>
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute top-1/2 -translate-y-1/2 start-3.5 w-4.5 h-4.5 text-white/40" />
+            <input
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+              placeholder={isEn ? 'Search tools...' : 'ابحث عن أداة...'}
+              className="w-full ps-11 pe-10 py-3 bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-white/30 focus:bg-white/15 transition-all"
+              style={{ fontFamily: 'Cairo, sans-serif' }}
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')}
+                className="absolute top-1/2 -translate-y-1/2 end-3">
+                <X className="w-4 h-4 text-white/40 hover:text-white/70 transition-colors" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Primary Tools Grid — 2 per row on mobile */}
-      <div className="px-4 -mt-5 relative z-10">
-        <div className="flex items-center justify-between mb-3 px-1">
-          <h3 className="text-[#1A1A1A] font-bold font-cairo text-lg">
-            {isEn ? 'Core Tools' : 'الأدوات الأساسية'}
-          </h3>
-          <span className="text-xs font-bold text-[#2AA676] bg-[#2AA676]/10 px-2.5 py-1 rounded-full font-cairo">
-            {PRIMARY_TOOLS.length} {isEn ? 'tools' : 'أداة'}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          {PRIMARY_TOOLS.map((tool, index) => {
-            const badge = isEn ? tool.badgeEn : tool.badgeAr;
+      {/* Category Tabs - overlapping header */}
+      <div className="px-4 -mt-6 relative z-20">
+        <div className="bg-white rounded-2xl shadow-lg p-1.5 flex gap-1 border border-gray-100/80 overflow-x-auto scrollbar-hide">
+          {CATEGORIES.map(cat => {
+            const CatIcon = cat.icon;
+            const isActive = activeCategory === cat.id;
+            const count = cat.id === 'all' ? ALL_TOOLS.length : ALL_TOOLS.filter(t => t.category === cat.id).length;
             return (
-              <motion.button
-                key={tool.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.04 }}
-                onClick={() => setActiveTool(tool.id)}
-                className="bg-white rounded-[20px] p-3.5 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/80 hover:shadow-md transition-all group active:scale-[0.97] flex flex-col items-center text-center relative"
+              <button
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                className={`flex-shrink-0 flex-1 min-w-0 py-2.5 px-2 rounded-xl text-[11px] transition-all flex items-center justify-center gap-1.5 ${
+                  isActive
+                    ? 'text-white shadow-md'
+                    : 'text-gray-500 hover:bg-gray-50'
+                }`}
+                style={{
+                  fontFamily: 'Cairo, sans-serif',
+                  fontWeight: 700,
+                  backgroundColor: isActive ? cat.color : undefined,
+                }}
               >
-                {/* Badge */}
-                {badge && (
-                  <span className={`absolute top-2 left-2 text-[8px] font-bold px-1.5 py-0.5 rounded-full ${
-                    badge === 'جديد' || badge === 'New' ? 'bg-green-100 text-green-700' :
-                    badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
-                    badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
-                    'bg-gray-100 text-gray-600'
-                  }`}>
-                    {badge}
-                  </span>
-                )}
-
-                {/* Icon */}
-                <div className="mb-2.5 group-hover:scale-110 transition-transform">
-                  {TOOL_ICONS[tool.id as string] ? (
-                    <Icon3D
-                      icon={TOOL_ICONS[tool.id as string].icon}
-                      theme={TOOL_ICONS[tool.id as string].theme}
-                      size="lg"
-                      hoverable={false}
-                    />
-                  ) : (
-                    <div className={`w-12 h-12 bg-gradient-to-br ${tool.gradient} rounded-2xl flex items-center justify-center text-2xl shadow-lg`}>
-                      {tool.icon}
-                    </div>
-                  )}
-                </div>
-
-                {/* Title */}
-                <h4 className="font-bold font-cairo text-[12px] text-[#1A1A1A] leading-tight mb-1 line-clamp-2 min-h-[32px] flex items-center">
-                  {isEn ? tool.titleEn : tool.titleAr}
-                </h4>
-
-                {/* Subtitle */}
-                <p className="text-[10px] text-gray-400 font-cairo leading-tight line-clamp-2">
-                  {isEn ? tool.subtitleEn : tool.subtitleAr}
-                </p>
-              </motion.button>
+                <CatIcon className={`w-3.5 h-3.5 flex-shrink-0 ${isActive ? 'text-white' : ''}`} style={{ color: isActive ? undefined : cat.color }} />
+                <span className="truncate">{isEn ? cat.en : cat.ar}</span>
+                <span className={`text-[9px] px-1.5 py-0.5 rounded-full flex-shrink-0 ${
+                  isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'
+                }`}>
+                  {count}
+                </span>
+              </button>
             );
           })}
         </div>
       </div>
 
-      {/* Footer Note */}
+      {/* Tools Grid */}
+      <div className="px-4 mt-5 relative z-10">
+        <AnimatePresence mode="wait">
+          {filteredTools.length === 0 ? (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center py-16"
+            >
+              <Search className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+              <p className="text-gray-400 text-sm font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {isEn ? 'No tools found' : 'لا توجد أدوات'}
+              </p>
+              <p className="text-gray-300 text-xs mt-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                {isEn ? 'Try a different search term' : 'جرب كلمة بحث مختلفة'}
+              </p>
+            </motion.div>
+          ) : (
+            <motion.div
+              key={activeCategory + searchQuery}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="space-y-6"
+            >
+              {groupedTools.map(group => {
+                const catData = CATEGORIES.find(c => c.id === group.category);
+                return (
+                  <div key={group.category}>
+                    {/* Category Title (only in 'all' view) */}
+                    {activeCategory === 'all' && catData && (
+                      <div className="flex items-center gap-2 mb-3 px-1">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${catData.color}15` }}>
+                          <catData.icon className="w-4 h-4" style={{ color: catData.color }} />
+                        </div>
+                        <h3 className="text-[#1A1A1A] font-bold text-sm" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                          {isEn ? catData.en : catData.ar}
+                        </h3>
+                        <div className="flex-1 h-px bg-gray-100" />
+                        <span className="text-[10px] text-gray-400 font-bold" style={{ fontFamily: 'Cairo, sans-serif' }}>
+                          {group.tools.length}
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Tools Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      {group.tools.map((tool, index) => {
+                        const badge = isEn ? tool.badgeEn : tool.badgeAr;
+                        const toolIcon = TOOL_ICONS[tool.id as string];
+                        return (
+                          <motion.button
+                            key={tool.id}
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.04 }}
+                            onClick={() => setActiveTool(tool.id)}
+                            className="bg-white rounded-[20px] p-4 shadow-[0_4px_20px_rgba(0,0,0,0.04)] border border-gray-100/80 hover:shadow-lg hover:border-[#2AA676]/20 transition-all group active:scale-[0.97] flex flex-col items-center text-center relative overflow-hidden"
+                          >
+                            {/* Hover glow */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-[#2AA676]/0 to-[#2AA676]/0 group-hover:from-[#2AA676]/3 group-hover:to-[#2AA676]/6 transition-all duration-300 rounded-[20px]" />
+
+                            {/* Badge */}
+                            {badge && (
+                              <span className={`absolute top-2.5 left-2.5 text-[8px] font-bold px-2 py-0.5 rounded-full z-10 ${
+                                badge === 'جديد' || badge === 'New' ? 'bg-emerald-100 text-emerald-700' :
+                                badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
+                                badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
+                                'bg-gray-100 text-gray-600'
+                              }`} style={{ fontFamily: 'Cairo, sans-serif' }}>
+                                {badge}
+                              </span>
+                            )}
+
+                            {/* Icon */}
+                            <div className="mb-3 relative group-hover:scale-110 transition-transform duration-300">
+                              {toolIcon ? (
+                                <Icon3D
+                                  icon={toolIcon.icon}
+                                  theme={toolIcon.theme}
+                                  size="lg"
+                                  hoverable={false}
+                                />
+                              ) : (
+                                <div className="w-14 h-14 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-2xl flex items-center justify-center shadow-lg">
+                                  <Sparkles className="w-7 h-7 text-white" />
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Title */}
+                            <h4 className="font-bold text-[12px] text-[#1A1A1A] leading-tight mb-1 line-clamp-2 min-h-[32px] flex items-center relative z-10"
+                              style={{ fontFamily: 'Cairo, sans-serif' }}>
+                              {isEn ? tool.titleEn : tool.titleAr}
+                            </h4>
+
+                            {/* Subtitle */}
+                            <p className="text-[10px] text-gray-400 leading-tight line-clamp-2 relative z-10"
+                              style={{ fontFamily: 'Cairo, sans-serif' }}>
+                              {isEn ? tool.subtitleEn : tool.subtitleAr}
+                            </p>
+
+                            {/* Bottom accent line */}
+                            <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-gradient-to-r from-transparent via-[#2AA676]/0 to-transparent group-hover:via-[#2AA676]/40 transition-all duration-500 rounded-full" />
+                          </motion.button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Footer Tip */}
       <div className="px-4 mt-8">
         <div className="bg-gradient-to-l from-[#F5EEE1] to-[#FFF8F0] rounded-[20px] p-5 border border-[#E8DCC8]">
           <div className="flex items-start gap-3">
             <Icon3D icon={TOOL_ICONS['lighting'].icon} theme="amber" size="md" hoverable={false} />
             <div>
-              <h4 className="font-bold font-cairo text-sm text-[#1A1A1A] mb-1">
+              <h4 className="font-bold text-sm text-[#1A1A1A] mb-1" style={{ fontFamily: 'Cairo, sans-serif' }}>
                 {isEn ? 'Beit Al Reef Tip' : 'نصيحة بيت الريف'}
               </h4>
-              <p className="text-xs text-gray-600 font-cairo leading-relaxed">
+              <p className="text-xs text-gray-600 leading-relaxed" style={{ fontFamily: 'Cairo, sans-serif' }}>
                 {isEn
-                  ? 'All core tools work fully and give you instant results. You can copy results or share them via WhatsApp directly. Print as PDF for professional A4 documents.'
-                  : 'جميع الأدوات الأساسية تعمل بشكل كامل وتعطيك نتائج فورية. يمكنك نسخ النتائج أو مشاركتها عبر واتساب مباشرة. اطبع كـ PDF للحصول على مستندات A4 احترافية.'}
+                  ? 'All tools work fully and give you instant results. Copy results or share them via WhatsApp directly. Print as PDF for professional A4 documents.'
+                  : 'جميع الأدوات تعمل بشكل كامل وتعطيك نتائج فورية. يمكنك نسخ النتائج أو مشاركتها عبر واتساب مباشرة. اطبع كـ PDF للحصول على مستندات A4 احترافية.'}
               </p>
             </div>
           </div>

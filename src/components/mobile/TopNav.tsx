@@ -1,4 +1,5 @@
 import image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3 from 'figma:asset/1d3f7ac269fcb8922cef991f788ec0c45ba06aa3.png';
+import bietAlreefLogo from 'figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png';
 import { ShoppingCart, Search, Bell, Menu, Mic, Check, CheckCheck, ChevronLeft, X, Clock, Sparkles, MessageSquare, AlertTriangle, Zap } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router';
@@ -197,7 +198,7 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
           </button>
           <div className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center flex-shrink-0 overflow-hidden">
             <ImageWithFallback 
-              src={image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3}
+              src={bietAlreefLogo}
               alt="بيت الريف"
               className="w-full h-full object-contain"
             />

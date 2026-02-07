@@ -60,10 +60,9 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
       title={isEn ? 'Lighting Calculator' : 'حاسبة الإضاءة'}
       subtitle={isEn ? 'Calculate lighting needs for your rooms' : 'احسب احتياجات الإضاءة لغرفك'}
       onBack={onBack}
-      icon="💡"
-      gradientFrom="#F59E0B"
-      gradientTo="#D97706"
-      backLabel={isEn ? 'Back' : 'رجوع'}
+      toolId="lighting"
+      gradientFrom="#D97706"
+      gradientTo="#F59E0B"
     >
       <div className="space-y-5 p-4" dir="rtl">
         {/* Room Type */}

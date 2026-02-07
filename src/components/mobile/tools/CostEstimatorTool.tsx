@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
+  Zap, ClipboardCopy, Share2, RotateCcw, AlertTriangle, Building2,
+} from 'lucide-react';
+import {
   SimpleToolShell, InputCard, SliderInput, OptionSelector,
   ActionButton, Divider, formatAED,
 } from './SimpleToolShell';
 import { calculateCostEstimate, CostEstimateResult } from './logic/AllCalculators';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
   const [area, setArea] = useState(200);
@@ -34,8 +38,10 @@ export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell
       title="مقدّر تكلفة البناء"
+      titleEn="Construction Cost Estimator"
       subtitle="تقدير شامل لميزانية مشروعك"
-      icon="💰"
+      subtitleEn="Complete budget estimate for your project"
+      toolId="cost"
       gradientFrom="#0F766E"
       gradientTo="#14B8A6"
       onBack={onBack}

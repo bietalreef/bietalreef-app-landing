@@ -3,11 +3,12 @@ import { motion, AnimatePresence } from 'motion/react';
 import {
   Coins, ArrowDownCircle, ArrowUpCircle, Clock,
   Sparkles, Zap, Crown, Gift, RefreshCw, TrendingUp, Wrench, ShieldCheck,
-  Eye, History, ShoppingCart
+  Eye, History, ShoppingCart, Wallet, BarChart3, AlertTriangle
 } from 'lucide-react';
 import { useWallet } from '../../contexts/WalletContext';
 import { toast } from 'sonner@2.0.3';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { Icon3D } from '../ui/Icon3D';
 
 type WalletTab = 'overview' | 'history' | 'buy';
 
@@ -142,9 +143,9 @@ export function WalletScreen() {
 
   // How-to steps
   const howToSteps = [
-    { step: '1', icon: '💰', titleAr: 'اشحن رصيدك', titleEn: 'Top Up', descAr: 'اختر باقة كوينز وادفع', descEn: 'Choose a coin package and pay' },
-    { step: '2', icon: '🛠️', titleAr: 'استخدم الأدوات', titleEn: 'Use Tools', descAr: 'كل أداة لها تكلفة محددة بالكوينز', descEn: 'Each tool has a specific coin cost' },
-    { step: '3', icon: '📊', titleAr: 'تابع رصيدك', titleEn: 'Track Balance', descAr: 'سجل كامل لجميع العمليات', descEn: 'Full record of all transactions' },
+    { step: '1', icon: Coins, theme: 'gold', titleAr: 'اشحن رصيدك', titleEn: 'Top Up', descAr: 'اختر باقة كوينز وادفع', descEn: 'Choose a coin package and pay' },
+    { step: '2', icon: Wrench, theme: 'teal', titleAr: 'استخدم الأدوات', titleEn: 'Use Tools', descAr: 'كل أداة لها تكلفة محددة بالكوينز', descEn: 'Each tool has a specific coin cost' },
+    { step: '3', icon: BarChart3, theme: 'blue', titleAr: 'تابع رصيدك', titleEn: 'Track Balance', descAr: 'سجل كامل لجميع العمليات', descEn: 'Full record of all transactions' },
   ];
 
   return (
@@ -158,11 +159,9 @@ export function WalletScreen() {
         <div className="relative z-10">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#C8A86A] to-[#A07D35] rounded-xl flex items-center justify-center shadow-md">
-                <Coins className="w-6 h-6 text-white" />
-              </div>
+              <Icon3D icon={Wallet} theme="gold" size="sm" hoverable={false} />
               <h1 className="text-[#1F3D2B] text-2xl font-extrabold" style={fw800}>
-                {isEn ? 'Reef Wallet' : 'محفظة ريف'}
+                {isEn ? 'Dar Wallet' : 'محفظة الدار'}
               </h1>
             </div>
             <button
@@ -192,12 +191,12 @@ export function WalletScreen() {
                   <span className="text-5xl md:text-6xl text-[#1F3D2B] font-black" style={{ fontFamily: font }}>
                     {balance.toLocaleString(isEn ? 'en-US' : 'ar-EG')}
                   </span>
-                  <span className="text-2xl">🪙</span>
+                  <Coins className="w-8 h-8 text-[#D4AF37]" />
                 </>
               )}
             </motion.div>
             <p className="text-[#C8A86A] text-sm mt-2 font-bold" style={fw700}>
-              {isEn ? 'Reef Coins' : 'عملات ريف كوينز'}
+              {isEn ? 'Dar Coins' : 'كوينز الدار'}
             </p>
           </div>
 
@@ -265,7 +264,7 @@ export function WalletScreen() {
       {/* Tab Content */}
       <div className="px-4 mt-4 relative z-10">
         <AnimatePresence mode="wait">
-          {/* ── Overview ── */}
+          {/* Overview */}
           {activeTab === 'overview' && (
             <motion.div
               key="overview"
@@ -274,20 +273,18 @@ export function WalletScreen() {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-4"
             >
-              {/* What are Reef Coins */}
+              {/* What are Dar Coins */}
               <div className="bg-white rounded-2xl p-5 shadow-sm">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-11 h-11 bg-[#C8A86A]/10 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">🪙</span>
-                  </div>
+                  <Icon3D icon={Coins} theme="gold" size="sm" hoverable={false} />
                   <h3 className="text-[#1F3D2B] text-xl" style={fw800}>
-                    {isEn ? 'What are Reef Coins?' : 'ما هي عملات ريف؟'}
+                    {isEn ? 'What are Dar Coins?' : 'ما هي كوينز الدار؟'}
                   </h3>
                 </div>
                 <p className="text-[#1F3D2B]/70 text-base leading-relaxed" style={fw600}>
                   {isEn
-                    ? 'Reef Coins are your prepaid balance for using AI tools in Beit Al Reef. Top up your balance and use tools easily — construction calculators, room design, financial analysis and more.'
-                    : 'عملات ريف هي رصيدك المسبق الدفع لاستخدام أدوات الذكاء الاصطناعي في بيت الريف. اشحن رصيدك واستخدم الأدوات بسهولة — حاسبات البناء، تصميم الغرف، التحليل المالي والمزيد.'}
+                    ? 'Dar Coins are your prepaid balance for using AI tools in Beit Al Reef. Top up your balance and use tools easily — construction calculators, room design, financial analysis and more.'
+                    : 'كوينز الدار هي رصيدك المسبق الدفع لاستخدام أدوات الذكاء الاصطناعي في بيت الريف. اشحن رصيدك واستخدم الأدوات بسهولة — حاسبات البناء، تصميم الغرف، التحليل المالي والمزيد.'}
                 </p>
               </div>
 
@@ -299,9 +296,7 @@ export function WalletScreen() {
                 <div className="space-y-3">
                   {howToSteps.map((item) => (
                     <div key={item.step} className="flex items-center gap-3">
-                      <div className="w-11 h-11 bg-gradient-to-br from-[#C8A86A]/20 to-[#C8A86A]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <span className="text-xl">{item.icon}</span>
-                      </div>
+                      <Icon3D icon={item.icon} theme={item.theme} size="sm" hoverable={false} />
                       <div className="flex-1">
                         <p className="text-[#1F3D2B] text-base" style={fw700}>
                           {isEn ? item.titleEn : item.titleAr}
@@ -326,8 +321,8 @@ export function WalletScreen() {
                       <span className="text-[#1F3D2B] text-sm" style={fw700}>
                         {isEn ? tool.nameEn : tool.nameAr}
                       </span>
-                      <span className="text-[#C8A86A] text-sm" style={fw800}>
-                        {tool.cost} 🪙
+                      <span className="text-[#C8A86A] text-sm flex items-center gap-1" style={fw800}>
+                        {tool.cost} <Coins className="w-3.5 h-3.5 text-[#D4AF37]" />
                       </span>
                     </div>
                   ))}
@@ -351,7 +346,7 @@ export function WalletScreen() {
             </motion.div>
           )}
 
-          {/* ── History ── */}
+          {/* History */}
           {activeTab === 'history' && (
             <motion.div
               key="history"
@@ -427,7 +422,7 @@ export function WalletScreen() {
             </motion.div>
           )}
 
-          {/* ── Buy Coins ── */}
+          {/* Buy Coins */}
           {activeTab === 'buy' && (
             <motion.div
               key="buy"
@@ -461,7 +456,7 @@ export function WalletScreen() {
                       
                       {pkg.popular && (
                         <div className="absolute -top-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-l from-[#C8A86A] to-[#A07D35] text-white text-xs px-3 py-0.5 rounded-b-xl z-10" style={fw700}>
-                          {isEn ? 'Most Popular' : 'الأكثر طلباً'}
+                          {isEn ? 'Most Popular' : 'الأكثر طلبا'}
                         </div>
                       )}
                       
@@ -477,8 +472,8 @@ export function WalletScreen() {
                             {pkg.coins} <span className="text-xs md:text-sm text-[#1F3D2B]/40" style={fw700}>{isEn ? 'Coins' : 'كوينز'}</span>
                           </p>
                           {pkg.bonus > 0 && (
-                            <p className="text-emerald-600 text-xs md:text-sm mt-0.5" style={fw700}>
-                              + {pkg.bonus} {isEn ? 'free' : 'مجاناً'} 🎁
+                            <p className="text-emerald-600 text-xs md:text-sm mt-0.5 flex items-center gap-1" style={fw700}>
+                              + {pkg.bonus} {isEn ? 'free' : 'مجانا'} <Gift className="w-3.5 h-3.5 text-emerald-500" />
                             </p>
                           )}
                         </div>
@@ -500,11 +495,12 @@ export function WalletScreen() {
               </div>
 
               {/* Note */}
-              <div className="bg-amber-50 rounded-2xl p-4 text-center">
+              <div className="bg-amber-50 rounded-2xl p-4 flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
                 <p className="text-amber-700 text-sm" style={fw600}>
                   {isEn
-                    ? '⚠️ Currently coins are added directly for testing. Payment gateway integration coming soon.'
-                    : '⚠️ حالياً يتم الشحن مباشرة للتجربة. ربط بوابة الدفع قريباً.'}
+                    ? 'Currently coins are added directly for testing. Payment gateway integration coming soon.'
+                    : 'حاليا يتم الشحن مباشرة للتجربة. ربط بوابة الدفع قريبا.'}
                 </p>
               </div>
             </motion.div>

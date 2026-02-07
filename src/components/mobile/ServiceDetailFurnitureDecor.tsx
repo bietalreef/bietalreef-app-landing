@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Sofa } from 'lucide-react';
+import { ArrowRight, Star, Sofa, Sparkles, Lightbulb, Paintbrush, Crown, Home as HomeIcon, Briefcase, Monitor } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailFurnitureDecorProps {
   onBack: () => void;
@@ -32,32 +33,30 @@ export function ServiceDetailFurnitureDecor({ onBack, onNavigate, onOpenSearch, 
   };
 
   const serviceItems = [
-    { emoji: '🛏️', title: t('furnitureServices.bedrooms'), description: t('furnitureServices.bedroomsDesc') },
-    { emoji: '🛋️', title: t('furnitureServices.livingRooms'), description: t('furnitureServices.livingRoomsDesc') },
-    { emoji: '🍽️', title: t('furnitureServices.diningRooms'), description: t('furnitureServices.diningRoomsDesc') },
-    { emoji: '💼', title: t('furnitureServices.office'), description: t('furnitureServices.officeDesc') },
-    { emoji: '📺', title: t('furnitureServices.tvUnits'), description: t('furnitureServices.tvUnitsDesc') },
-    { emoji: '🪞', title: t('furnitureServices.mirrors'), description: t('furnitureServices.mirrorsDesc') },
-    { emoji: '💡', title: t('furnitureServices.lighting'), description: t('furnitureServices.lightingDesc') },
-    { emoji: '🎨', title: t('furnitureServices.paintings'), description: t('furnitureServices.paintingsDesc') },
-    { emoji: '🌿', title: t('furnitureServices.plants'), description: t('furnitureServices.plantsDesc') },
-    { emoji: '🏺', title: t('furnitureServices.antiques'), description: t('furnitureServices.antiquesDesc') },
-    { emoji: '🪟', title: t('furnitureServices.curtains'), description: t('furnitureServices.curtainsDesc') },
-    { emoji: '✨', title: t('furnitureServices.interiorDesign'), description: t('furnitureServices.interiorDesignDesc') },
+    { icon: HomeIcon, theme: 'purple', title: t('furnitureServices.bedrooms'), description: t('furnitureServices.bedroomsDesc') },
+    { icon: Sofa, theme: 'teal', title: t('furnitureServices.livingRooms'), description: t('furnitureServices.livingRoomsDesc') },
+    { icon: HomeIcon, theme: 'orange', title: t('furnitureServices.diningRooms'), description: t('furnitureServices.diningRoomsDesc') },
+    { icon: Briefcase, theme: 'indigo', title: t('furnitureServices.office'), description: t('furnitureServices.officeDesc') },
+    { icon: Monitor, theme: 'blue', title: t('furnitureServices.tvUnits'), description: t('furnitureServices.tvUnitsDesc') },
+    { icon: HomeIcon, theme: 'brown', title: t('furnitureServices.mirrors'), description: t('furnitureServices.mirrorsDesc') },
+    { icon: Lightbulb, theme: 'amber', title: t('furnitureServices.lighting'), description: t('furnitureServices.lightingDesc') },
+    { icon: Paintbrush, theme: 'pink', title: t('furnitureServices.paintings'), description: t('furnitureServices.paintingsDesc') },
+    { icon: Sparkles, theme: 'emerald', title: t('furnitureServices.plants'), description: t('furnitureServices.plantsDesc') },
+    { icon: Crown, theme: 'gold', title: t('furnitureServices.antiques'), description: t('furnitureServices.antiquesDesc') },
+    { icon: HomeIcon, theme: 'violet', title: t('furnitureServices.curtains'), description: t('furnitureServices.curtainsDesc') },
+    { icon: Sparkles, theme: 'cyan', title: t('furnitureServices.interiorDesign'), description: t('furnitureServices.interiorDesignDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['furniture-stores'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />
-      
-      {/* Back Button */}
       <div className="container mx-auto px-4 pt-4">
         <button onClick={onBack} className="inline-flex items-center gap-2 bg-gradient-to-l from-[#2AA676] to-[#C8A86A] text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
           <ArrowRight className="w-5 h-5" /><span>{t('backToHome')}</span>
         </button>
       </div>
-      
-      {/* Hero Section */}
       <div className="bg-gradient-to-l from-[#9B59B6]/10 to-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -65,7 +64,9 @@ export function ServiceDetailFurnitureDecor({ onBack, onNavigate, onOpenSearch, 
               <h1 className="text-3xl md:text-4xl text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('furnitureServices.title')}</h1>
               <p className="text-gray-600 leading-relaxed max-w-3xl" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('furnitureServices.description')}</p>
             </div>
-            <div className="text-6xl">🛋️</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -73,7 +74,7 @@ export function ServiceDetailFurnitureDecor({ onBack, onNavigate, onOpenSearch, 
               <span className="text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>4.8</span>
               <span className="text-gray-500" style={{ fontFamily: 'Cairo, sans-serif' }}>(1340 {t('reviewsCount')})</span>
             </div>
-            <div className="bg-[#9B59B6] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')} ✓</div>
+            <div className="bg-[#9B59B6] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')}</div>
           </div>
           <button className="bg-gradient-to-l from-[#9B59B6] to-[#8E44AD] text-white px-8 py-3 rounded-full hover:shadow-lg transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('shopNow')}</button>
         </div>
@@ -94,7 +95,7 @@ export function ServiceDetailFurnitureDecor({ onBack, onNavigate, onOpenSearch, 
           <div>
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('furnitureServices.servicesTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {serviceItems.map((item, idx) => <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />)}
+              {serviceItems.map((item, idx) => <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />)}
             </div>
           </div>
         )}

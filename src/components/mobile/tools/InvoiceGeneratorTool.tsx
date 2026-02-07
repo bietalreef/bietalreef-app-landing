@@ -190,7 +190,7 @@ export function InvoiceGeneratorTool({ onBack }: { onBack: () => void }) {
   const payMethodLabel = payMethodOpts.find(p => p.id === paymentMethod)?.label || '';
 
   return (
-    <SimpleToolShell title={L.title} subtitle={L.subtitle} icon="🧾" gradientFrom="#0F766E" gradientTo="#14B8A6" onBack={onBack}>
+    <SimpleToolShell title={L.title} subtitle={L.subtitle} toolId="invoice" gradientFrom="#0F766E" gradientTo="#14B8A6" onBack={onBack}>
       {/* نوع الفاتورة */}
       <InputCard title={`🧾 ${L.invoiceType}`}>
         <OptionSelector label={L.invoiceType} options={invoiceTypeOpts} value={invoiceType} onChange={v => setInvoiceType(v as any)} />

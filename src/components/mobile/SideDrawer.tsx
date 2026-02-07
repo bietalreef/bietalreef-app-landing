@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import { X, ChevronLeft, User, ArrowRight, Lock, Download, Smartphone, LogOut } from 'lucide-react';
+import { X, ChevronLeft, User, ArrowRight, Download, Smartphone, Sun, Moon } from 'lucide-react';
 import { sectionsTree, MainSection, SubSection } from '../../data/sectionsTree';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { supabase } from '../../utils/supabase/client';
+import { useUser } from '../../utils/UserContext';
 import { Icon3D, NAV_ICONS, SERVICE_ICONS } from '../ui/Icon3D';
-import { FolderKanban, Wallet, Bot, BarChart3 } from 'lucide-react';
+import { FolderKanban, Wallet, Bot, BarChart3, Wrench, Home as HomeIcon } from 'lucide-react';
+import bietAlreefLogo from 'figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png';
 
 interface SideDrawerProps {
   isOpen: boolean;
@@ -18,26 +19,22 @@ interface SideDrawerProps {
 export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDrawerProps) {
   const { t, language } = useTranslation('common');
   const theme = useTheme();
+  const { profile } = useUser();
   const [showServicesOverlay, setShowServicesOverlay] = useState(false);
   const [showAppCTA, setShowAppCTA] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif';
   
-  // Browser app = always Guest
-  const displayName = isEn ? 'Guest User' : 'مستخدم زائر';
-
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await supabase.auth.signOut();
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Logout error:', error);
-      // Force reload anyway
-      window.location.href = '/';
-    }
-  };
+  // Pull name from profile context, fallback to Guest
+  const displayName = profile?.full_name || (isEn ? 'Guest User' : 'مستخدم زائر');
+  const userRole = profile?.role || 'guest';
+  const roleLabel = userRole === 'guest'
+    ? (isEn ? 'Guest' : 'زائر')
+    : userRole === 'client'
+    ? (isEn ? 'Client' : 'عميل')
+    : userRole === 'provider'
+    ? (isEn ? 'Provider' : 'مزود خدمة')
+    : (isEn ? 'Guest' : 'زائر');
 
   const handleSectionClick = (section: MainSection) => {
     if (!section.guestAllowed) {
@@ -71,6 +68,9 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
   };
 
   const servicesSection = sectionsTree.find(s => s.id === 'services');
+
+  // Filter: show guest-allowed only, exclude 'projects'
+  const visibleSections = sectionsTree.filter(s => s.guestAllowed && s.id !== 'projects');
 
   if (!isOpen) return null;
 
@@ -128,7 +128,7 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 <div className="w-full space-y-2 mb-6">
                   {[
                     { iconComp: FolderKanban, theme: 'indigo', ar: 'إدارة المشاريع', en: 'Project Management' },
-                    { iconComp: Wallet, theme: 'gold', ar: 'محفظة ريف', en: 'Reef Wallet' },
+                    { iconComp: Wallet, theme: 'gold', ar: 'محظة الدار', en: 'Dar Wallet' },
                     { iconComp: Bot, theme: 'emerald', ar: 'وكيل ذكي متكامل', en: 'Full AI Agent' },
                     { iconComp: User, theme: 'blue', ar: 'ملف شخصي محترف', en: 'Professional Profile' },
                     { iconComp: BarChart3, theme: 'purple', ar: 'CRM والأتمتة', en: 'CRM & Automation' },
@@ -187,7 +187,7 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                   className="w-full bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] rounded-2xl p-4 mb-4 flex items-center justify-between group hover:shadow-lg transition-all">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-white/15 rounded-xl flex items-center justify-center">
-                      <span className="text-xl">🔧</span>
+                      <Icon3D icon={Wrench} theme="green" size="xs" hoverable={false} />
                     </div>
                     <div className="text-right">
                       <h3 className="text-white font-bold text-sm" style={{ fontFamily }}>
@@ -249,33 +249,112 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
           </button>
         </div>
 
-        {/* Guest Card */}
-        <div className="bg-gradient-to-br from-[#F5EEE1] to-[#EDE5D5] p-4 border-b border-[#DDD4C4]">
-          <div className="flex items-center gap-3">
-            <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#D4AF37]/30 to-[#C8A86A]/20 flex items-center justify-center flex-shrink-0 shadow-lg border-2 border-[#D4AF37]/20">
-              <User className="w-7 h-7 text-[#8B7328]" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[#2AA676] text-[11px] font-medium mb-0.5" style={{ fontFamily }}>
-                {isEn ? 'Welcome' : 'مرحباً بك'} 👋
-              </p>
-              <h3 className="font-bold text-[#1F3D2B] text-base" style={{ fontFamily }}>
-                {displayName}
-              </h3>
-              <div className="flex items-center gap-2 mt-1.5">
-                <span className="text-xs bg-[#D4AF37]/15 text-[#8B7328] px-2.5 py-0.5 rounded-full font-bold" style={{ fontFamily }}>
-                  {isEn ? 'Guest' : 'زائر'}
-                </span>
+        {/* Guest / User Card — 3D Clay Style */}
+        <div className="p-3 border-b border-[#DDD4C4] bg-gradient-to-br from-[#F5EEE1] to-[#EDE5D5]">
+          <button
+            onClick={() => { onNavigate('/profile'); onClose(); }}
+            className="w-full group"
+          >
+            {/* 3D Card */}
+            <div
+              className="relative rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-[1.02] group-active:scale-[0.98]"
+              style={{
+                background: 'linear-gradient(135deg, #2AA676 0%, #1F3D2B 100%)',
+                boxShadow: `
+                  0 4px 0 0 #16332A,
+                  0 6px 16px rgba(42,166,118,0.3),
+                  inset 0 1px 1px rgba(255,255,255,0.25),
+                  inset 0 -1px 2px rgba(0,0,0,0.1)
+                `,
+                transform: 'translateY(-2px)',
+              }}
+            >
+              {/* Shine overlay */}
+              <div
+                className="absolute top-0 left-0 w-1/2 h-2/5 pointer-events-none"
+                style={{
+                  borderRadius: '16px 16px 40px 4px',
+                  background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+                }}
+              />
+
+              {/* Golden accent strip */}
+              <div className="absolute top-0 right-0 left-0 h-1 bg-gradient-to-l from-[#D4AF37] via-[#FFD700] to-[#D4AF37] opacity-60" />
+
+              <div className="relative z-10 p-4 flex items-center gap-3">
+                {/* Avatar */}
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(212,175,55,0.4) 0%, rgba(200,168,106,0.25) 100%)',
+                    boxShadow: '0 2px 0 0 rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.3)',
+                    border: '2px solid rgba(212,175,55,0.3)',
+                  }}
+                >
+                  {profile?.avatar_url ? (
+                    <img src={profile.avatar_url} alt="" className="w-full h-full object-cover rounded-xl" />
+                  ) : (
+                    <User className="w-7 h-7 text-white/90" />
+                  )}
+                </div>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0 text-right">
+                  {/* 3D Welcome Text */}
+                  <p
+                    className="text-[13px] font-extrabold mb-0.5"
+                    style={{
+                      fontFamily,
+                      color: '#FFD700',
+                      textShadow: '0 1px 2px rgba(0,0,0,0.3), 0 0 8px rgba(212,175,55,0.2)',
+                    }}
+                  >
+                    {isEn ? 'Welcome to Al Dar' : 'مرحباً بك في الدار'}
+                  </p>
+                  <h3
+                    className="font-bold text-white text-base truncate"
+                    style={{
+                      fontFamily,
+                      textShadow: '0 1px 3px rgba(0,0,0,0.2)',
+                    }}
+                  >
+                    {displayName}
+                  </h3>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className="text-[10px] font-bold px-2.5 py-0.5 rounded-full"
+                      style={{
+                        fontFamily,
+                        background: 'rgba(212,175,55,0.2)',
+                        color: '#FFD700',
+                        border: '1px solid rgba(212,175,55,0.3)',
+                        textShadow: '0 1px 1px rgba(0,0,0,0.15)',
+                      }}
+                    >
+                      {roleLabel}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Arrow to Profile */}
+                <div
+                  className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-transform duration-200 group-hover:-translate-x-1"
+                  style={{
+                    background: 'rgba(255,255,255,0.15)',
+                    boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.2), 0 1px 3px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  <ChevronLeft className="w-5 h-5 text-white/80" />
+                </div>
               </div>
             </div>
-          </div>
+          </button>
         </div>
 
-        {/* Sections */}
+        {/* Sections — all visible, no projects */}
         <div className="flex-1 overflow-y-auto p-2">
           <nav>
-            {/* Guest-allowed sections */}
-            {sectionsTree.filter(s => s.guestAllowed).map((section) => (
+            {visibleSections.map((section) => (
               <button
                 key={section.id}
                 onClick={() => handleSectionClick(section)}
@@ -310,107 +389,62 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 )}
               </button>
             ))}
-
-            {/* Divider */}
-            <div className="mx-4 my-2 border-t border-[#E6E0D4]" />
-
-            {/* App-Only label */}
-            <p className="px-4 py-1.5 text-[10px] font-bold text-[#1F3D2B]/25 uppercase tracking-wide" style={{ fontFamily }}>
-              {isEn ? 'In the App' : 'في التطبيق'}
-            </p>
-
-            {/* App-only sections with lock */}
-            {sectionsTree.filter(s => !s.guestAllowed).map((section) => (
-              <button
-                key={section.id}
-                onClick={() => handleSectionClick(section)}
-                className="w-full flex items-center justify-between gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 hover:bg-[#F5EEE1] text-[#1F3D2B]/30"
-              >
-                <div className="flex items-center gap-3 flex-1">
-                  <div className="opacity-30 grayscale">
-                    {NAV_ICONS[section.id] ? (
-                      <Icon3D
-                        icon={NAV_ICONS[section.id].icon}
-                        theme={NAV_ICONS[section.id].theme}
-                        size="xs"
-                        hoverable={false}
-                      />
-                    ) : (
-                      <span className="text-2xl">{section.icon}</span>
-                    )}
-                  </div>
-                  <span className="font-medium text-sm" style={{ fontFamily }}>
-                    {isEn ? section.nameEn : section.nameAr}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Lock className="w-3.5 h-3.5 text-[#D4AF37]/50" />
-                </div>
-              </button>
-            ))}
           </nav>
         </div>
 
-        {/* Footer */}
+        {/* Footer — Download App + Theme Toggle next to Branding */}
         <div className="border-t border-gray-200 p-4 bg-[#F5EEE1]/30">
-          {/* Theme Toggle */}
-          <div className="flex items-center justify-center mb-3">
-            <div className="flex items-center bg-white/80 border border-[#E6DCC8] rounded-full p-1 shadow-sm">
-              <button
-                onClick={() => { if (theme.theme !== 'light') theme.toggleTheme(); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
-                  theme.theme === 'light' ? 'bg-[#2E7D50] text-white shadow-md' : 'text-gray-500 hover:text-[#2E7D50]'
-                }`}
-                style={{ fontFamily }}
-              >
-                {isEn ? 'Light' : 'فاتح'}
-              </button>
-              <button
-                onClick={() => { if (theme.theme !== 'dark') theme.toggleTheme(); }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
-                  theme.theme === 'dark' ? 'bg-[#2E7D50] text-white shadow-md' : 'text-gray-500 hover:text-[#2E7D50]'
-                }`}
-                style={{ fontFamily }}
-              >
-                {isEn ? 'Dark' : 'داكن'}
-              </button>
-            </div>
-          </div>
-
           {/* Download App CTA */}
           <button
             onClick={() => setShowAppCTA(true)}
-            className="w-full bg-gradient-to-l from-[#1F3D2B] to-[#2A5A3B] text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mb-3 shadow-md hover:shadow-lg transition-all"
+            className="w-full bg-gradient-to-l from-[#1F3D2B] to-[#2A5A3B] text-white py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mb-4 shadow-md hover:shadow-lg transition-all"
             style={{ fontFamily }}
           >
             <Download className="w-3.5 h-3.5" />
             {isEn ? 'Download the Full App' : 'حمّل التطبيق الكامل'}
           </button>
 
-          {/* Sign Out Button */}
-          <button
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="w-full bg-red-50 hover:bg-red-100 text-red-600 py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 mb-3 border border-red-200 transition-all disabled:opacity-50"
-            style={{ fontFamily }}
-          >
-            <LogOut className="w-3.5 h-3.5" />
-            {isLoggingOut
-              ? (isEn ? 'Signing out...' : 'جاري الخروج...')
-              : (isEn ? 'Sign Out' : 'تسجيل خروج')
-            }
-          </button>
+          {/* Branding + Theme Toggle side by side */}
+          <div className="flex items-center gap-3">
+            {/* Logo & Branding */}
+            <div className="flex items-center gap-2.5 flex-1 min-w-0">
+              <img src={bietAlreefLogo} alt="بيت الريف" className="w-11 h-11 object-contain shrink-0" />
+              <div className="min-w-0">
+                <p className="font-bold text-sm text-[#1F3D2B] truncate" style={{ fontFamily }}>
+                  {isEn ? 'Beit Al Reef' : 'بيت الريف'}
+                </p>
+                <p className="text-[10px] text-gray-500 truncate" style={{ fontFamily }}>
+                  {isEn ? 'Smart Building Platform' : 'منصة البناء الذكي'}
+                </p>
+              </div>
+            </div>
 
-          <div className="text-center">
-            <div className="text-2xl mb-1">🏠</div>
-            <p className="font-bold text-sm text-[#1F3D2B]" style={{ fontFamily }}>
-              {isEn ? 'Beit Al Reef' : 'بيت الريف'}
-            </p>
-            <p className="text-xs text-gray-500" style={{ fontFamily }}>
-              {isEn ? 'Smart Building Platform' : 'منصة البناء الذكي'}
-            </p>
+            {/* Compact Theme Toggle */}
+            <div className="flex items-center bg-white/80 border border-[#E6DCC8] rounded-full p-0.5 shadow-sm shrink-0">
+              <button
+                onClick={() => { if (theme.theme !== 'light') theme.toggleTheme(); }}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all duration-200 ${
+                  theme.theme === 'light' ? 'bg-[#2E7D50] text-white shadow-md' : 'text-gray-400 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily }}
+              >
+                <Sun className="w-3 h-3" />
+                {isEn ? 'Light' : 'فاتح'}
+              </button>
+              <button
+                onClick={() => { if (theme.theme !== 'dark') theme.toggleTheme(); }}
+                className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all duration-200 ${
+                  theme.theme === 'dark' ? 'bg-[#2E7D50] text-white shadow-md' : 'text-gray-400 hover:text-[#2E7D50]'
+                }`}
+                style={{ fontFamily }}
+              >
+                <Moon className="w-3 h-3" />
+                {isEn ? 'Dark' : 'داكن'}
+              </button>
+            </div>
           </div>
-          <p className="text-xs text-center text-gray-400 mt-2">
+
+          <p className="text-[10px] text-center text-gray-400 mt-3" style={{ fontFamily }}>
             {isEn ? '© 2026 All Rights Reserved' : '© 2026 جميع الحقوق محفوظة'}
           </p>
         </div>

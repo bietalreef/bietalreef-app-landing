@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   Star, Shield, CheckCircle, MapPin, Clock,
-  MessageCircle, Share2, Wrench,
+  MessageCircle, Share2, Wrench, Phone,
   Award, Briefcase, ChevronLeft
 } from 'lucide-react';
 import { useTranslation } from '../../contexts/LanguageContext';
@@ -33,16 +33,11 @@ export function ProviderProfileCard({ provider, onContact, onViewProfile }: Prov
   const { language } = useTranslation('services');
   const isEn = language === 'en';
 
-  const statusColors: Record<string, string> = {
-    online: 'bg-[#2AA676]',
-    busy: 'bg-[#F2994A]',
-    offline: 'bg-[#EB5757]',
-  };
-
-  const statusLabels: Record<string, string> = {
-    online: isEn ? 'Available' : 'متاح',
-    busy: isEn ? 'Busy' : 'مشغول',
-    offline: isEn ? 'Offline' : 'غير متصل',
+  const getProviderType = () => {
+    if (provider.isVerified) {
+      return isEn ? 'Verified Provider' : 'مزود موثق';
+    }
+    return isEn ? 'Unverified' : 'غير موثق';
   };
 
   return (
@@ -56,16 +51,10 @@ export function ProviderProfileCard({ provider, onContact, onViewProfile }: Prov
             className="w-full h-full object-cover min-h-[160px]"
           />
           {provider.isVerified && (
-            <div className="absolute top-2 right-2 w-6 h-6 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg">
-              <CheckCircle className="w-3.5 h-3.5 text-white" />
+            <div className="absolute top-2 right-2 w-7 h-7 bg-gradient-to-br from-[#4A90E2] to-[#56CCF2] rounded-full flex items-center justify-center shadow-lg ring-2 ring-white">
+              <CheckCircle className="w-4 h-4 text-white" />
             </div>
           )}
-          <div className="absolute bottom-2 left-2 right-2">
-            <div className={`${statusColors[provider.status]} text-white px-2 py-1 rounded-lg text-[10px] text-center font-bold`}
-              style={{ fontFamily: isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif' }}>
-              {statusLabels[provider.status]}
-            </div>
-          </div>
         </div>
 
         {/* Details */}
@@ -83,13 +72,16 @@ export function ProviderProfileCard({ provider, onContact, onViewProfile }: Prov
               <span className="text-[#1A1A1A] text-xs font-bold">{provider.rating}</span>
               <span className="text-[#1A1A1A]/40 text-[10px]">({provider.reviewCount})</span>
             </div>
+            {provider.isVerified && (
+              <CheckCircle className="w-3.5 h-3.5 text-[#4A90E2]" />
+            )}
             <div className="flex items-center gap-1">
               <MapPin className="w-3 h-3 text-[#4A90E2]" />
               <span className="text-[#1A1A1A]/60 text-[10px]">{provider.location}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 mb-3 flex-wrap">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <div className="flex items-center gap-1">
               <Briefcase className="w-3 h-3 text-[#2AA676]" />
               <span className="text-[#1A1A1A]/60 text-[10px]">{provider.experience}</span>
@@ -100,17 +92,30 @@ export function ProviderProfileCard({ provider, onContact, onViewProfile }: Prov
             </div>
           </div>
 
-          {/* Price + Actions */}
+          {/* Verification Type Badge */}
+          <div className="mb-3">
+            <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold ${
+              provider.isVerified 
+                ? 'bg-[#4A90E2]/10 text-[#4A90E2]' 
+                : 'bg-[#F2994A]/10 text-[#F2994A]'
+            }`} style={{ fontFamily: isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif' }}>
+              {provider.isVerified && <CheckCircle className="w-3 h-3" />}
+              {getProviderType()}
+            </span>
+          </div>
+
+          {/* Price + Contact Now */}
           <div className="mt-auto flex items-center gap-2">
             <div className="bg-gradient-to-r from-[#4A90E2] to-[#56CCF2] text-white px-3 py-1.5 rounded-xl text-xs font-bold">
               {provider.hourlyRate} {isEn ? 'AED' : 'د.إ'}
             </div>
             <button
               onClick={() => onContact?.(provider.id)}
-              className="flex items-center gap-1 bg-[#F5EEE1] text-[#1F3D2B] px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-[#E8DFD0] transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 bg-gradient-to-r from-[#2AA676] to-[#6FCF97] text-white px-3 py-1.5 rounded-xl text-xs font-bold hover:shadow-md transition-all active:scale-95"
+              style={{ fontFamily: isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif' }}
             >
-              <MessageCircle className="w-3 h-3" />
-              {isEn ? 'Contact' : 'تواصل'}
+              <Phone className="w-3 h-3" />
+              {isEn ? 'Contact Now' : 'تواصل الآن'}
             </button>
           </div>
         </div>

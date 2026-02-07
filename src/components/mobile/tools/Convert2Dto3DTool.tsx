@@ -315,10 +315,9 @@ export function Convert2Dto3DTool({ onBack }: { onBack: () => void }) {
       title={isEn ? '2D to 3D Converter' : 'محوّل من 2D إلى 3D'}
       subtitle={isEn ? 'Convert floor plans to 3D models' : 'حوّل المخططات الأفقية إلى نماذج ثلاثية'}
       onBack={onBack}
-      icon="🔄"
+      toolId="convert-2d-3d"
       gradientFrom="#2AA676"
       gradientTo="#1F6F50"
-      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-3 p-3" dir="rtl">
         {/* Templates */}

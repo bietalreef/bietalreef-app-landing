@@ -23,7 +23,7 @@ interface PlatformShowcaseProps {
 
 // ═══════════════════════════════════════════════════════════
 // 1. HERO SECTION
-// ═══════════════════════════════════════════════════════════
+// ══════════════════════════════════════════���════════════════
 function HeroSection() {
   const { language } = useTranslation('common');
   const isEn = language === 'en';
@@ -181,7 +181,7 @@ const FEATURE_CATEGORIES: FeatureCategory[] = [
       { icon: <BarChart3 className="w-5 h-5" />, name: 'التحليل المالي', nameEn: 'Financial Analytics', desc: 'رسوم بيانية تفاعلية تعرض الإيرادات والمصروفات والأرباح بشكل لحظي', descEn: 'Interactive charts showing revenue, expenses, and profits in real-time' },
       { icon: <DollarSign className="w-5 h-5" />, name: 'إدارة المصروفات', nameEn: 'Expense Management', desc: 'تتبع مصروفات كل مشروع — مواد، عمالة، معدات — مع تقارير مفصلة', descEn: 'Track expenses per project — materials, labor, equipment — with detailed reports' },
       { icon: <TrendingUp className="w-5 h-5" />, name: 'توقعات الأرباح', nameEn: 'Profit Forecasting', desc: 'تنبؤات ذكية بالأرباح المتوقعة بناءً على المشاريع القائمة', descEn: 'Smart predictions of expected profits based on current projects' },
-      { icon: <Crown className="w-5 h-5" />, name: 'عملات ريف', nameEn: 'Reef Coins', desc: 'نظام مكافآت حصري — اكسب عملات مع كل مشروع واستبدلها بمزايا', descEn: 'Exclusive rewards system — earn coins with every project and redeem benefits', tag: 'حصري', tagEn: 'Exclusive' },
+      { icon: <Crown className="w-5 h-5" />, name: 'كوينز الدار', nameEn: 'Dar Coins', desc: 'نظام مكافآت حصري — اكسب عملات مع كل مشروع واستبدلها بمزايا', descEn: 'Exclusive rewards system — earn coins with every project and redeem benefits', tag: 'حصري', tagEn: 'Exclusive' },
     ],
   },
   {
@@ -472,7 +472,7 @@ function BrowserVsApp() {
     isEn ? 'Financial Center' : 'المركز المالي',
     isEn ? 'Team Management' : 'إدارة الفريق',
     isEn ? 'AR & 3D Experience' : 'تجربة AR و 3D',
-    isEn ? 'Reef Coins & Wallet' : 'عملات ريف والمحفظة',
+    isEn ? 'Dar Coins & Wallet' : 'كوينز الدار والمحفظة',
     isEn ? 'Smart Notifications' : 'إشعارات ذكية',
     isEn ? 'Offline Support' : 'دعم بدون إنترنت',
   ];
@@ -616,7 +616,7 @@ function ProviderJourney() {
   );
 }
 
-// ══════════════════════════════════��════════════════════════
+// ══════════════════════════════════════════════════════════
 // 6. FINAL CTA
 // ═══════════════════════════════════════════════════════════
 function FinalCTA() {

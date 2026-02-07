@@ -242,7 +242,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       grandTotal: isEn ? 'Grand Total' : 'الإجمالي',
       duration: isEn ? 'Duration' : 'المدة',
       days: isEn ? 'days' : 'يوم',
-      warranty: isEn ? 'Warranty' : 'الضمان',
+      warranty: isEn ? 'Warranty' : '��لضمان',
       months: isEn ? 'months' : 'أشهر',
       penalty: isEn ? 'Delay Penalty' : 'غرامة التأخير',
       daily: isEn ? '/ day' : '/ يوم',
@@ -260,7 +260,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <SimpleToolShell title={L.title} subtitle={L.subtitle} icon="📝" gradientFrom="#7C3AED" gradientTo="#A78BFA" onBack={onBack}>
+    <SimpleToolShell title={L.title} subtitle={L.subtitle} toolId="contract" gradientFrom="#7C3AED" gradientTo="#A78BFA" onBack={onBack}>
       {/* 1. نوع العقد */}
       <InputCard title={`📋 ${L.contractType}`}>
         <OptionSelector label={L.selectType} options={CONTRACT_TYPES} value={contractType} onChange={(v) => setContractType(v as ContractType)} />

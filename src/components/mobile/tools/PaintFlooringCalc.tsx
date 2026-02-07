@@ -1,10 +1,15 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
+  Zap, ClipboardCopy, Share2, RotateCcw, AlertTriangle,
+  Paintbrush, DoorOpen, Ruler,
+} from 'lucide-react';
+import {
   SimpleToolShell, InputCard, SliderInput, OptionSelector, CounterInput,
   ActionButton, Divider, formatAED,
 } from './SimpleToolShell';
 import { calculatePaintFlooring, PaintFlooringResult, getFlooringName } from './logic/AllCalculators';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export function PaintFlooringCalc({ onBack }: { onBack: () => void }) {
   const [length, setLength] = useState(5);
@@ -17,6 +22,7 @@ export function PaintFlooringCalc({ onBack }: { onBack: () => void }) {
   const [flooringType, setFlooringType] = useState('ceramic');
   const [result, setResult] = useState<PaintFlooringResult | null>(null);
   const [loading, setLoading] = useState(false);
+  const { language } = useLanguage();
 
   const handleCalculate = () => {
     setLoading(true);
@@ -36,8 +42,10 @@ export function PaintFlooringCalc({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell
       title="حاسبة الدهانات والأرضيات"
+      titleEn="Paint & Flooring Calculator"
       subtitle="احسب الكميات المطلوبة لتشطيب غرفتك"
-      icon="🎨"
+      subtitleEn="Calculate quantities needed for room finishing"
+      toolId="paint"
       gradientFrom="#6B21A8"
       gradientTo="#A855F7"
       onBack={onBack}

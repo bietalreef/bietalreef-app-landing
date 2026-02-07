@@ -259,7 +259,8 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
   // Labels
   const L = {
     title: isEn ? 'Quotation Generator' : 'مولّد عروض الأسعار',
-    subtitle: isEn ? 'Create a professional A4 PDF quotation' : 'أنشئ عرض سعر احترافي يطابق نموذج A4 PDF',
+    subtitle: isEn ? 'Professional A4 quotation ready to print' : 'عرض سعر احترافي A4 جاهز للطباعة',
+    toolId: 'quote',
     companyData: isEn ? 'Company / Provider Info' : 'بيانات الشركة / المزود',
     companyLogo: isEn ? 'Company Logo' : 'شعار الشركة',
     uploadLogo: isEn ? 'Upload' : 'رفع شعار',
@@ -346,14 +347,14 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
 
   return (
     <SimpleToolShell
-      title={L.title}
-      subtitle={L.subtitle}
-      icon="📄"
+      title={isEn ? 'Quotation Generator' : 'مولّد عروض الأسعار'}
+      subtitle={isEn ? 'Professional A4 quotation ready to print' : 'عرض سعر احترافي A4 جاهز للطباعة'}
+      toolId="quote"
       gradientFrom="#1E40AF"
       gradientTo="#3B82F6"
       onBack={onBack}
     >
-      {/* ═══════════ 1. بيانات الشركة ═══════════ */}
+      {/* ═══════════ 1. بيانات الشركة ══════════�� */}
       <CollapsibleSection
         isOpen={!!expandedSections.company}
         onToggle={() => toggleSection('company')}

@@ -24,7 +24,7 @@ const PAGE_TITLES: Record<string, { ar: string; en: string; icon: string }> = {
   // App-only pages (still need titles for the close bar)
   '/projects': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
   '/wallet': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
-  '/profile': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
+  '/profile': { ar: 'الملف الشخصي', en: 'Profile', icon: '👤' },
   '/rfq': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
 };
 

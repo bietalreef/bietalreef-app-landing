@@ -606,7 +606,7 @@ export function ProfileScreen() {
 
           <div className="bg-white rounded-2xl p-4 shadow-sm">
             <h4 className="font-bold text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif' }}>الأسئلة الشائعة</h4>
-            {['كيف أضيف مشروعاً جديداً؟', 'كيف أتواصل مع مزود الخدمة؟', 'كيف أستخدم عملات ريف؟'].map((q, i) => (
+            {['كيف أضيف مشروعاً جديداً؟', 'كيف أتواصل مع مزود الخدمة؟', 'كيف أستخدم كوينز الدار؟'].map((q, i) => (
               <button
                 key={i}
                 onClick={() => toast.info('قريباً — الإجابات التفصيلية')}
@@ -695,7 +695,7 @@ export function ProfileScreen() {
           </div>
           <div className="relative flex-1 text-right">
             <p className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif' }}>
-              {isEn ? 'Reef Wallet Balance' : 'رصيد محفظة ريف'}
+              {isEn ? 'Dar Wallet Balance' : 'رصيد محفظة الدار'}
             </p>
             <p className="text-[#1F3D2B] text-2xl font-black" style={{ fontFamily: 'Cairo, sans-serif' }}>
               {walletBalance.toLocaleString(isEn ? 'en-US' : 'ar-EG')} <span className="text-sm font-semibold text-[#C8A86A]">{isEn ? 'Coins' : 'كوينز'}</span>

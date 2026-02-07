@@ -190,7 +190,7 @@ export function OffersScreen() {
       <div className="px-5 mt-6">
         <div className="bg-gradient-to-br from-[#4A90E2]/10 to-[#56CCF2]/10 rounded-[20px] p-5 border-2 border-[#4A90E2]/20">
           <h4 className="text-[#1A1A1A] mb-2" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '14px' }}>
-            🎁 {language === 'ar' ? 'نصيحة' : 'Tip'}
+            {language === 'ar' ? 'نصيحة' : 'Tip'}
           </h4>
           <p className="text-[#1A1A1A]/70" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 500, fontSize: '13px', lineHeight: 1.7 }}>
             {language === 'ar' 

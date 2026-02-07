@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Wrench } from 'lucide-react';
+import { ArrowRight, Star, Wrench, Hammer, Gem, Sparkles, Paintbrush, Settings, Building2, Briefcase, Zap, Box, Home as HomeIcon } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailWorkshopsProps {
   onBack: () => void;
@@ -31,32 +32,30 @@ export function ServiceDetailWorkshops({ onBack, onNavigate, onOpenSearch }: Ser
   };
 
   const serviceItems = [
-    { emoji: '🪵', title: t('workshopServices.carpentryShop'), description: t('workshopServices.carpentryShopDesc') },
-    { emoji: '🔨', title: t('workshopServices.metalworkShop'), description: t('workshopServices.metalworkShopDesc') },
-    { emoji: '🪟', title: t('workshopServices.aluminumShop'), description: t('workshopServices.aluminumShopDesc') },
-    { emoji: '💎', title: t('workshopServices.marbleShop'), description: t('workshopServices.marbleShopDesc') },
-    { emoji: '✨', title: t('workshopServices.gypsumShop'), description: t('workshopServices.gypsumShopDesc') },
-    { emoji: '🚪', title: t('workshopServices.doorsShop'), description: t('workshopServices.doorsShopDesc') },
-    { emoji: '🎨', title: t('workshopServices.paintingShop'), description: t('workshopServices.paintingShopDesc') },
-    { emoji: '🔩', title: t('workshopServices.mechanicShop'), description: t('workshopServices.mechanicShopDesc') },
-    { emoji: '🛠️', title: t('workshopServices.maintenanceShop'), description: t('workshopServices.maintenanceShopDesc') },
-    { emoji: '🏗️', title: t('workshopServices.constructionShop'), description: t('workshopServices.constructionShopDesc') },
-    { emoji: '💼', title: t('workshopServices.customMade'), description: t('workshopServices.customMadeDesc') },
-    { emoji: '⚡', title: t('workshopServices.fastService'), description: t('workshopServices.fastServiceDesc') },
+    { icon: Box, theme: 'brown', title: t('workshopServices.carpentryShop'), description: t('workshopServices.carpentryShopDesc') },
+    { icon: Hammer, theme: 'red', title: t('workshopServices.metalworkShop'), description: t('workshopServices.metalworkShopDesc') },
+    { icon: HomeIcon, theme: 'indigo', title: t('workshopServices.aluminumShop'), description: t('workshopServices.aluminumShopDesc') },
+    { icon: Gem, theme: 'violet', title: t('workshopServices.marbleShop'), description: t('workshopServices.marbleShopDesc') },
+    { icon: Sparkles, theme: 'gold', title: t('workshopServices.gypsumShop'), description: t('workshopServices.gypsumShopDesc') },
+    { icon: HomeIcon, theme: 'orange', title: t('workshopServices.doorsShop'), description: t('workshopServices.doorsShopDesc') },
+    { icon: Paintbrush, theme: 'pink', title: t('workshopServices.paintingShop'), description: t('workshopServices.paintingShopDesc') },
+    { icon: Wrench, theme: 'teal', title: t('workshopServices.mechanicShop'), description: t('workshopServices.mechanicShopDesc') },
+    { icon: Settings, theme: 'green', title: t('workshopServices.maintenanceShop'), description: t('workshopServices.maintenanceShopDesc') },
+    { icon: Building2, theme: 'amber', title: t('workshopServices.constructionShop'), description: t('workshopServices.constructionShopDesc') },
+    { icon: Briefcase, theme: 'purple', title: t('workshopServices.customMade'), description: t('workshopServices.customMadeDesc') },
+    { icon: Zap, theme: 'cyan', title: t('workshopServices.fastService'), description: t('workshopServices.fastServiceDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['workshops'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />
-
-      {/* Back Button */}
       <div className="container mx-auto px-4 pt-4">
         <button onClick={onBack} className="inline-flex items-center gap-2 bg-gradient-to-l from-[#2AA676] to-[#C8A86A] text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
           <ArrowRight className="w-5 h-5" /><span>{t('backToHome')}</span>
         </button>
       </div>
-
-      {/* Hero Section */}
       <div className="bg-gradient-to-l from-[#8E44AD]/10 to-white py-8 pt-4">
         <div className="container mx-auto px-4">
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -64,7 +63,9 @@ export function ServiceDetailWorkshops({ onBack, onNavigate, onOpenSearch }: Ser
               <h1 className="text-3xl md:text-4xl text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('workshopServices.title')}</h1>
               <p className="text-gray-600 leading-relaxed max-w-3xl" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('workshopServices.description')}</p>
             </div>
-            <div className="text-6xl">🔨</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -72,7 +73,7 @@ export function ServiceDetailWorkshops({ onBack, onNavigate, onOpenSearch }: Ser
               <span className="text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>4.8</span>
               <span className="text-gray-500" style={{ fontFamily: 'Cairo, sans-serif' }}>(890 {t('reviewsCount')})</span>
             </div>
-            <div className="bg-[#8E44AD] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')} ✓</div>
+            <div className="bg-[#8E44AD] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')}</div>
           </div>
           <button className="bg-gradient-to-l from-[#8E44AD] to-[#1F3D2B] text-white px-8 py-3 rounded-full hover:shadow-lg transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('requestService')}</button>
         </div>
@@ -93,7 +94,7 @@ export function ServiceDetailWorkshops({ onBack, onNavigate, onOpenSearch }: Ser
           <div>
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('workshopServices.servicesTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {serviceItems.map((item, idx) => <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />)}
+              {serviceItems.map((item, idx) => <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />)}
             </div>
           </div>
         )}

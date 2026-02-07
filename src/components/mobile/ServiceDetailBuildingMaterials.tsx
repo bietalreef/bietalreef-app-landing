@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Package } from 'lucide-react';
+import { ArrowRight, Star, Package, Wrench, LayoutGrid, Paintbrush, Gem, Home as HomeIcon, Lightbulb, Droplet, Sparkles, Truck, Building2 } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailBuildingMaterialsProps {
   onBack: () => void;
@@ -32,32 +33,30 @@ export function ServiceDetailBuildingMaterials({ onBack, onNavigate, onOpenSearc
   };
 
   const serviceItems = [
-    { emoji: '🧱', title: t('materialsServices.cement'), description: t('materialsServices.cementDesc') },
-    { emoji: '🔩', title: t('materialsServices.steel'), description: t('materialsServices.steelDesc') },
-    { emoji: '🧱', title: t('materialsServices.blocks'), description: t('materialsServices.blocksDesc') },
-    { emoji: '⛏️', title: t('materialsServices.sandGravel'), description: t('materialsServices.sandGravelDesc') },
-    { emoji: '🔲', title: t('materialsServices.tiles'), description: t('materialsServices.tilesDesc') },
-    { emoji: '🎨', title: t('materialsServices.paint'), description: t('materialsServices.paintDesc') },
-    { emoji: '💎', title: t('materialsServices.marble'), description: t('materialsServices.marbleDesc') },
-    { emoji: '🚪', title: t('materialsServices.doors'), description: t('materialsServices.doorsDesc') },
-    { emoji: '💡', title: t('materialsServices.electrical'), description: t('materialsServices.electricalDesc') },
-    { emoji: '🚰', title: t('materialsServices.plumbing'), description: t('materialsServices.plumbingDesc') },
-    { emoji: '✨', title: t('materialsServices.insulation'), description: t('materialsServices.insulationDesc') },
-    { emoji: '🚚', title: t('materialsServices.freeDelivery'), description: t('materialsServices.freeDeliveryDesc') },
+    { icon: Building2, theme: 'brown', title: t('materialsServices.cement'), description: t('materialsServices.cementDesc') },
+    { icon: Wrench, theme: 'red', title: t('materialsServices.steel'), description: t('materialsServices.steelDesc') },
+    { icon: Package, theme: 'orange', title: t('materialsServices.blocks'), description: t('materialsServices.blocksDesc') },
+    { icon: Building2, theme: 'amber', title: t('materialsServices.sandGravel'), description: t('materialsServices.sandGravelDesc') },
+    { icon: LayoutGrid, theme: 'teal', title: t('materialsServices.tiles'), description: t('materialsServices.tilesDesc') },
+    { icon: Paintbrush, theme: 'pink', title: t('materialsServices.paint'), description: t('materialsServices.paintDesc') },
+    { icon: Gem, theme: 'violet', title: t('materialsServices.marble'), description: t('materialsServices.marbleDesc') },
+    { icon: HomeIcon, theme: 'indigo', title: t('materialsServices.doors'), description: t('materialsServices.doorsDesc') },
+    { icon: Lightbulb, theme: 'amber', title: t('materialsServices.electrical'), description: t('materialsServices.electricalDesc') },
+    { icon: Droplet, theme: 'blue', title: t('materialsServices.plumbing'), description: t('materialsServices.plumbingDesc') },
+    { icon: Sparkles, theme: 'cyan', title: t('materialsServices.insulation'), description: t('materialsServices.insulationDesc') },
+    { icon: Truck, theme: 'green', title: t('materialsServices.freeDelivery'), description: t('materialsServices.freeDeliveryDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['building-materials'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />
-      
-      {/* Back Button */}
       <div className="container mx-auto px-4 pt-4">
         <button onClick={onBack} className="inline-flex items-center gap-2 bg-gradient-to-l from-[#2AA676] to-[#C8A86A] text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
           <ArrowRight className="w-5 h-5" /><span>{t('backToHome')}</span>
         </button>
       </div>
-      
-      {/* Hero Section */}
       <div className="bg-gradient-to-l from-[#E67E22]/10 to-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -65,7 +64,9 @@ export function ServiceDetailBuildingMaterials({ onBack, onNavigate, onOpenSearc
               <h1 className="text-3xl md:text-4xl text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('materialsServices.title')}</h1>
               <p className="text-gray-600 leading-relaxed max-w-3xl" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('materialsServices.description')}</p>
             </div>
-            <div className="text-6xl">🏗️</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -73,7 +74,7 @@ export function ServiceDetailBuildingMaterials({ onBack, onNavigate, onOpenSearc
               <span className="text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>4.6</span>
               <span className="text-gray-500" style={{ fontFamily: 'Cairo, sans-serif' }}>(980 {t('reviewsCount')})</span>
             </div>
-            <div className="bg-[#E67E22] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')} ✓</div>
+            <div className="bg-[#E67E22] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')}</div>
           </div>
           <button className="bg-gradient-to-l from-[#E67E22] to-[#D35400] text-white px-8 py-3 rounded-full hover:shadow-lg transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('shopNow')}</button>
         </div>
@@ -94,7 +95,7 @@ export function ServiceDetailBuildingMaterials({ onBack, onNavigate, onOpenSearc
           <div>
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('materialsServices.servicesTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {serviceItems.map((item, idx) => <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />)}
+              {serviceItems.map((item, idx) => <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />)}
             </div>
           </div>
         )}

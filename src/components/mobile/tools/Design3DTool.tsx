@@ -332,10 +332,9 @@ export function Design3DTool({ onBack }: { onBack: () => void }) {
       title={isEn ? '3D Room Visualizer' : 'عارض الغرف ثلاثي الأبعاد'}
       subtitle={isEn ? 'Visualize rooms & furniture in 3D' : 'تصوّر الغرف والأثاث بشكل ثلاثي الأبعاد'}
       onBack={onBack}
-      icon="🧊"
+      toolId="design-3d"
       gradientFrom="#8B5CF6"
       gradientTo="#6D28D9"
-      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-3 p-3" dir="rtl">
         {/* Templates */}

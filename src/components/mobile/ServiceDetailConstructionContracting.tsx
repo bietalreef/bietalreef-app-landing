@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Building2, Hammer, Shield, Wrench, FileText, Home as HomeIcon } from 'lucide-react';
+import { ArrowRight, Star, Building2, Hammer, Shield, Wrench, FileText, Home as HomeIcon, HardHat, Zap, Clock, CheckCircle } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailConstructionContractingProps {
   onBack: () => void;
@@ -36,19 +37,21 @@ export function ServiceDetailConstructionContracting({ onBack, onNavigate, onOpe
   };
 
   const serviceItems = [
-    { icon: Building2, title: t('constructionContracting_items.residentialVillas'), description: t('constructionContracting_items.residentialVillasDesc') },
-    { icon: Building2, title: t('constructionContracting_items.commercialBuildings'), description: t('constructionContracting_items.commercialBuildingsDesc') },
-    { icon: Hammer, title: t('constructionContracting_items.extensions'), description: t('constructionContracting_items.extensionsDesc') },
-    { icon: Wrench, title: t('constructionContracting_items.renovations'), description: t('constructionContracting_items.renovationsDesc') },
-    { icon: Shield, title: t('constructionContracting_items.structural'), description: t('constructionContracting_items.structuralDesc') },
-    { emoji: '🛡️', title: t('constructionContracting_items.insulation'), description: t('constructionContracting_items.insulationDesc') },
-    { emoji: '✨', title: t('constructionContracting_items.finishing'), description: t('constructionContracting_items.finishingDesc') },
-    { emoji: '⚡', title: t('constructionContracting_items.mep'), description: t('constructionContracting_items.mepDesc') },
-    { icon: FileText, title: t('constructionContracting_items.supervision'), description: t('constructionContracting_items.supervisionDesc') },
-    { emoji: '📋', title: t('constructionContracting_items.permits'), description: t('constructionContracting_items.permitsDesc') },
-    { icon: Shield, title: t('constructionContracting_items.warranty'), description: t('constructionContracting_items.warrantyDesc') },
-    { emoji: '⏰', title: t('constructionContracting_items.ontime'), description: t('constructionContracting_items.ontimeDesc') },
+    { icon: Building2, theme: 'orange', title: t('constructionContracting_items.residentialVillas'), description: t('constructionContracting_items.residentialVillasDesc') },
+    { icon: Building2, theme: 'blue', title: t('constructionContracting_items.commercialBuildings'), description: t('constructionContracting_items.commercialBuildingsDesc') },
+    { icon: Hammer, theme: 'amber', title: t('constructionContracting_items.extensions'), description: t('constructionContracting_items.extensionsDesc') },
+    { icon: Wrench, theme: 'teal', title: t('constructionContracting_items.renovations'), description: t('constructionContracting_items.renovationsDesc') },
+    { icon: Shield, theme: 'emerald', title: t('constructionContracting_items.structural'), description: t('constructionContracting_items.structuralDesc') },
+    { icon: Shield, theme: 'cyan', title: t('constructionContracting_items.insulation'), description: t('constructionContracting_items.insulationDesc') },
+    { icon: Star, theme: 'gold', title: t('constructionContracting_items.finishing'), description: t('constructionContracting_items.finishingDesc') },
+    { icon: Zap, theme: 'amber', title: t('constructionContracting_items.mep'), description: t('constructionContracting_items.mepDesc') },
+    { icon: FileText, theme: 'purple', title: t('constructionContracting_items.supervision'), description: t('constructionContracting_items.supervisionDesc') },
+    { icon: FileText, theme: 'indigo', title: t('constructionContracting_items.permits'), description: t('constructionContracting_items.permitsDesc') },
+    { icon: Shield, theme: 'green', title: t('constructionContracting_items.warranty'), description: t('constructionContracting_items.warrantyDesc') },
+    { icon: Clock, theme: 'red', title: t('constructionContracting_items.ontime'), description: t('constructionContracting_items.ontimeDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['construction-contracting'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
@@ -73,7 +76,9 @@ export function ServiceDetailConstructionContracting({ onBack, onNavigate, onOpe
                 {t('constructionServices.description')}
               </p>
             </div>
-            <div className="text-6xl">👷</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -131,7 +136,7 @@ export function ServiceDetailConstructionContracting({ onBack, onNavigate, onOpe
                 <GlassCard
                   key={idx}
                   icon={item.icon}
-                  emoji={item.emoji}
+                  theme={item.theme}
                   title={item.title}
                   description={item.description}
                 />

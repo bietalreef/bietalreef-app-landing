@@ -56,10 +56,12 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell
       title="مولّد المحتوى التسويقي"
+      titleEn="Marketing Content Generator"
       subtitle="أنشئ منشورات جاهزة لمنصات التواصل"
-      icon="📱"
-      gradientFrom="#BE185D"
-      gradientTo="#EC4899"
+      subtitleEn="Create ready-to-publish social media posts"
+      toolId="marketing"
+      gradientFrom="#DB2777"
+      gradientTo="#F472B6"
       onBack={onBack}
     >
       {/* Service Type */}

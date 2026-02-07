@@ -1,9 +1,10 @@
-import { Link } from 'react-router';
+import { Icon3D, SERVICE_ICONS, TOOL_ICONS } from '../ui/Icon3D';
+import { Bot, Home as HomeIcon } from 'lucide-react';
+import bietAlreefLogo from 'figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Icon3D, SERVICE_ICONS, TOOL_ICONS } from '../ui/Icon3D';
-import { Bot, Home as HomeIcon } from 'lucide-react';
+import { Link } from 'react-router';
 import {
   SITE_NAME_AR,
   SITE_NAME_EN,
@@ -225,7 +226,7 @@ export function FooterDirectory() {
                 { to: '/projects', ar: 'المشاريع', en: 'Projects' },
                 { to: '/rfq', ar: 'طلب عرض سعر', en: 'Request Quote' },
                 { to: '/platform', ar: 'مميزات المنصة', en: 'Platform Features' },
-                { to: '/wallet', ar: 'محفظة ريف', en: 'Reef Wallet' },
+                { to: '/wallet', ar: 'محفظة الدار', en: 'Dar Wallet' },
                 { to: '/offers', ar: 'العروض', en: 'Offers' },
                 { to: '/recommendations', ar: 'التوصيات', en: 'Recommendations' },
               ].map((link) => (
@@ -268,7 +269,7 @@ export function FooterDirectory() {
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo & tagline */}
             <div className="text-center md:text-right flex items-center gap-3">
-              <Icon3D icon={HomeIcon} theme="green" size="md" hoverable={false} />
+              <img src={bietAlreefLogo} alt="بيت الريف" className="w-14 h-14 object-contain flex-shrink-0" />
               <div>
                 <h2 className="text-xl font-black text-[#1F3D2B] mb-0.5" style={{ fontFamily }}>
                   {isEn ? SITE_NAME_EN : SITE_NAME_AR}

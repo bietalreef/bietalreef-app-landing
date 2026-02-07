@@ -123,12 +123,11 @@ export const sectionsTree: MainSection[] = [
   },
   {
     id: 'wallet',
-    nameAr: 'محفظة ريف',
-    nameEn: 'Reef Wallet',
+    nameAr: 'محفظة الدار',
+    nameEn: 'Dar Wallet',
     icon: '🪙',
     route: '/wallet',
-    guestAllowed: false,
-    appOnlyLabel: { ar: 'المحفظة متاحة في التطبيق', en: 'Wallet available in App' },
+    guestAllowed: true,
   },
   {
     id: 'profile',
@@ -136,8 +135,7 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Profile',
     icon: '👤',
     route: '/profile',
-    guestAllowed: false,
-    appOnlyLabel: { ar: 'سجّل في التطبيق', en: 'Register in App' },
+    guestAllowed: true,
   },
 ];
 

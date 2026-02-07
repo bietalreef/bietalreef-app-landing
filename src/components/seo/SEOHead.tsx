@@ -177,10 +177,10 @@ function getRouteSEO(pathname: string): PageSEO {
   // ─── /wallet ───
   if (pathname === '/wallet') {
     return {
-      titleAr: `محفظة ريف | نظام الدفع الآمن | ${SITE_NAME_AR}`,
-      titleEn: `Reef Wallet | Secure Payment System | ${SITE_NAME_EN}`,
-      descAr: 'محفظة ريف الرقمية لإدارة المدفوعات والضمانات المالية لمشاريع البناء والصيانة.',
-      descEn: 'Reef digital wallet to manage payments and financial guarantees for construction and maintenance projects.',
+      titleAr: `محفظة الدار | نظام الدفع الآمن | ${SITE_NAME_AR}`,
+      titleEn: `Dar Wallet | Secure Payment System | ${SITE_NAME_EN}`,
+      descAr: 'محفظة الدار الرقمية لإدارة المدفوعات والضمانات المالية لمشاريع البناء والصيانة.',
+      descEn: 'Dar digital wallet to manage payments and financial guarantees for construction and maintenance projects.',
       keywordsAr: 'محفظة رقمية, دفع آمن, ضمان مالي',
       keywordsEn: 'digital wallet, secure payment, financial guarantee',
     };
@@ -511,7 +511,7 @@ function generateBreadcrumbs(path: string) {
     '/maps': 'الخرائط',
     '/yak': 'وياك AI',
     '/projects': 'المشاريع',
-    '/wallet': 'محفظة ريف',
+    '/wallet': 'محفظة الدار',
     '/profile': 'الملف الشخصي',
     '/platform': 'مميزات المنصة',
     '/rfq': 'طلب عرض سعر',
