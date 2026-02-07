@@ -7,6 +7,7 @@ import logoImg from "figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png";
 import { useLanguage } from '../../contexts/LanguageContext';
 import { LegalModals, useLegalModals } from '../LegalModals';
 import { HeroCylinder } from './HeroCylinder';
+import { ServicesCylinder } from './ServicesCylinder';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface AuthScreenProps {
@@ -345,6 +346,32 @@ function WelcomeScreen({ onGetStarted, onPasswordLogin, onGoogleLogin, isLoading
           <div className="flex items-center gap-2">
             <div className="w-2.5 h-2.5 rounded-full bg-[#8B5CF6] shadow-[0_0_6px_rgba(139,92,246,0.4)]" />
             <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{isEn ? 'Platform' : 'المنصة'}</span>
+          </div>
+        </motion.div>
+
+        {/* 3D Rotating Cylinder #2 — خدمات بيت الريف */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9, duration: 0.6 }}
+          className="relative z-10 -mx-6"
+        >
+          <ServicesCylinder isEn={isEn} />
+        </motion.div>
+
+        {/* Label under services cylinder */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1 }}
+          className="relative z-10 flex items-center justify-center gap-2 mt-1 mb-1"
+        >
+          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-1.5 rounded-full border border-[#E6DCC8] shadow-sm">
+            <div className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] shadow-[0_0_6px_rgba(212,175,55,0.4)]" />
+            <span className="text-[#1F3D2B]/50 text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+              {isEn ? 'Beit Al Reef Services' : 'خدمات بيت الريف'}
+            </span>
+            <span className="text-[#2AA676] text-[10px] font-black bg-[#2AA676]/10 px-1.5 py-0.5 rounded-full">9</span>
           </div>
         </motion.div>
       </div>

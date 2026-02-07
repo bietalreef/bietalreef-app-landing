@@ -4,13 +4,13 @@ import {
   Star, Award, Zap, FileText, ChevronLeft, ChevronRight,
   MessageSquareText, ClipboardList, Sparkles, Tag, Clock,
   Percent, ArrowUp, Check, ShieldCheck, Crown, UserPlus,
-  Building2, User as UserIcon
+  Building2, User as UserIcon, Layout, Pencil, Download
 } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from '../../contexts/LanguageContext';
-import { useUser } from '../../utils/UserContext';
-import { checkPolicy } from '../../utils/uiPolicy';
+import { useBrowserSession } from '../../contexts/BrowserSession';
+import { GuestGateButton } from '../browser/GuestGuard';
 import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 import { useNavigate } from 'react-router';
 import { InquiryFormModal, RFQFormModal } from './InquiryRFQModals';
@@ -19,7 +19,7 @@ const fontCairo = 'Cairo, sans-serif';
 
 export function NewHomeContent() {
   const { t, language } = useTranslation('home');
-  const { profile } = useUser();
+  const session = useBrowserSession();
   const navigate = useNavigate();
   const isEn = language === 'en';
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
@@ -27,6 +27,7 @@ export function NewHomeContent() {
   const [pkgTab, setPkgTab] = useState<'client' | 'provider'>('client');
   const [showInquiry, setShowInquiry] = useState(false);
   const [showRFQ, setShowRFQ] = useState(false);
+  const [showDownloadCTA, setShowDownloadCTA] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const heroSlides = [
@@ -72,18 +73,20 @@ export function NewHomeContent() {
   };
 
   const handleActionClick = (action: 'quick_rfq' | 'contact_providers' | 'create_project') => {
-    const policy = checkPolicy(profile, action);
-    if (!policy.allowed) {
-      toast.error(t('notAllowed'), {
-        description: policy.actionRequired === 'upgrade' ? t('upgradeRequired') : t('verifyRequired'),
-        action: {
-          label: policy.actionRequired === 'upgrade' ? t('upgrade') : t('verify'),
-          onClick: () => console.log('Redirect to upgrade/verify')
-        }
-      });
+    // Guest-allowed actions
+    if (action === 'contact_providers') {
+      navigate('/services');
       return;
     }
-    toast.success(t('processingRequest'));
+    if (action === 'quick_rfq') {
+      setShowRFQ(true);
+      return;
+    }
+    // Verified-only → show download CTA
+    if (action === 'create_project') {
+      setShowDownloadCTA(true);
+      return;
+    }
   };
 
   /* ═══════════════════════════════════════════
@@ -238,7 +241,7 @@ export function NewHomeContent() {
       userName: isEn ? 'Eng. Khaled Al Maktoum' : 'م. خالد المكتوم',
       role: isEn ? 'Verified Contractor' : 'مقاول معتمد',
       avatar: 'https://images.unsplash.com/photo-1560072362-53f3810f8b5b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
-      text: isEn ? 'Project completed: 4-bedroom villa in Al Barsha, delivered on time with premium finishes.' : 'تم إنجاز مشروع فيلا 4 غرف نوم في البرشاء — تسليم في الوقت المحدد بتشطيبات فاخرة.',
+      text: isEn ? 'Project completed: 4-bedroom villa in Al Barsha, delivered on time with premium finishes.' : 'تم إنجاز مشروع فيلا 4 غرف نوم في البرشاء — تسليم في الوقت المحدد بتطيبات فاخرة.',
       image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800',
       likes: 245, comments: 42,
       tags: isEn ? ['villa','construction','dubai'] : ['فيلا','بناء','دبي'],
@@ -379,6 +382,46 @@ export function NewHomeContent() {
             </span>
           </button>
         </div>
+      </div>
+
+      {/* ── DESIGN STUDIO BANNER ─────────────────── */}
+      <div className="px-4 pb-2">
+        <button
+          onClick={() => navigate('/design')}
+          className="w-full relative overflow-hidden bg-gradient-to-l from-[#1F3D2B] via-[#2A5A3B] to-[#1F3D2B] rounded-2xl p-5 shadow-lg group"
+        >
+          {/* Decorative grid pattern */}
+          <div className="absolute inset-0 opacity-10">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <pattern id="homegrid" width="40" height="40" patternUnits="userSpaceOnUse">
+                  <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff" strokeWidth="0.5"/>
+                </pattern>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#homegrid)" />
+            </svg>
+          </div>
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-[#2AA676] via-[#D4AF37] to-[#2AA676]" />
+          
+          <div className="relative z-10 flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors">
+              <Layout className="w-7 h-7 text-[#2AA676]" />
+            </div>
+            <div className="flex-1 text-start">
+              <h3 className="text-white text-base font-extrabold mb-0.5" style={{ fontFamily: fontCairo }}>
+                {isEn ? 'Design Your Dream Home' : 'صمّم بيت أحلامك'}
+              </h3>
+              <p className="text-white/50 text-[11px] font-semibold" style={{ fontFamily: fontCairo }}>
+                {isEn ? 'Free interactive 2D planner — no signup needed' : 'مخطط تفاعلي مجاني — بدون تسجيل'}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5 bg-[#2AA676] text-white px-3 py-2 rounded-xl text-xs font-bold shrink-0 shadow-lg shadow-[#2AA676]/30 group-hover:bg-[#34C68D] transition-colors"
+              style={{ fontFamily: fontCairo }}>
+              <Pencil className="w-3.5 h-3.5" />
+              {isEn ? 'Start' : 'ابدأ'}
+            </div>
+          </div>
+        </button>
       </div>
 
       {/* ── PACKAGES SLIDER ─────────────────── */}
@@ -604,7 +647,7 @@ export function NewHomeContent() {
                     <span className="text-[10px]" style={{ fontFamily: fontCairo }}>{isEn ? 'Valid until' : 'صالح حتى'} {offer.validUntil}</span>
                   </div>
                   <button className="text-[#2AA676] text-[11px] font-bold" style={{ fontFamily: fontCairo }}>
-                    {isEn ? 'Claim' : 'احصل عليه'}
+                    {isEn ? 'Claim' : '��حصل عليه'}
                   </button>
                 </div>
               </div>
@@ -670,6 +713,48 @@ export function NewHomeContent() {
         isOpen={showRFQ}
         onClose={() => setShowRFQ(false)}
       />
+
+      {/* ── DOWNLOAD APP CTA MODAL (verified-only actions) ─── */}
+      <AnimatePresence>
+        {showDownloadCTA && (
+          <>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setShowDownloadCTA(false)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100]" />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 40 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 40 }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-sm mx-auto bg-white rounded-3xl shadow-2xl z-[101] overflow-hidden"
+              dir={isEn ? 'ltr' : 'rtl'}>
+              <div className="h-1.5 bg-gradient-to-l from-[#2AA676] via-[#D4AF37] to-[#2AA676]" />
+              <div className="p-6 text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[#2AA676]/20">
+                  <Download className="w-9 h-9 text-white" />
+                </div>
+                <h3 className="text-xl font-extrabold text-[#1F3D2B] mb-2" style={{ fontFamily: fontCairo }}>
+                  {isEn ? 'Manage Projects in the App' : 'أدر مشاريعك من التطبيق'}
+                </h3>
+                <p className="text-[#1F3D2B]/40 text-sm leading-relaxed mb-6" style={{ fontFamily: fontCairo }}>
+                  {isEn
+                    ? 'Download Beit Al Reef to create projects, manage teams, track progress and more.'
+                    : 'حمّل تطبيق بيت الريف لإنشاء المشاريع، إدارة الفرق، متابعة التقدم وأكثر.'}
+                </p>
+                <button className="w-full bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] text-white py-3.5 rounded-2xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg mb-3"
+                  style={{ fontFamily: fontCairo }}>
+                  <Download className="w-4 h-4" />
+                  {isEn ? 'Download the App' : 'حمّل التطبيق'}
+                </button>
+                <button onClick={() => setShowDownloadCTA(false)}
+                  className="w-full py-2 text-sm font-bold text-[#1F3D2B]/30" style={{ fontFamily: fontCairo }}>
+                  {isEn ? 'Continue Browsing' : 'استمر في التصفح'}
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
     </div>
   );

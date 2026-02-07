@@ -1,5 +1,8 @@
-// شجرة الأقسام الكاملة - بيت الريف (محدثة)
-// 10 أقسام رئيسية فقط
+// شجرة الأقسام — بيت الريف (تطبيق المتصفح)
+// ══════════════════════════════════════════════════
+// القاعدة الذهبية: Web App = Guest Experience
+// كل قسم يحمل علامة guestAllowed
+// الأقسام غير المسموحة تعرض CTA "حمّل التطبيق"
 
 export interface SubSection {
   id: string;
@@ -17,6 +20,10 @@ export interface MainSection {
   route: string;
   subSections?: SubSection[];
   expandable?: boolean;
+  /** Can a guest (browser visitor) access this? */
+  guestAllowed: boolean;
+  /** If not guest-allowed, what does the CTA say? */
+  appOnlyLabel?: { ar: string; en: string };
 }
 
 export const sectionsTree: MainSection[] = [
@@ -26,6 +33,7 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Home',
     icon: '🏠',
     route: '/home',
+    guestAllowed: true,
   },
   {
     id: 'services',
@@ -33,6 +41,7 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Services',
     icon: '🔧',
     route: '/services',
+    guestAllowed: true,
     expandable: true,
     subSections: [
       { id: 'construction-contracting', nameAr: 'مقاولات البناء', nameEn: 'Construction Contracting', icon: '🏗️', route: '/services/construction-contracting' },
@@ -52,20 +61,31 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Shop',
     icon: '🛒',
     route: '/shop',
-  },
-  {
-    id: 'wallet',
-    nameAr: 'محفظة ريف',
-    nameEn: 'Reef Wallet',
-    icon: '🪙',
-    route: '/wallet',
+    guestAllowed: true,
   },
   {
     id: 'maps',
-    nameAr: 'الخرائط',
-    nameEn: 'Maps',
-    icon: '🗺️',
+    nameAr: 'خريطة المحلات',
+    nameEn: 'Stores Map',
+    icon: '📍',
     route: '/maps',
+    guestAllowed: true,
+  },
+  {
+    id: 'design',
+    nameAr: 'استوديو التصميم',
+    nameEn: 'Design Studio',
+    icon: '📐',
+    route: '/design',
+    guestAllowed: true,
+  },
+  {
+    id: 'offers',
+    nameAr: 'العروض',
+    nameEn: 'Offers',
+    icon: '🔥',
+    route: '/offers',
+    guestAllowed: true,
   },
   {
     id: 'tools',
@@ -73,13 +93,42 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Tools',
     icon: '🛠️',
     route: '/tools',
+    guestAllowed: true,
+  },
+  {
+    id: 'marketplace',
+    nameAr: 'السوق',
+    nameEn: 'Marketplace',
+    icon: '🏪',
+    route: '/marketplace',
+    guestAllowed: true,
   },
   {
     id: 'yak',
-    nameAr: 'وياك AI',
-    nameEn: 'Weyaak AI',
-    icon: '🤖',
+    nameAr: 'وياك دليلك',
+    nameEn: 'Weyaak Guide',
+    icon: '🗣️',
     route: '/yak',
+    guestAllowed: true,  // guide mode only — NOT execution
+  },
+  // ─── APP-ONLY SECTIONS (shown with lock icon + CTA) ───
+  {
+    id: 'projects',
+    nameAr: 'المشاريع',
+    nameEn: 'Projects',
+    icon: '📁',
+    route: '/projects',
+    guestAllowed: false,
+    appOnlyLabel: { ar: 'إدارة المشاريع في التطبيق', en: 'Manage Projects in App' },
+  },
+  {
+    id: 'wallet',
+    nameAr: 'محفظة ريف',
+    nameEn: 'Reef Wallet',
+    icon: '🪙',
+    route: '/wallet',
+    guestAllowed: false,
+    appOnlyLabel: { ar: 'المحفظة متاحة في التطبيق', en: 'Wallet available in App' },
   },
   {
     id: 'profile',
@@ -87,5 +136,13 @@ export const sectionsTree: MainSection[] = [
     nameEn: 'Profile',
     icon: '👤',
     route: '/profile',
+    guestAllowed: false,
+    appOnlyLabel: { ar: 'سجّل في التطبيق', en: 'Register in App' },
   },
 ];
+
+/** Only guest-allowed sections (for navigation menus) */
+export const guestSections = sectionsTree.filter(s => s.guestAllowed);
+
+/** App-only sections (for "download app" hints) */
+export const appOnlySections = sectionsTree.filter(s => !s.guestAllowed);

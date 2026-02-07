@@ -15,15 +15,17 @@ const PAGE_TITLES: Record<string, { ar: string; en: string; icon: string }> = {
   '/shop': { ar: 'المتجر', en: 'Store', icon: '🛒' },
   '/store': { ar: 'المتجر', en: 'Store', icon: '🛒' },
   '/tools': { ar: 'الأدوات', en: 'Tools', icon: '🛠️' },
-  '/wallet': { ar: 'محفظة ريف', en: 'Reef Wallet', icon: '🪙' },
-  '/profile': { ar: 'الملف الشخصي', en: 'Profile', icon: '👤' },
-  '/maps': { ar: 'الخرائط', en: 'Maps', icon: '🗺️' },
-  '/yak': { ar: 'وياك AI', en: 'Weyaak AI', icon: '🤖' },
-  '/projects': { ar: 'المشاريع', en: 'Projects', icon: '📁' },
-  '/rfq': { ar: 'طلب عرض سعر', en: 'RFQ', icon: '📋' },
+  '/maps': { ar: 'خريطة المحلات', en: 'Stores Map', icon: '📍' },
+  '/yak': { ar: 'وياك دليلك', en: 'Weyaak Guide', icon: '🗣️' },
   '/marketplace': { ar: 'السوق', en: 'Marketplace', icon: '🏪' },
   '/recommendations': { ar: 'التوصيات', en: 'Recommendations', icon: '⭐' },
   '/offers': { ar: 'العروض', en: 'Offers', icon: '🔥' },
+  '/design': { ar: 'استوديو التصميم', en: 'Design Studio', icon: '📐' },
+  // App-only pages (still need titles for the close bar)
+  '/projects': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
+  '/wallet': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
+  '/profile': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
+  '/rfq': { ar: 'متوفر في التطبيق', en: 'Available in App', icon: '📱' },
 };
 
 function getPageInfo(pathname: string): { ar: string; en: string; icon: string } | null {
