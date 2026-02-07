@@ -25,13 +25,18 @@ export function GoogleMapsLoader({
   children, 
   googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '' 
 }: GoogleMapsLoaderProps) {
+  
+  if (!googleMapsApiKey && typeof window !== 'undefined') {
+    console.warn('⚠️ Google Maps API key not found. Set VITE_GOOGLE_MAPS_API_KEY in .env.local');
+  }
+
   return (
     <LoadScript
       googleMapsApiKey={googleMapsApiKey}
-      onLoad={() => console.log('Google Maps loaded')}
-      onError={() => console.error('Failed to load Google Maps')}
+      onLoad={() => console.log('✅ Google Maps loaded')}
+      onError={() => console.error('❌ Failed to load Google Maps')}
     >
-      <GoogleMapsContext.Provider value={{ isLoaded: true }}>
+      <GoogleMapsContext.Provider value={{ isLoaded: !!googleMapsApiKey }}>
         {children}
       </GoogleMapsContext.Provider>
     </LoadScript>
