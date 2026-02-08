@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Star, Heart, CheckCircle, Users, Sparkles, Building2, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check } from 'lucide-react';
+import { Star, Heart, CheckCircle, Users, Sparkles, Building2, BookOpen, Info, Target, ChevronLeft, Share2, Send, AlertTriangle, MessageCircle, MapPin, Copy, Check, Hammer, Droplet } from 'lucide-react';
 import { BietAlreefLogo } from '../BietAlreefLogo';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { ServiceSEOHead } from '../SEOHead';
 import { IDCopyBox } from './IDCopyBox';
 import { ProvidersTabContent } from './ProviderProfileCard';
 import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailConstructionProps {
   onBack: () => void;
@@ -346,7 +347,7 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                   <BookOpen className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }}>
-                  📚 الشرح والتعريف
+                  الشرح والتعريف
                 </h2>
               </div>
 
@@ -359,9 +360,12 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                   خدمات مقاولات البناء تشمل جميع أعمال الإنشاءات من البداية حتى التسليم. نوفر مقاولين معتمدين لبناء الفلل، العمارات السكنية والتجارية، التوسعات، الترميمات، مع إشراف هندسي كامل وضمان على جميع الأعمال.
                 </p>
                 <div className="bg-gradient-to-br from-[#27AE60]/10 to-[#6FCF97]/10 rounded-[16px] p-4 border-2 border-[#27AE60]/20">
-                  <p className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}>
-                    🏗️ <strong>هل تعلم؟</strong> الإشراف الهندسي المستمر يوفر 30% من التكاليف الإضافية ويضمن جودة البناء وفق المواصفات العالمية.
-                  </p>
+                  <div className="flex items-start gap-2">
+                    <Icon3D icon={Building2} theme="green" size="xs" hoverable={false} />
+                    <p className="text-[#1A1A1A] flex-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}>
+                      <strong>هل تعلم؟</strong> الإشراف الهندسي المستمر يوفر 30% من التكاليف الإضافية ويضمن جودة البناء وفق المواصفات العالمية.
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -428,7 +432,7 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                   <Info className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }}>
-                  ⚠️ التوعية والسلامة
+                  التوعية والسلامة
                 </h2>
               </div>
 
@@ -439,14 +443,14 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { icon: '🏗️', title: 'بناء جديد', desc: 'تخطط لبناء فيلا أو عمارة من الصفر وتحتاج مقاول معتمد' },
-                    { icon: '🔨', title: 'شقوق في الجدران', desc: 'ظهور شقوق أو تصدعات في الجدران أو الأسقف' },
-                    { icon: '💧', title: 'تسربات المياه', desc: 'تسربات مياه مستمرة في الأسقف أو الجدران' },
-                    { icon: '⚠️', title: 'تهالك المبنى', desc: 'مبنى قديم يحتاج ترميم شامل أو تقوية إنشائية' }
+                    { icon: Building2, title: 'بناء جديد', desc: 'تخطط لبناء فيلا أو عمارة من الصفر وتحتاج مقاول معتمد' },
+                    { icon: Hammer, title: 'شقوق في الجدران', desc: 'ظهور شقوق أو تصدعات في الجدران أو الأسقف' },
+                    { icon: Droplet, title: 'تسربات المياه', desc: 'تسربات مياه مستمرة في الأسقف أو الجدران' },
+                    { icon: AlertTriangle, title: 'تهالك المبنى', desc: 'مبنى قديم يحتاج ترميم شامل أو تقوية إنشائية' }
                   ].map((item, idx) => (
                     <div key={idx} className="bg-white rounded-[16px] p-4 border-2 border-[#F2994A]/20">
                       <div className="flex items-start gap-3">
-                        <span className="text-2xl">{item.icon}</span>
+                        <Icon3D icon={item.icon} theme="orange" size="sm" hoverable={false} />
                         <div className="flex-1">
                           <h4 className="text-[#EB5757] mb-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '15px' }}>
                             {item.title}
@@ -468,14 +472,14 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                 </h3>
                 <div className="space-y-3">
                   {[
-                    { icon: '📋', text: 'تأكد من الترخيص والتأمين - مقاول معتمد من الجهات المختصة' },
-                    { icon: '💼', text: 'اطلب أمثلة من أعمال سابقة وتحدث مع عملاء سابقين' },
-                    { icon: '📝', text: 'احصل على عقد مكتوب يوضح التكلفة والمدة الزمنية' },
-                    { icon: '🏗️', text: 'تأكد من وجود مهندس إشراف معتمد على الموقع' },
-                    { icon: '⚖️', text: 'تحقق من الضمانات المقدمة على الهيكل والتشطيبات' }
+                    { icon: Target, text: 'تأكد من الترخيص والتأمين - مقاول معتمد من الجهات المختصة' },
+                    { icon: Users, text: 'اطلب أمثلة من أعمال سابقة وتحدث مع عملاء سابقين' },
+                    { icon: BookOpen, text: 'احصل على عقد مكتوب يوضح التكلفة والمدة الزمنية' },
+                    { icon: Building2, text: 'تأكد من وجود مهندس إشراف معتمد على الموقع' },
+                    { icon: CheckCircle, text: 'تحقق من الضمانات المقدمة على الهيكل والتشطيبات' }
                   ].map((tip, idx) => (
                     <div key={idx} className="flex items-center gap-3 p-4 bg-gradient-to-r from-[#F5EEE1]/50 to-transparent rounded-[16px]">
-                      <span className="text-2xl">{tip.icon}</span>
+                      <Icon3D icon={tip.icon} theme="green" size="sm" hoverable={false} />
                       <p className="text-[#1A1A1A] flex-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600, fontSize: '14px' }}>
                         {tip.text}
                       </p>
@@ -492,7 +496,7 @@ export function ServiceDetailConstruction({ onBack, onOpenSearch }: ServiceDetai
                   <Target className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-[#1A1A1A]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 800, fontSize: '22px' }}>
-                  🎯 الإرشاد والدليل
+                  الإرشاد والدليل
                 </h2>
               </div>
 

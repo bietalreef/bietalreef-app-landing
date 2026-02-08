@@ -4,9 +4,11 @@ import {
   ArrowRight, ZoomIn, ZoomOut, Undo2, Redo2, Trash2,
   Grid3X3, ChevronUp, ChevronDown, Eye, RotateCcw,
   Maximize2, Ruler, Pencil, MoreHorizontal, HelpCircle,
-  SlidersHorizontal,
+  SlidersHorizontal, FileText, Calendar, Hash, Copy, Printer,
+  X as XIcon, Layers, Home, LayoutGrid,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { Icon3D } from '../../ui/Icon3D';
 
 const f = 'Cairo, sans-serif';
 
@@ -259,6 +261,10 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
   /* dimensions for property panel */
   const [editDoorWidth, setEditDoorWidth] = useState(900);
   const [showProps, setShowProps] = useState(false);
+
+  /* ---- design report ---- */
+  const [showReport, setShowReport] = useState(false);
+  const [reportId] = useState(() => `DR-${Date.now().toString(36).toUpperCase()}-${Math.random().toString(36).slice(2,6).toUpperCase()}`);
 
   /* ---- canvas size ---- */
   const [cSize, setCSize] = useState({ w: 400, h: 600 });
@@ -1008,6 +1014,46 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
     setSel(null); setDrawStart(null); setShowProps(false);
   };
 
+  /* ── generate design report ── */
+  const generateReport = useCallback(() => {
+    const totalWallLength = walls.reduce((sum, w) => sum + dist(w.p1, w.p2), 0);
+    const totalArea = rooms.reduce((sum, r) => sum + r.area, 0);
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('ar-AE', {
+      year: 'numeric', month: 'long', day: 'numeric',
+      weekday: 'long',
+    });
+    const timeStr = now.toLocaleTimeString('ar-AE', {
+      hour: '2-digit', minute: '2-digit',
+    });
+    return {
+      id: reportId,
+      date: dateStr,
+      time: timeStr,
+      wallsCount: walls.length,
+      doorsCount: doors.length,
+      windowsCount: wins.length,
+      furnitureCount: furns.length,
+      roomsCount: rooms.length,
+      totalWallLength: Math.round(totalWallLength),
+      totalArea: totalArea.toFixed(2),
+      rooms: rooms.map(r => ({
+        name: r.name,
+        area: r.area.toFixed(2),
+        height: r.height,
+      })),
+      furniture: furns.map(fi => ({
+        label: fi.label,
+        width: fi.w,
+        height: fi.h,
+      })),
+      wallDetails: walls.map(w => ({
+        length: Math.round(dist(w.p1, w.p2)),
+        thickness: w.thickness,
+      })),
+    };
+  }, [walls, doors, wins, furns, rooms, reportId]);
+
   /* ── tool list ── */
   const TOOLS: { id: Tool; icon: string; ar: string; en: string }[] = [
     { id: 'select', icon: '👆', ar: 'تحديد', en: 'Select' },
@@ -1067,6 +1113,9 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
             <span className="text-gray-400 px-2 py-0.5 rounded text-[10px] font-bold" style={{ fontFamily: f }}>3D</span>
           </div>
           <span className="bg-gray-100 text-[10px] font-bold px-2 py-1 rounded-lg text-[#4A5A6A]" style={{ fontFamily: f }}>1F</span>
+          <button onClick={() => setShowReport(true)} className="p-1 hover:bg-green-50 rounded-lg" title={isEn ? 'Design Report' : 'تقرير التصميم'}>
+            <FileText className="w-4 h-4 text-[#2AA676]" />
+          </button>
           <button onClick={() => setShowHelp(h => !h)} className="p-1 hover:bg-gray-100 rounded-lg">
             <HelpCircle className="w-4 h-4 text-gray-400" />
           </button>
@@ -1077,10 +1126,10 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
       <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-3 py-1.5 flex gap-2 overflow-x-auto shrink-0">
         {TPLS.map(t => (
           <button key={t.id} onClick={() => loadTpl(t)}
-            className="whitespace-nowrap bg-white border border-gray-200 px-3 py-1 rounded-lg text-[10px] font-bold text-[#1F3D2B] hover:border-[#2AA676] hover:bg-green-50 shrink-0"
+            className="whitespace-nowrap bg-white border-[4px] border-gray-200/60 px-3 py-1 rounded-lg text-[10px] font-bold text-[#1F3D2B] hover:border-[#2AA676] hover:bg-green-50 shrink-0"
             style={{ fontFamily: f }}>{isEn ? t.en : t.ar}</button>
         ))}
-        <button onClick={clearAll} className="whitespace-nowrap bg-red-50 border border-red-200 px-3 py-1 rounded-lg text-[10px] font-bold text-red-500 shrink-0"
+        <button onClick={clearAll} className="whitespace-nowrap bg-red-50 border-[4px] border-red-200/60 px-3 py-1 rounded-lg text-[10px] font-bold text-red-500 shrink-0"
           style={{ fontFamily: f }}>{isEn ? 'Clear All' : 'مسح الكل'}</button>
       </div>
 
@@ -1089,7 +1138,7 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
         {TOOLS.map(t => (
           <button key={t.id} onClick={() => { setTool(t.id); if (t.id !== 'wall') setDrawStart(null); }}
             className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-[10px] font-bold whitespace-nowrap shrink-0 transition-all ${
-              tool === t.id ? 'bg-[#2AA676] text-white shadow-md' : 'bg-gray-50 text-[#4A5A6A] border border-gray-200'
+              tool === t.id ? 'bg-[#2AA676] text-white shadow-md border-[4px] border-[#238c63]/30' : 'bg-gray-50 text-[#4A5A6A] border-[4px] border-gray-200/60'
             }`} style={{ fontFamily: f }}>
             <span className="text-sm">{t.icon}</span>{isEn ? t.en : t.ar}
           </button>
@@ -1098,14 +1147,14 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
           <div className="flex items-center gap-1 px-1.5 shrink-0">
             <span className="text-[9px] text-gray-400" style={{ fontFamily: f }}>{isEn ? 'T:' : 'س:'}</span>
             <select value={wallThick} onChange={e => setWallThick(+e.target.value)}
-              className="text-[10px] bg-gray-50 border border-gray-200 rounded px-1 py-0.5 text-[#1F3D2B] font-bold">
+              className="text-[10px] bg-gray-50 border-[4px] border-gray-200/60 rounded px-1 py-0.5 text-[#1F3D2B] font-bold">
               {[100, 150, 200, 250, 300].map(v => <option key={v} value={v}>{v}mm</option>)}
             </select>
           </div>
         )}
         {drawStart && (
           <button onClick={() => setDrawStart(null)}
-            className="px-2 py-1.5 bg-red-50 text-red-500 border border-red-200 rounded-lg text-[10px] font-bold whitespace-nowrap shrink-0"
+            className="px-2 py-1.5 bg-red-50 text-red-500 border-[4px] border-red-200/60 rounded-lg text-[10px] font-bold whitespace-nowrap shrink-0"
             style={{ fontFamily: f }}>{isEn ? 'End' : 'إنهاء'}</button>
         )}
       </div>
@@ -1123,18 +1172,18 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
 
         {/* ─── Side buttons ─── */}
         <div className="absolute left-2 top-2 flex flex-col gap-1">
-          <button onClick={zoomIn} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><ZoomIn className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
-          <button onClick={zoomOut} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><ZoomOut className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
-          <button onClick={resetView} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Maximize2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={zoomIn} className="w-8 h-8 bg-white rounded-xl shadow border-[4px] border-gray-200/60 flex items-center justify-center"><ZoomIn className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={zoomOut} className="w-8 h-8 bg-white rounded-xl shadow border-[4px] border-gray-200/60 flex items-center justify-center"><ZoomOut className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={resetView} className="w-8 h-8 bg-white rounded-xl shadow border-[4px] border-gray-200/60 flex items-center justify-center"><Maximize2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
           <div className="h-px bg-gray-200 mx-0.5 my-0.5" />
-          <button onClick={() => setShowGrid(g => !g)} className={`w-8 h-8 rounded-xl shadow border flex items-center justify-center ${showGrid ? 'bg-[#2AA676] border-[#2AA676] text-white' : 'bg-white border-gray-200 text-[#4A5A6A]'}`}><Grid3X3 className="w-3.5 h-3.5" /></button>
-          <button onClick={() => setShowDims(d => !d)} className={`w-8 h-8 rounded-xl shadow border flex items-center justify-center ${showDims ? 'bg-[#2AA676] border-[#2AA676] text-white' : 'bg-white border-gray-200 text-[#4A5A6A]'}`}><Eye className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setShowGrid(g => !g)} className={`w-8 h-8 rounded-xl shadow border-[4px] flex items-center justify-center ${showGrid ? 'bg-[#2AA676] border-[#2AA676]/50 text-white' : 'bg-white border-gray-200/60 text-[#4A5A6A]'}`}><Grid3X3 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setShowDims(d => !d)} className={`w-8 h-8 rounded-xl shadow border-[4px] flex items-center justify-center ${showDims ? 'bg-[#2AA676] border-[#2AA676]/50 text-white' : 'bg-white border-gray-200/60 text-[#4A5A6A]'}`}><Eye className="w-3.5 h-3.5" /></button>
         </div>
 
         {/* undo / redo */}
         <div className="absolute left-2 bottom-2 flex flex-col gap-1">
-          <button onClick={undo} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Undo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
-          <button onClick={redo} className="w-8 h-8 bg-white rounded-xl shadow border border-gray-200 flex items-center justify-center"><Redo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={undo} className="w-8 h-8 bg-white rounded-xl shadow border-[4px] border-gray-200/60 flex items-center justify-center"><Undo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
+          <button onClick={redo} className="w-8 h-8 bg-white rounded-xl shadow border-[4px] border-gray-200/60 flex items-center justify-center"><Redo2 className="w-3.5 h-3.5 text-[#4A5A6A]" /></button>
         </div>
 
         {/* ── Floating toolbar on selection ── */}
@@ -1144,7 +1193,7 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
           const x = Math.max(40, Math.min(cSize.w - 140, sp.x - 70));
           const y = Math.max(8, Math.min(cSize.h - 50, sp.y));
           return (
-            <div className="absolute z-30 flex items-center gap-0.5 bg-white rounded-xl shadow-lg border border-gray-200 px-1 py-0.5"
+            <div className="absolute z-30 flex items-center gap-0.5 bg-white rounded-xl shadow-lg border-[4px] border-gray-200/60 px-1 py-0.5"
               style={{ left: x, top: y }}>
               {sel.type === 'door' && (
                 <>
@@ -1182,7 +1231,7 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
           {showProps && sel && (
             <motion.div
               initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
-              className="absolute right-2 top-2 bg-white rounded-xl shadow-lg border border-gray-200 p-3 w-44 z-30 space-y-2"
+              className="absolute right-2 top-2 bg-white rounded-xl shadow-lg border-[4px] border-gray-200/60 p-3 w-44 z-30 space-y-2"
             >
               <h4 className="text-[10px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>
                 {sel.type === 'wall' ? (isEn ? 'Wall Properties' : 'خصائص الجدار') :
@@ -1222,10 +1271,10 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <button onClick={flipDoor} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                      <button onClick={flipDoor} className="flex-1 py-1 bg-gray-50 border-[4px] border-gray-200/60 rounded text-[9px] font-bold text-gray-600">
                         {isEn ? 'Flip Side' : 'عكس الجانب'}
                       </button>
-                      <button onClick={flipDoorSwing} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                      <button onClick={flipDoorSwing} className="flex-1 py-1 bg-gray-50 border-[4px] border-gray-200/60 rounded text-[9px] font-bold text-gray-600">
                         {isEn ? 'Flip Swing' : 'عكس الفتح'}
                       </button>
                     </div>
@@ -1287,11 +1336,264 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
         </AnimatePresence>
 
         {/* status bar */}
-        <div className="absolute right-2 bottom-2 bg-white/90 rounded-lg px-2 py-1 shadow-sm border border-gray-200">
+        <div className="absolute right-2 bottom-2 bg-white/90 rounded-lg px-2 py-1 shadow-sm border-[4px] border-gray-200/60">
           <span className="text-[8px] text-[#7B8794] font-bold" style={{ fontFamily: f }}>
             {walls.length}W {doors.length}D {wins.length}Win {furns.length}F | {Math.round(zoom * 1000)}%
           </span>
         </div>
+
+        {/* ═══ DESIGN REPORT MODAL ═══ */}
+        <AnimatePresence>
+          {showReport && (() => {
+            const report = generateReport();
+            return (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="absolute inset-0 bg-black/60 z-50 flex items-start justify-center pt-4 pb-4 px-3 overflow-y-auto"
+                onClick={() => setShowReport(false)}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 30, scale: 0.95 }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className="bg-white rounded-3xl shadow-2xl w-full max-w-md border-[4px] border-[#2AA676]/30 overflow-hidden"
+                  onClick={e => e.stopPropagation()}
+                >
+                  {/* Report Header */}
+                  <div className="bg-gradient-to-l from-[#1F3D2B] to-[#2AA676] p-5 relative overflow-hidden">
+                    <div className="absolute -top-6 -left-6 w-24 h-24 bg-white/5 rounded-full" />
+                    <div className="absolute -bottom-8 -right-4 w-20 h-20 bg-white/5 rounded-full" />
+                    <div className="relative z-10 flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Icon3D icon={FileText} theme="green" size="md" hoverable={false} />
+                        <div>
+                          <h2 className="text-white text-base font-extrabold" style={{ fontFamily: f }}>
+                            {isEn ? 'Design Report' : 'تقرير التصميم'}
+                          </h2>
+                          <p className="text-white/60 text-[10px]" style={{ fontFamily: f }}>
+                            {isEn ? 'Detailed 2D Floor Plan Report' : 'تقرير مفصّل عن المخطط ثنائي الأبعاد'}
+                          </p>
+                        </div>
+                      </div>
+                      <button onClick={() => setShowReport(false)} className="w-8 h-8 bg-white/15 rounded-xl flex items-center justify-center hover:bg-white/25 transition-colors">
+                        <XIcon className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Report Body */}
+                  <div className="p-4 space-y-3 max-h-[60vh] overflow-y-auto">
+
+                    {/* Tool ID & Date */}
+                    <div className="bg-gray-50 rounded-2xl p-4 border-[4px] border-gray-200/60 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Hash className="w-4 h-4 text-[#2AA676]" />
+                          <span className="text-[11px] font-bold text-gray-500" style={{ fontFamily: f }}>
+                            {isEn ? 'Report ID' : 'معرّف التقرير'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <code className="text-[11px] font-extrabold text-[#1F3D2B] bg-[#2AA676]/10 px-2.5 py-1 rounded-lg" style={{ fontFamily: 'monospace' }}>
+                            {report.id}
+                          </code>
+                          <button onClick={() => navigator.clipboard?.writeText(report.id)}
+                            className="p-1 hover:bg-gray-200 rounded-lg transition-colors" title={isEn ? 'Copy' : 'نسخ'}>
+                            <Copy className="w-3 h-3 text-gray-400" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 text-[#5B9CF6]" />
+                          <span className="text-[11px] font-bold text-gray-500" style={{ fontFamily: f }}>
+                            {isEn ? 'Date & Time' : 'التاريخ والوقت'}
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>
+                          {report.date} — {report.time}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Design Summary Stats */}
+                    <div className="bg-white rounded-2xl p-4 border-[4px] border-[#2AA676]/20 space-y-3">
+                      <h3 className="text-[12px] font-extrabold text-[#1F3D2B] flex items-center gap-2" style={{ fontFamily: f }}>
+                        <Layers className="w-4 h-4 text-[#2AA676]" />
+                        {isEn ? 'Design Summary' : 'ملخص التصميم'}
+                      </h3>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        {[
+                          { label: isEn ? 'Walls' : 'الجدران', value: report.wallsCount, color: '#5C636B', icon: Layers },
+                          { label: isEn ? 'Doors' : 'الأبواب', value: report.doorsCount, color: '#E74C3C', icon: Home },
+                          { label: isEn ? 'Windows' : 'النوافذ', value: report.windowsCount, color: '#3498DB', icon: LayoutGrid },
+                          { label: isEn ? 'Furniture' : 'الأثاث', value: report.furnitureCount, color: '#C8A86A', icon: LayoutGrid },
+                        ].map((stat, idx) => (
+                          <div key={idx} className="bg-gray-50 rounded-xl p-3 border-[4px] border-gray-100/80 flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: stat.color + '15' }}>
+                              <stat.icon className="w-4 h-4" style={{ color: stat.color }} />
+                            </div>
+                            <div>
+                              <div className="text-[9px] text-gray-400 font-bold" style={{ fontFamily: f }}>{stat.label}</div>
+                              <div className="text-sm font-extrabold text-[#1F3D2B]" style={{ fontFamily: f }}>{stat.value}</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className="flex gap-2">
+                        <div className="flex-1 bg-[#2AA676]/10 rounded-xl p-3 border-[4px] border-[#2AA676]/20 text-center">
+                          <div className="text-[9px] text-[#2AA676] font-bold" style={{ fontFamily: f }}>
+                            {isEn ? 'Total Wall Length' : 'إجمالي طول الجدران'}
+                          </div>
+                          <div className="text-sm font-extrabold text-[#1F3D2B]" style={{ fontFamily: f }}>
+                            {(report.totalWallLength / 1000).toFixed(2)} {isEn ? 'm' : 'م'}
+                          </div>
+                        </div>
+                        <div className="flex-1 bg-[#5B9CF6]/10 rounded-xl p-3 border-[4px] border-[#5B9CF6]/20 text-center">
+                          <div className="text-[9px] text-[#5B9CF6] font-bold" style={{ fontFamily: f }}>
+                            {isEn ? 'Total Area' : 'إجمالي المساحة'}
+                          </div>
+                          <div className="text-sm font-extrabold text-[#1F3D2B]" style={{ fontFamily: f }}>
+                            {report.totalArea} {isEn ? 'm²' : 'م²'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Rooms Details */}
+                    {report.rooms.length > 0 && (
+                      <div className="bg-white rounded-2xl p-4 border-[4px] border-[#9B7AED]/20 space-y-2">
+                        <h3 className="text-[12px] font-extrabold text-[#1F3D2B] flex items-center gap-2" style={{ fontFamily: f }}>
+                          <Home className="w-4 h-4 text-[#9B7AED]" />
+                          {isEn ? 'Rooms' : 'الغرف'}
+                          <span className="text-[9px] bg-[#9B7AED]/10 text-[#9B7AED] px-1.5 py-0.5 rounded-full font-bold">{report.rooms.length}</span>
+                        </h3>
+                        {report.rooms.map((room, idx) => (
+                          <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2 border-[4px] border-gray-100/80">
+                            <span className="text-[11px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>{room.name}</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-[9px] text-gray-400 font-bold" style={{ fontFamily: f }}>
+                                {isEn ? 'H' : 'ع'}: {room.height}mm
+                              </span>
+                              <span className="text-[10px] font-extrabold text-[#2AA676] bg-[#2AA676]/10 px-2 py-0.5 rounded-full" style={{ fontFamily: f }}>
+                                {room.area} {isEn ? 'm²' : 'م²'}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Walls Details */}
+                    {report.wallDetails.length > 0 && (
+                      <div className="bg-white rounded-2xl p-4 border-[4px] border-[#4A5568]/20 space-y-2">
+                        <h3 className="text-[12px] font-extrabold text-[#1F3D2B] flex items-center gap-2" style={{ fontFamily: f }}>
+                          <Ruler className="w-4 h-4 text-[#4A5568]" />
+                          {isEn ? 'Wall Details' : 'تفاصيل الجدران'}
+                          <span className="text-[9px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded-full font-bold">{report.wallDetails.length}</span>
+                        </h3>
+                        <div className="space-y-1">
+                          {report.wallDetails.map((w, idx) => (
+                            <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-1.5 border-[4px] border-gray-100/80">
+                              <span className="text-[10px] font-bold text-gray-500" style={{ fontFamily: f }}>
+                                {isEn ? `Wall ${idx + 1}` : `جدار ${idx + 1}`}
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[9px] text-gray-400" style={{ fontFamily: f }}>
+                                  {isEn ? 'T' : 'س'}: {w.thickness}mm
+                                </span>
+                                <span className="text-[10px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>
+                                  {w.length}mm
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Furniture Details */}
+                    {report.furniture.length > 0 && (
+                      <div className="bg-white rounded-2xl p-4 border-[4px] border-[#C8A86A]/20 space-y-2">
+                        <h3 className="text-[12px] font-extrabold text-[#1F3D2B] flex items-center gap-2" style={{ fontFamily: f }}>
+                          <LayoutGrid className="w-4 h-4 text-[#C8A86A]" />
+                          {isEn ? 'Furniture List' : 'قائمة الأثاث'}
+                          <span className="text-[9px] bg-[#C8A86A]/10 text-[#C8A86A] px-1.5 py-0.5 rounded-full font-bold">{report.furniture.length}</span>
+                        </h3>
+                        {report.furniture.map((fi, idx) => (
+                          <div key={idx} className="flex items-center justify-between bg-gray-50 rounded-lg px-3 py-1.5 border-[4px] border-gray-100/80">
+                            <span className="text-[10px] font-bold text-[#1F3D2B]" style={{ fontFamily: f }}>{fi.label}</span>
+                            <span className="text-[9px] text-gray-400" style={{ fontFamily: f }}>
+                              {fi.width / 10}×{fi.height / 10} cm
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Empty state */}
+                    {report.wallsCount === 0 && report.furnitureCount === 0 && (
+                      <div className="text-center py-8">
+                        <div className="mx-auto mb-3">
+                          <Icon3D icon={Pencil} theme="orange" size="lg" hoverable={false} />
+                        </div>
+                        <p className="text-sm font-bold text-gray-400" style={{ fontFamily: f }}>
+                          {isEn ? 'No design elements yet' : 'لا توجد عناصر تصميم بعد'}
+                        </p>
+                        <p className="text-[10px] text-gray-300 mt-1" style={{ fontFamily: f }}>
+                          {isEn ? 'Start drawing walls or load a template' : 'ابدأ برسم الجدران أو حمّل قالب جاهز'}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Report Footer Actions */}
+                  <div className="p-4 border-t border-gray-100 flex gap-2">
+                    <button
+                      onClick={() => {
+                        const report2 = generateReport();
+                        const text = [
+                          `📐 ${isEn ? 'Design Report' : 'تقرير التصميم'} — ${isEn ? 'Beit Al Reef' : 'بيت الريف'}`,
+                          `━━━━━━━━━━━━━━━━━━━━━`,
+                          `🆔 ${isEn ? 'ID' : 'المعرّف'}: ${report2.id}`,
+                          `📅 ${isEn ? 'Date' : 'التاريخ'}: ${report2.date} — ${report2.time}`,
+                          ``,
+                          `📊 ${isEn ? 'Summary' : 'الملخص'}:`,
+                          `   ${isEn ? 'Walls' : 'الجدران'}: ${report2.wallsCount} (${(report2.totalWallLength / 1000).toFixed(2)}${isEn ? 'm' : 'م'})`,
+                          `   ${isEn ? 'Doors' : 'الأبواب'}: ${report2.doorsCount}`,
+                          `   ${isEn ? 'Windows' : 'النوافذ'}: ${report2.windowsCount}`,
+                          `   ${isEn ? 'Furniture' : 'الأثاث'}: ${report2.furnitureCount}`,
+                          `   ${isEn ? 'Area' : 'المساحة'}: ${report2.totalArea}${isEn ? 'm²' : 'م²'}`,
+                          report2.rooms.length > 0 ? `\n🏠 ${isEn ? 'Rooms' : 'الغرف'}:` : '',
+                          ...report2.rooms.map(r => `   • ${r.name}: ${r.area}${isEn ? 'm²' : 'م²'} (H=${r.height}mm)`),
+                        ].filter(Boolean).join('\n');
+                        navigator.clipboard?.writeText(text);
+                      }}
+                      className="flex-1 py-2.5 bg-gray-100 hover:bg-gray-200 rounded-xl text-[11px] font-bold text-[#1F3D2B] flex items-center justify-center gap-1.5 transition-colors border-[4px] border-gray-200/60"
+                      style={{ fontFamily: f }}
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      {isEn ? 'Copy Report' : 'نسخ التقرير'}
+                    </button>
+                    <button
+                      onClick={() => window.print()}
+                      className="flex-1 py-2.5 bg-[#2AA676] hover:bg-[#238c63] rounded-xl text-[11px] font-bold text-white flex items-center justify-center gap-1.5 transition-colors border-[4px] border-[#238c63]/30"
+                      style={{ fontFamily: f }}
+                    >
+                      <Printer className="w-3.5 h-3.5" />
+                      {isEn ? 'Print' : 'طباعة'}
+                    </button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            );
+          })()}
+        </AnimatePresence>
       </div>
 
       {/* ═══ CATALOG ═══ */}
@@ -1315,7 +1617,7 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
               <div className="grid grid-cols-4 gap-1.5 px-3 pb-3 max-h-36 overflow-y-auto">
                 {CATALOG.filter(c => c.cat === catalogCat).map(item => (
                   <button key={item.id} onClick={() => addFurn(item)}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-1.5 flex flex-col items-center gap-0.5 hover:border-[#2AA676] hover:bg-green-50 active:scale-95 transition-all">
+                    className="bg-gray-50 border-[4px] border-gray-200/60 rounded-xl p-1.5 flex flex-col items-center gap-0.5 hover:border-[#2AA676] hover:bg-green-50 active:scale-95 transition-all">
                     <span className="text-lg">{item.icon}</span>
                     <span className="text-[8px] font-bold text-[#4A5A6A] leading-tight text-center line-clamp-2" style={{ fontFamily: f }}>
                       {isEn ? item.en : item.ar}

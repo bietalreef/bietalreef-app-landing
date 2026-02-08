@@ -4,7 +4,8 @@ import {
   Phone, 
   MessageCircle,
   ChevronUp,
-  ExternalLink
+  ExternalLink,
+  CheckCircle
 } from 'lucide-react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
@@ -92,6 +93,21 @@ export function ProviderMapCard({
   };
 
   const statusConfig = getStatusConfig();
+
+  // ====================================
+  // 🎯 Get Verification Config
+  // ====================================
+  
+  const getVerificationConfig = () => {
+    return {
+      text: 'مزود موثق',
+      dotColor: 'bg-[#4A90E2]',
+      textColor: 'text-[#4A90E2]',
+      bgColor: 'bg-[#4A90E2]/10',
+    };
+  };
+
+  const verificationConfig = getVerificationConfig();
 
   // ====================================
   // 🖼️ Get Avatar Content
@@ -204,13 +220,13 @@ export function ProviderMapCard({
         )}
 
         {/* ====================================
-            🟢 Status Badge
+            ✓ Verification Badge
             ==================================== */}
         
-        <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${statusConfig.bgColor} mb-4`}>
-          <div className={`w-2 h-2 rounded-full ${statusConfig.dotColor} animate-pulse`} />
-          <span className={`text-sm font-medium ${statusConfig.textColor}`}>
-            {statusConfig.text}
+        <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${verificationConfig.bgColor} mb-4`}>
+          <CheckCircle className={`w-4 h-4 ${verificationConfig.textColor}`} />
+          <span className={`text-sm font-medium ${verificationConfig.textColor}`}>
+            {verificationConfig.text}
           </span>
         </div>
 

@@ -1,5 +1,9 @@
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
+/**
+ * pdfExport.tsx — تصدير PDF
+ * ══════════════════════════
+ * يستخدم dynamic import لتجنب crash
+ * في حال عدم توفر html2canvas أو jspdf
+ */
 
 /**
  * يحوّل عنصر HTML إلى ملف PDF ويقوم بتحميله مباشرة
@@ -13,6 +17,22 @@ export async function downloadPdfFromElement(
 ) {
   try {
     onStart?.();
+
+    // Dynamic imports — لن تنهار الأداة إذا لم تتوفر المكتبات
+    let html2canvas: any;
+    let jsPDF: any;
+
+    try {
+      const h2cModule = await import('html2canvas');
+      html2canvas = h2cModule.default || h2cModule;
+      const jspdfModule = await import('jspdf');
+      jsPDF = jspdfModule.jsPDF || jspdfModule.default;
+    } catch (importErr) {
+      console.warn('PDF libraries not available, falling back to print:', importErr);
+      // Fallback: فتح نافذة طباعة مباشرة
+      fallbackPrint(element, fileName);
+      return;
+    }
 
     // تحويل العنصر إلى صورة عالية الجودة
     const canvas = await html2canvas(element, {
@@ -51,13 +71,20 @@ export async function downloadPdfFromElement(
   } catch (err) {
     console.error('PDF export error:', err);
     // Fallback: فتح نافذة طباعة
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${fileName}</title><style>@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Cairo',sans-serif;direction:rtl}@page{size:A4;margin:0}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>${element.innerHTML}</body></html>`);
-      printWindow.document.close();
-      setTimeout(() => printWindow.print(), 500);
-    }
+    fallbackPrint(element, fileName);
   } finally {
     onEnd?.();
+  }
+}
+
+/** Fallback — يفتح نافذة طباعة المتصفح */
+function fallbackPrint(element: HTMLElement, fileName: string) {
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(
+      `<!DOCTYPE html><html dir="rtl" lang="ar"><head><meta charset="UTF-8"><title>${fileName}</title><style>@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Cairo',sans-serif;direction:rtl}@page{size:A4;margin:0}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body>${element.innerHTML}</body></html>`
+    );
+    printWindow.document.close();
+    setTimeout(() => printWindow.print(), 500);
   }
 }

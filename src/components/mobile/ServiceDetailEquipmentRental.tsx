@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Truck } from 'lucide-react';
+import { ArrowRight, Star, Truck, Building2, Zap, Settings, Wrench, Lightbulb, Droplet, Clock, Package } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailEquipmentRentalProps {
   onBack: () => void;
@@ -32,32 +33,30 @@ export function ServiceDetailEquipmentRental({ onBack, onNavigate, onOpenSearch,
   };
 
   const serviceItems = [
-    { emoji: '🏗️', title: t('equipmentServices.cranes'), description: t('equipmentServices.cranesDesc') },
-    { emoji: '🚜', title: t('equipmentServices.heavyEquipment'), description: t('equipmentServices.heavyEquipmentDesc') },
-    { emoji: '🔌', title: t('equipmentServices.generators'), description: t('equipmentServices.generatorsDesc') },
-    { emoji: '⚙️', title: t('equipmentServices.mixers'), description: t('equipmentServices.mixersDesc') },
-    { emoji: '🏗️', title: t('equipmentServices.scaffolding'), description: t('equipmentServices.scaffoldingDesc') },
-    { emoji: '🛠️', title: t('equipmentServices.powerTools'), description: t('equipmentServices.powerToolsDesc') },
-    { emoji: '💨', title: t('equipmentServices.compressors'), description: t('equipmentServices.compressorsDesc') },
-    { emoji: '💡', title: t('equipmentServices.lighting'), description: t('equipmentServices.lightingDesc') },
-    { emoji: '🚰', title: t('equipmentServices.pumps'), description: t('equipmentServices.pumpsDesc') },
-    { emoji: '🔧', title: t('equipmentServices.welding'), description: t('equipmentServices.weldingDesc') },
-    { emoji: '⏰', title: t('equipmentServices.dailyWeekly'), description: t('equipmentServices.dailyWeeklyDesc') },
-    { emoji: '🚚', title: t('equipmentServices.freeDelivery'), description: t('equipmentServices.freeDeliveryDesc') },
+    { icon: Building2, theme: 'orange', title: t('equipmentServices.cranes'), description: t('equipmentServices.cranesDesc') },
+    { icon: Truck, theme: 'gold', title: t('equipmentServices.heavyEquipment'), description: t('equipmentServices.heavyEquipmentDesc') },
+    { icon: Zap, theme: 'amber', title: t('equipmentServices.generators'), description: t('equipmentServices.generatorsDesc') },
+    { icon: Settings, theme: 'teal', title: t('equipmentServices.mixers'), description: t('equipmentServices.mixersDesc') },
+    { icon: Building2, theme: 'red', title: t('equipmentServices.scaffolding'), description: t('equipmentServices.scaffoldingDesc') },
+    { icon: Wrench, theme: 'indigo', title: t('equipmentServices.powerTools'), description: t('equipmentServices.powerToolsDesc') },
+    { icon: Settings, theme: 'cyan', title: t('equipmentServices.compressors'), description: t('equipmentServices.compressorsDesc') },
+    { icon: Lightbulb, theme: 'amber', title: t('equipmentServices.lighting'), description: t('equipmentServices.lightingDesc') },
+    { icon: Droplet, theme: 'blue', title: t('equipmentServices.pumps'), description: t('equipmentServices.pumpsDesc') },
+    { icon: Wrench, theme: 'brown', title: t('equipmentServices.welding'), description: t('equipmentServices.weldingDesc') },
+    { icon: Clock, theme: 'purple', title: t('equipmentServices.dailyWeekly'), description: t('equipmentServices.dailyWeeklyDesc') },
+    { icon: Truck, theme: 'green', title: t('equipmentServices.freeDelivery'), description: t('equipmentServices.freeDeliveryDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['equipment-rental'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />
-      
-      {/* Back Button */}
       <div className="container mx-auto px-4 pt-4">
         <button onClick={onBack} className="inline-flex items-center gap-2 bg-gradient-to-l from-[#2AA676] to-[#C8A86A] text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
           <ArrowRight className="w-5 h-5" /><span>{t('backToHome')}</span>
         </button>
       </div>
-      
-      {/* Hero Section */}
       <div className="bg-gradient-to-l from-[#F39C12]/10 to-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -65,7 +64,9 @@ export function ServiceDetailEquipmentRental({ onBack, onNavigate, onOpenSearch,
               <h1 className="text-3xl md:text-4xl text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('equipmentServices.title')}</h1>
               <p className="text-gray-600 leading-relaxed max-w-3xl" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('equipmentServices.description')}</p>
             </div>
-            <div className="text-6xl">🚜</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -73,7 +74,7 @@ export function ServiceDetailEquipmentRental({ onBack, onNavigate, onOpenSearch,
               <span className="text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>4.7</span>
               <span className="text-gray-500" style={{ fontFamily: 'Cairo, sans-serif' }}>(650 {t('reviewsCount')})</span>
             </div>
-            <div className="bg-[#F39C12] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')} ✓</div>
+            <div className="bg-[#F39C12] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')}</div>
           </div>
           <button className="bg-gradient-to-l from-[#F39C12] to-[#E67E22] text-white px-8 py-3 rounded-full hover:shadow-lg transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('rentNow')}</button>
         </div>
@@ -94,7 +95,7 @@ export function ServiceDetailEquipmentRental({ onBack, onNavigate, onOpenSearch,
           <div>
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('equipmentServices.servicesTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {serviceItems.map((item, idx) => <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />)}
+              {serviceItems.map((item, idx) => <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />)}
             </div>
           </div>
         )}

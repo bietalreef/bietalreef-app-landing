@@ -149,7 +149,7 @@ export function InvoiceGeneratorTool({ onBack }: { onBack: () => void }) {
     companyInfo: isEn ? 'Company Info' : 'بيانات الشركة',
     clientInfo: isEn ? 'Client Info' : 'بيانات العميل',
     invoiceDetails: isEn ? 'Invoice Details' : 'تفاصيل الفاتورة',
-    items: isEn ? '📦 Invoice Items' : '📦 بنود الفاتورة',
+    items: isEn ? 'Invoice Items' : 'بنود الفاتورة',
     itemNum: isEn ? 'Item' : 'بند',
     addItem: isEn ? 'Add Item' : 'إضافة بند',
     generate: isEn ? 'Preview & Generate Invoice' : 'معاينة وإنشاء الفاتورة',
@@ -180,26 +180,26 @@ export function InvoiceGeneratorTool({ onBack }: { onBack: () => void }) {
   };
 
   const invoiceTypeOpts = isEn
-    ? [{ id: 'tax', label: 'Tax Invoice', icon: '🧾' }, { id: 'simple', label: 'Simple', icon: '📃' }, { id: 'credit', label: 'Credit Note', icon: '🔄' }]
-    : [{ id: 'tax', label: 'فاتورة ضريبية', icon: '🧾' }, { id: 'simple', label: 'فاتورة بسيطة', icon: '📃' }, { id: 'credit', label: 'إشعار دائن', icon: '🔄' }];
+    ? [{ id: 'tax', label: 'Tax Invoice', icon: <Receipt className="w-4 h-4 text-teal-600" /> }, { id: 'simple', label: 'Simple', icon: <FileText className="w-4 h-4 text-gray-500" /> }, { id: 'credit', label: 'Credit Note', icon: <Receipt className="w-4 h-4 text-orange-500" /> }]
+    : [{ id: 'tax', label: 'فاتورة ضريبية', icon: <Receipt className="w-4 h-4 text-teal-600" /> }, { id: 'simple', label: 'فاتورة بسيطة', icon: <FileText className="w-4 h-4 text-gray-500" /> }, { id: 'credit', label: 'إشعار دائن', icon: <Receipt className="w-4 h-4 text-orange-500" /> }];
 
   const payMethodOpts = isEn
-    ? [{ id: 'bank', label: 'Bank Transfer', icon: '🏦' }, { id: 'cash', label: 'Cash', icon: '💵' }, { id: 'cheque', label: 'Cheque', icon: '📝' }, { id: 'card', label: 'Card', icon: '💳' }]
-    : [{ id: 'bank', label: 'تحويل بنكي', icon: '🏦' }, { id: 'cash', label: 'نقداً', icon: '💵' }, { id: 'cheque', label: 'شيك', icon: '📝' }, { id: 'card', label: 'بطاقة', icon: '💳' }];
+    ? [{ id: 'bank', label: 'Bank Transfer', icon: <Building2 className="w-4 h-4 text-blue-500" /> }, { id: 'cash', label: 'Cash', icon: <Receipt className="w-4 h-4 text-green-500" /> }, { id: 'cheque', label: 'Cheque', icon: <FileText className="w-4 h-4 text-gray-500" /> }, { id: 'card', label: 'Card', icon: <Receipt className="w-4 h-4 text-purple-500" /> }]
+    : [{ id: 'bank', label: 'تحويل بنكي', icon: <Building2 className="w-4 h-4 text-blue-500" /> }, { id: 'cash', label: 'نقداً', icon: <Receipt className="w-4 h-4 text-green-500" /> }, { id: 'cheque', label: 'شيك', icon: <FileText className="w-4 h-4 text-gray-500" /> }, { id: 'card', label: 'بطاقة', icon: <Receipt className="w-4 h-4 text-purple-500" /> }];
 
   const payMethodLabel = payMethodOpts.find(p => p.id === paymentMethod)?.label || '';
 
   return (
-    <SimpleToolShell title={L.title} subtitle={L.subtitle} icon="🧾" gradientFrom="#0F766E" gradientTo="#14B8A6" onBack={onBack}>
+    <SimpleToolShell title={L.title} subtitle={L.subtitle} toolId="invoice" gradientFrom="#0F766E" gradientTo="#14B8A6" onBack={onBack}>
       {/* نوع الفاتورة */}
-      <InputCard title={`🧾 ${L.invoiceType}`}>
+      <InputCard title={L.invoiceType}>
         <OptionSelector label={L.invoiceType} options={invoiceTypeOpts} value={invoiceType} onChange={v => setInvoiceType(v as any)} />
       </InputCard>
 
       {/* بيانات الشركة */}
       <CollapsibleSection isOpen={!!expandedSections.company} onToggle={() => toggleSection('company')} title={L.companyInfo} icon={<Building2 className="w-4 h-4 text-teal-500" />}>
         <div className="mb-3 flex items-center gap-3">
-          <button onClick={() => logoInputRef.current?.click()} className="relative w-16 h-16 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center hover:border-teal-400 transition-all overflow-hidden group">
+          <button onClick={() => logoInputRef.current?.click()} className="relative w-16 h-16 rounded-2xl border-[4px] border-dashed border-gray-300/60 bg-gray-50 flex flex-col items-center justify-center hover:border-teal-400 transition-all overflow-hidden group">
             {companyLogo ? (<><img src={companyLogo} alt="" className="w-full h-full object-contain p-1" /><div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><Upload className="w-4 h-4 text-white" /></div></>) : (<><Upload className="w-4 h-4 text-gray-400" /><span className="text-[8px] text-gray-400 font-cairo">{L.logo}</span></>)}
           </button>
           <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -207,11 +207,11 @@ export function InvoiceGeneratorTool({ onBack }: { onBack: () => void }) {
         </div>
         <InputField label={L.name} value={companyName} onChange={setCompanyName} type="text" placeholder={isEn ? 'Company name' : 'اسم الشركة'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={companyPhone} onChange={e => setCompanyPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={companyEmail} onChange={e => setCompanyEmail(e.target.value)} placeholder="info@co.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={companyPhone} onChange={e => setCompanyPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={companyEmail} onChange={e => setCompanyEmail(e.target.value)} placeholder="info@co.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
         </div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} placeholder={isEn ? 'Company address' : 'عنوان الشركة'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={companyWebsite} onChange={e => setCompanyWebsite(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={companyAddress} onChange={e => setCompanyAddress(e.target.value)} placeholder={isEn ? 'Company address' : 'عنوان الشركة'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={companyWebsite} onChange={e => setCompanyWebsite(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
         {invoiceType === 'tax' && <div className="mt-3"><InputField label={L.trn} value={companyTRN} onChange={setCompanyTRN} type="text" placeholder="100XXXXXXXXX" /></div>}
       </CollapsibleSection>
 
@@ -219,48 +219,48 @@ export function InvoiceGeneratorTool({ onBack }: { onBack: () => void }) {
       <CollapsibleSection isOpen={!!expandedSections.client} onToggle={() => toggleSection('client')} title={L.clientInfo} icon={<User className="w-4 h-4 text-green-500" />}>
         <InputField label={L.name} value={clientName} onChange={setClientName} type="text" placeholder={isEn ? 'Client name' : 'اسم العميل'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={clientPhone} onChange={e => setClientPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={clientEmail} onChange={e => setClientEmail(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" dir="ltr" /></div>
         </div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={clientAddress} onChange={e => setClientAddress(e.target.value)} placeholder={isEn ? 'Client address' : 'عنوان العميل'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={clientAddress} onChange={e => setClientAddress(e.target.value)} placeholder={isEn ? 'Client address' : 'عنوان العميل'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
         {invoiceType === 'tax' && <div className="mt-3"><InputField label={L.trn} value={clientTRN} onChange={setClientTRN} type="text" placeholder="100XXXXXXXXX" /></div>}
       </CollapsibleSection>
 
       {/* تفاصيل */}
       <CollapsibleSection isOpen={!!expandedSections.details} onToggle={() => toggleSection('details')} title={L.invoiceDetails} icon={<FileText className="w-4 h-4 text-orange-500" />}>
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.date}</label><input type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.due}</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.date}</label><input type="date" value={invoiceDate} onChange={e => setInvoiceDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.due}</label><input type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo" /></div>
         </div>
         <div className="mt-3"><InputField label={L.ref} value={refNumber} onChange={setRefNumber} type="text" placeholder={isEn ? 'Quote or PO number' : 'رقم عرض السعر أو أمر الشراء'} /></div>
-        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all mt-3 ${includeVAT ? 'border-teal-400 bg-teal-50' : 'border-gray-200 bg-white'}`}>
+        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3 rounded-xl border-[4px] transition-all mt-3 ${includeVAT ? 'border-teal-400 bg-teal-50' : 'border-gray-200/60 bg-white'}`}>
           <span className="font-cairo font-bold text-sm text-gray-700">{L.vat}</span>
           <div className={`w-12 h-7 rounded-full relative transition-colors ${includeVAT ? 'bg-teal-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${includeVAT ? 'right-0.5' : 'left-0.5'}`} /></div>
         </button>
         <div className="mt-3"><OptionSelector label={L.payMethod} options={payMethodOpts} value={paymentMethod} onChange={setPaymentMethod} /></div>
-        <div className="mt-3"><label className="text-sm font-bold text-gray-500 font-cairo block mb-1.5">{L.notes}</label><textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={isEn ? 'Notes...' : 'ملاحظات...'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-teal-400 font-cairo h-20 resize-none" /></div>
+        <div className="mt-3"><label className="text-sm font-bold text-gray-500 font-cairo block mb-1.5">{L.notes}</label><textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={isEn ? 'Notes...' : 'ملاحظات...'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 font-cairo h-20 resize-none" /></div>
       </CollapsibleSection>
 
       {/* البنود */}
       <InputCard title={L.items}>
         <div className="space-y-4">
           {items.map((item, idx) => (
-            <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50/80 rounded-xl p-4 border border-gray-100">
+            <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50/80 rounded-xl p-4 border-[4px] border-gray-100/60">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-gray-400 font-cairo">{L.itemNum} #{idx + 1}</span>
                 {items.length > 1 && <button onClick={() => removeItem(item.id)} className="w-7 h-7 rounded-full bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100"><Trash2 className="w-3.5 h-3.5" /></button>}
               </div>
-              <input type="text" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} placeholder={L.descPh} className="w-full p-3 bg-white rounded-lg border border-gray-200 text-sm outline-none focus:border-teal-400 mb-2 font-cairo" />
+              <input type="text" value={item.description} onChange={e => updateItem(item.id, 'description', e.target.value)} placeholder={L.descPh} className="w-full p-3 bg-white rounded-lg border-[4px] border-gray-200/60 text-sm outline-none focus:border-teal-400 mb-2 font-cairo" />
               <div className="grid grid-cols-3 gap-2">
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unit}</label><select value={item.unit} onChange={e => updateItem(item.id, 'unit', e.target.value)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none">{UNITS.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}</select></div>
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.qty}</label><input type="number" value={item.quantity || ''} onChange={e => updateItem(item.id, 'quantity', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={1} /></div>
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.price}</label><input type="number" value={item.unitPrice || ''} onChange={e => updateItem(item.id, 'unitPrice', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={0} /></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unit}</label><select value={item.unit} onChange={e => updateItem(item.id, 'unit', e.target.value)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none">{UNITS.map(u => <option key={u.id} value={u.id}>{u.label}</option>)}</select></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.qty}</label><input type="number" value={item.quantity || ''} onChange={e => updateItem(item.id, 'quantity', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={1} /></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.price}</label><input type="number" value={item.unitPrice || ''} onChange={e => updateItem(item.id, 'unitPrice', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={0} /></div>
               </div>
               {item.quantity > 0 && item.unitPrice > 0 && <div className="mt-2 text-left"><span className="text-xs font-bold text-teal-600 font-cairo bg-teal-50 px-2 py-1 rounded-lg">= {formatAED(item.quantity * item.unitPrice)}</span></div>}
             </motion.div>
           ))}
         </div>
-        <button onClick={addItem} className="w-full mt-3 py-3 border-2 border-dashed border-teal-300 rounded-xl text-teal-600 font-bold font-cairo text-sm flex items-center justify-center gap-2 hover:bg-teal-50 transition-colors"><Plus className="w-4 h-4" />{L.addItem}</button>
+        <button onClick={addItem} className="w-full mt-3 py-3 border-[4px] border-dashed border-teal-300 rounded-xl text-teal-600 font-bold font-cairo text-sm flex items-center justify-center gap-2 hover:bg-teal-50 transition-colors"><Plus className="w-4 h-4" />{L.addItem}</button>
         {items.some(i => i.unitPrice > 0) && (<div className="mt-4 bg-teal-50 rounded-xl p-3 flex items-center justify-between"><span className="text-sm font-cairo text-gray-600">{L.subtotalLabel}</span><span className="text-lg font-bold font-cairo text-teal-700">{formatAED(subtotal)}</span></div>)}
       </InputCard>
 

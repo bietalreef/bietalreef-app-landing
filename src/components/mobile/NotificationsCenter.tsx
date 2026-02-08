@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { ArrowRight, Bell, Trash2, Check, CheckCheck, Clock, X } from 'lucide-react';
+import { ArrowRight, Bell, Trash2, Check, CheckCheck, Clock, X, Home, Rocket, Bot, MessageCircle, Flame, User } from 'lucide-react';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner@2.0.3';
@@ -26,10 +26,10 @@ interface Notification {
 
 // ─── 3 Categories Only ───
 const CATEGORY_META: Record<string, { icon: string; labelAr: string; labelEn: string; color: string; bg: string }> = {
-  all:       { icon: '📬', labelAr: 'الكل',     labelEn: 'All',      color: 'from-[#2AA676] to-[#1F3D2B]', bg: 'bg-[#2AA676]/10' },
-  platform:  { icon: '📨', labelAr: 'المنصة',   labelEn: 'Platform', color: 'from-blue-500 to-blue-600',    bg: 'bg-blue-50' },
-  weyaak:    { icon: '🤖', labelAr: 'وياك',     labelEn: 'Weyaak',   color: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
-  other:     { icon: '🔔', labelAr: 'أخرى',     labelEn: 'Other',    color: 'from-amber-500 to-amber-600',  bg: 'bg-amber-50' },
+  all:       { icon: 'all', labelAr: 'الكل',     labelEn: 'All',      color: 'from-[#2AA676] to-[#1F3D2B]', bg: 'bg-[#2AA676]/10' },
+  platform:  { icon: 'platform', labelAr: 'المنصة',   labelEn: 'Platform', color: 'from-blue-500 to-blue-600',    bg: 'bg-blue-50' },
+  weyaak:    { icon: 'weyaak', labelAr: 'وياك',     labelEn: 'Weyaak',   color: 'from-purple-500 to-purple-600', bg: 'bg-purple-50' },
+  other:     { icon: 'other', labelAr: 'أخرى',     labelEn: 'Other',    color: 'from-amber-500 to-amber-600',  bg: 'bg-amber-50' },
 };
 
 const INITIAL_NOTIFICATIONS: Notification[] = [
@@ -37,43 +37,43 @@ const INITIAL_NOTIFICATIONS: Notification[] = [
     id: 'n1', category: 'platform',
     titleAr: 'مرحباً بك في بيت الريف', titleEn: 'Welcome to Beit Al Reef',
     messageAr: 'ابدأ باستكشاف الخدمات والأدوات الذكية المتاحة لك', messageEn: 'Start exploring services and smart tools available to you',
-    time: 'منذ 5 دقائق', timeEn: '5 min ago', read: false, icon: '🏠',
+    time: 'منذ 5 دقائق', timeEn: '5 min ago', read: false, icon: 'home',
   },
   {
     id: 'n2', category: 'platform',
     titleAr: 'تحديث التطبيق v2.0', titleEn: 'App Update v2.0',
     messageAr: 'ميزات جديدة: الأدوات الذكية، مدير السوشيال ميديا، وتحسينات الأداء', messageEn: 'New features: Smart tools, Social media manager, and performance improvements',
-    time: 'منذ ساعة', timeEn: '1 hour ago', read: false, icon: '🚀',
+    time: 'منذ ساعة', timeEn: '1 hour ago', read: false, icon: 'rocket',
   },
   {
     id: 'n3', category: 'weyaak',
     titleAr: 'وياك جاهز لمساعدتك', titleEn: 'Weyaak is ready to help',
     messageAr: 'جرّب السؤال عن تكلفة تجديد منزلك أو تصميم الديكور الداخلي', messageEn: 'Try asking about your home renovation cost or interior design',
-    time: 'منذ ساعتين', timeEn: '2 hours ago', read: false, icon: '🤖',
+    time: 'منذ ساعتين', timeEn: '2 hours ago', read: false, icon: 'bot',
   },
   {
     id: 'n4', category: 'weyaak',
     titleAr: 'رد جديد من وياك', titleEn: 'New reply from Weyaak',
     messageAr: 'تم الرد على استفسارك حول أسعار مواد البناء في دبي', messageEn: 'Your query about construction material prices in Dubai has been answered',
-    time: 'منذ 3 ساعات', timeEn: '3 hours ago', read: true, icon: '💬',
+    time: 'منذ 3 ساعات', timeEn: '3 hours ago', read: true, icon: 'message',
   },
   {
     id: 'n5', category: 'other',
     titleAr: 'تذكير: موعد الصيانة غداً', titleEn: 'Reminder: Maintenance tomorrow',
     messageAr: 'لديك موعد صيانة تكييف الساعة 10 صباحاً', messageEn: 'AC maintenance appointment at 10 AM',
-    time: 'منذ 5 ساعات', timeEn: '5 hours ago', read: true, icon: '🔔',
+    time: 'منذ 5 ساعات', timeEn: '5 hours ago', read: true, icon: 'bell',
   },
   {
     id: 'n6', category: 'other',
     titleAr: 'عرض حصري: خصم 30%', titleEn: 'Exclusive: 30% Off',
     messageAr: 'خصم على جميع خدمات المقاولات هذا الأسبوع', messageEn: 'Discount on all contracting services this week',
-    time: 'أمس', timeEn: 'Yesterday', read: true, icon: '🔥',
+    time: 'أمس', timeEn: 'Yesterday', read: true, icon: 'flame',
   },
   {
     id: 'n7', category: 'platform',
     titleAr: 'رسالة من مقاول', titleEn: 'Message from contractor',
     messageAr: 'أحمد المهندس أرسل لك عرض سعر جديد لمشروع تجديد الفيلا', messageEn: 'Ahmed Engineer sent you a new quote for the villa renovation project',
-    time: 'أمس', timeEn: 'Yesterday', read: true, icon: '👤',
+    time: 'أمس', timeEn: 'Yesterday', read: true, icon: 'user',
   },
 ];
 
@@ -81,6 +81,16 @@ export function NotificationsCenter({ onBack, initialCategory = 'all' }: Notific
   const { language } = useTranslation('notifications');
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : fontCairo;
+
+  const ICON_MAP: Record<string, any> = {
+    home: Home, rocket: Rocket, bot: Bot, message: MessageCircle,
+    bell: Bell, flame: Flame, user: User, all: Bell, platform: Bell, weyaak: Bot, other: Bell,
+  };
+
+  const renderIcon = (iconKey: string, size: string = 'w-5 h-5', color: string = 'text-[#4A90E2]') => {
+    const IconComp = ICON_MAP[iconKey] || Bell;
+    return <IconComp className={`${size} ${color}`} />;
+  };
 
   const [notifications, setNotifications] = useState<Notification[]>(INITIAL_NOTIFICATIONS);
   const [activeCategory, setActiveCategory] = useState(initialCategory);
@@ -143,7 +153,7 @@ export function NotificationsCenter({ onBack, initialCategory = 'all' }: Notific
                   }`}
                   style={{ fontFamily }}
                 >
-                  <span className="text-sm">{meta.icon}</span>
+                  {renderIcon(meta.icon, 'w-4 h-4', isActive ? 'text-[#1F3D2B]' : 'text-white')}
                   <span>{isEn ? meta.labelEn : meta.labelAr}</span>
                   {count > 0 && (
                     <span className={`min-w-[18px] h-[18px] rounded-full flex items-center justify-center text-[9px] font-bold ${
@@ -220,7 +230,7 @@ export function NotificationsCenter({ onBack, initialCategory = 'all' }: Notific
                 >
                   <div className="flex items-start gap-3">
                     <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 ${catMeta?.bg || 'bg-gray-50'}`}>
-                      <span className="text-xl">{notif.icon}</span>
+                      {renderIcon(notif.icon)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">

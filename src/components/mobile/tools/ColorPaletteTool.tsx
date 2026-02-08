@@ -88,10 +88,9 @@ export function ColorPaletteTool({ onBack }: { onBack: () => void }) {
       title={isEn ? 'Color Palette Generator' : 'مولّد لوحات الألوان'}
       subtitle={isEn ? 'Design color schemes for your rooms' : 'صمّم تنسيقات ألوان لغرفك'}
       onBack={onBack}
-      icon="🎨"
+      toolId="color-palette"
       gradientFrom="#EC4899"
       gradientTo="#E11D48"
-      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-5 p-4" dir="rtl">
         {/* Room Type */}
@@ -107,7 +106,7 @@ export function ColorPaletteTool({ onBack }: { onBack: () => void }) {
                 className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
                   roomType === room.id
                     ? 'bg-[#2AA676] text-white shadow-md'
-                    : 'bg-white text-[#1F3D2B] border border-gray-200'
+                    : 'bg-white text-[#1F3D2B] border-[4px] border-gray-200/60'
                 }`}
                 style={{ fontFamily: fontCairo }}
               >
@@ -130,7 +129,7 @@ export function ColorPaletteTool({ onBack }: { onBack: () => void }) {
                 className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
                   style === s.id
                     ? 'bg-[#C8A86A] text-white shadow-md'
-                    : 'bg-white text-[#1F3D2B] border border-gray-200'
+                    : 'bg-white text-[#1F3D2B] border-[4px] border-gray-200/60'
                 }`}
                 style={{ fontFamily: fontCairo }}
               >
@@ -157,7 +156,7 @@ export function ColorPaletteTool({ onBack }: { onBack: () => void }) {
               {isEn ? 'Suggested Palettes' : 'اللوحات المقترحة'}
             </h3>
             {results.map((palette, idx) => (
-              <div key={idx} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <div key={idx} className="bg-white rounded-2xl p-4 shadow-sm border-[4px] border-gray-100/60">
                 <h4 className="font-bold text-sm text-[#1F3D2B] mb-1" style={{ fontFamily: fontCairo }}>
                   {isEn ? palette.nameEn : palette.name}
                 </h4>

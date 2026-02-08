@@ -1,13 +1,16 @@
 import { LucideIcon } from 'lucide-react';
+import { Icon3D } from '../ui/Icon3D';
 
 interface GlassCardProps {
   icon?: LucideIcon;
   emoji?: string;
   title: string;
   description?: string;
+  /** Icon3D color theme — when provided with icon, renders as 3D */
+  theme?: string;
 }
 
-export function GlassCard({ icon: Icon, emoji, title, description }: GlassCardProps) {
+export function GlassCard({ icon: Icon, emoji, title, description, theme = 'green' }: GlassCardProps) {
   return (
     <div className="group relative overflow-hidden bg-white/60 backdrop-blur-sm border border-white/40 rounded-2xl p-4 hover:bg-white/80 hover:shadow-lg transition-all duration-300">
       {/* Subtle gradient overlay */}
@@ -15,12 +18,18 @@ export function GlassCard({ icon: Icon, emoji, title, description }: GlassCardPr
       
       {/* Content */}
       <div className="relative flex items-start gap-3">
-        {/* Icon/Emoji */}
-        <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-[#2AA676]/10 to-[#C8A86A]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-          {Icon && <Icon className="w-5 h-5 text-[#2AA676]" />}
-          {emoji && <span className="text-xl">{emoji}</span>}
-          {!Icon && !emoji && (
-            <div className="w-2 h-2 rounded-full bg-[#2AA676]" />
+        {/* Icon3D or fallback */}
+        <div className="flex-shrink-0">
+          {Icon ? (
+            <Icon3D icon={Icon} theme={theme} size="sm" hoverable={false} />
+          ) : emoji ? (
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2AA676]/10 to-[#C8A86A]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <span className="text-xl">{emoji}</span>
+            </div>
+          ) : (
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#2AA676]/10 to-[#C8A86A]/10 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-[#2AA676]" />
+            </div>
           )}
         </div>
         

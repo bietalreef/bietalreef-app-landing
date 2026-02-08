@@ -315,17 +315,16 @@ export function Convert2Dto3DTool({ onBack }: { onBack: () => void }) {
       title={isEn ? '2D to 3D Converter' : 'محوّل من 2D إلى 3D'}
       subtitle={isEn ? 'Convert floor plans to 3D models' : 'حوّل المخططات الأفقية إلى نماذج ثلاثية'}
       onBack={onBack}
-      icon="🔄"
+      toolId="convert-2d-3d"
       gradientFrom="#2AA676"
       gradientTo="#1F6F50"
-      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-3 p-3" dir="rtl">
         {/* Templates */}
         <div className="flex gap-2 flex-wrap">
           {TEMPLATES.map(t => (
             <button key={t.id} onClick={() => loadTemplate(t)}
-              className="bg-white border border-gray-200 px-3 py-1.5 rounded-xl text-[10px] font-bold text-[#1F3D2B] hover:bg-green-50 hover:border-green-300 transition-all"
+              className="bg-white border-[4px] border-gray-200/60 px-3 py-1.5 rounded-xl text-[10px] font-bold text-[#1F3D2B] hover:bg-green-50 hover:border-green-300 transition-all"
               style={{ fontFamily: fontCairo }}>
               {isEn ? t.en : t.ar}
             </button>
@@ -351,12 +350,12 @@ export function Convert2Dto3DTool({ onBack }: { onBack: () => void }) {
         {/* Canvases */}
         <div className={viewMode === 'split' ? 'grid grid-cols-2 gap-2' : ''}>
           {(viewMode === 'split' || viewMode === '2d') && (
-            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="bg-white rounded-2xl border-[4px] border-gray-200/60 shadow-sm overflow-hidden">
               <canvas ref={canvas2dRef} width={viewMode === 'split' ? 180 : 360} height={viewMode === 'split' ? 160 : 250} className="w-full" />
             </div>
           )}
           {(viewMode === 'split' || viewMode === '3d') && (
-            <div className="bg-[#111318] rounded-2xl border border-gray-700 shadow-sm overflow-hidden">
+            <div className="bg-[#111318] rounded-2xl border-[4px] border-gray-700/60 shadow-sm overflow-hidden">
               <canvas ref={canvas3dRef} width={viewMode === 'split' ? 180 : 360} height={viewMode === 'split' ? 160 : 250} className="w-full" />
             </div>
           )}
@@ -382,7 +381,7 @@ export function Convert2Dto3DTool({ onBack }: { onBack: () => void }) {
 
         {/* Room Wall Heights */}
         {rooms.length > 0 && (
-          <div className="bg-white rounded-xl p-3 border border-gray-100">
+          <div className="bg-white rounded-xl p-3 border-[4px] border-gray-100/60">
             <h4 className="text-[10px] font-bold text-[#1F3D2B] mb-2" style={{ fontFamily: fontCairo }}>
               {isEn ? 'Room Wall Heights' : 'ارتفاع جدران الغرف'}
             </h4>

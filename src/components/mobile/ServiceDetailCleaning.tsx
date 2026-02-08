@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Sparkles } from 'lucide-react';
+import { ArrowRight, Star, Sparkles, Home as HomeIcon, Building2, Gem, Droplet, Clock, CheckCircle, Shield } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { ProvidersTabContent } from './ProviderProfileCard';
 import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailCleaningProps {
   onBack: () => void;
@@ -15,10 +16,6 @@ interface ServiceDetailCleaningProps {
 
 export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpenDrawer }: ServiceDetailCleaningProps) {
   const { t, dir } = useTranslation('services');
-  const tCommon = (key: string) => {
-    const { t: tc } = useTranslation('common');
-    return tc(key);
-  };
   const [activeTab, setActiveTab] = useState<'details' | 'providers' | 'reviews'>('details');
 
   const seoData = {
@@ -41,19 +38,20 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
   };
 
   const serviceItems = [
-    { emoji: '🏠', title: t('cleaningServices.items.homes'), description: t('cleaningServices.items.homesDesc') },
-    { emoji: '🏢', title: t('cleaningServices.items.buildings'), description: t('cleaningServices.items.buildingsDesc') },
-    { emoji: '✨', title: t('cleaningServices.items.villas'), description: t('cleaningServices.items.villasDesc') },
-    { emoji: '🏗️', title: t('cleaningServices.items.postConstruction'), description: t('cleaningServices.items.postConstructionDesc') },
-    { emoji: '🪟', title: t('cleaningServices.items.windows'), description: t('cleaningServices.items.windowsDesc') },
-    { emoji: '🛋️', title: t('cleaningServices.items.furniture'), description: t('cleaningServices.items.furnitureDesc') },
-    { emoji: '🚿', title: t('cleaningServices.items.bathrooms'), description: t('cleaningServices.items.bathroomsDesc') },
-    { emoji: '🍳', title: t('cleaningServices.items.kitchens'), description: t('cleaningServices.items.kitchensDesc') },
-    { emoji: '💎', title: t('cleaningServices.items.marble'), description: t('cleaningServices.items.marbleDesc') },
-    { emoji: '🧹', title: t('cleaningServices.items.periodic'), description: t('cleaningServices.items.periodicDesc') },
-    { emoji: '⏰', title: t('cleaningServices.items.available247'), description: t('cleaningServices.items.available247Desc') },
-    { emoji: '✅', title: t('cleaningServices.items.guarantee'), description: t('cleaningServices.items.guaranteeDesc') },
+    { icon: HomeIcon, theme: 'green', title: t('cleaningServices.items.homes'), description: t('cleaningServices.items.homesDesc') },
+    { icon: Building2, theme: 'blue', title: t('cleaningServices.items.buildings'), description: t('cleaningServices.items.buildingsDesc') },
+    { icon: Sparkles, theme: 'gold', title: t('cleaningServices.items.villas'), description: t('cleaningServices.items.villasDesc') },
+    { icon: Building2, theme: 'orange', title: t('cleaningServices.items.postConstruction'), description: t('cleaningServices.items.postConstructionDesc') },
+    { icon: HomeIcon, theme: 'indigo', title: t('cleaningServices.items.windows'), description: t('cleaningServices.items.windowsDesc') },
+    { icon: Shield, theme: 'teal', title: t('cleaningServices.items.furniture'), description: t('cleaningServices.items.furnitureDesc') },
+    { icon: Droplet, theme: 'cyan', title: t('cleaningServices.items.bathrooms'), description: t('cleaningServices.items.bathroomsDesc') },
+    { icon: Gem, theme: 'violet', title: t('cleaningServices.items.marble'), description: t('cleaningServices.items.marbleDesc') },
+    { icon: Sparkles, theme: 'emerald', title: t('cleaningServices.items.periodic'), description: t('cleaningServices.items.periodicDesc') },
+    { icon: Clock, theme: 'red', title: t('cleaningServices.items.available247'), description: t('cleaningServices.items.available247Desc') },
+    { icon: CheckCircle, theme: 'green', title: t('cleaningServices.items.guarantee'), description: t('cleaningServices.items.guaranteeDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['cleaning-services'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
@@ -83,7 +81,9 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
                 {t('cleaningServices.description')}
               </p>
             </div>
-            <div className="text-6xl">✨</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
 
           <div className="flex items-center gap-6 mb-4">
@@ -141,7 +141,7 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
             </h2>
             <div className="grid md:grid-cols-2 gap-4">
               {serviceItems.map((item, idx) => (
-                <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />
+                <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />
               ))}
             </div>
           </div>
@@ -180,8 +180,6 @@ export function ServiceDetailCleaning({ onBack, onNavigate, onOpenSearch, onOpen
           </button>
         </div>
       </div>
-
-      <PlatformShowcaseBanner variant="mini" className="py-6" />
     </div>
   );
 }

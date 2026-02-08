@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Hammer, User } from 'lucide-react';
+import { ArrowRight, Star, Hammer, User, Wrench, Droplet, Zap, Paintbrush, Building2, Sparkles, LayoutGrid, Home as HomeIcon, Wind, Settings, CheckCircle } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailCraftsmenProps {
   onBack: () => void;
@@ -31,32 +32,30 @@ export function ServiceDetailCraftsmen({ onBack, onNavigate, onOpenSearch }: Ser
   };
 
   const serviceItems = [
-    { emoji: '🪚', title: t('craftsmenServices.carpentry'), description: t('craftsmenServices.carpentryDesc') },
-    { emoji: '🚰', title: t('craftsmenServices.plumbing'), description: t('craftsmenServices.plumbingDesc') },
-    { emoji: '⚡', title: t('craftsmenServices.electrical'), description: t('craftsmenServices.electricalDesc') },
-    { emoji: '🎨', title: t('craftsmenServices.painting'), description: t('craftsmenServices.paintingDesc') },
-    { emoji: '🏗️', title: t('craftsmenServices.masonry'), description: t('craftsmenServices.masonryDesc') },
-    { emoji: '✨', title: t('craftsmenServices.gypsum'), description: t('craftsmenServices.gypsumDesc') },
-    { emoji: '🔲', title: t('craftsmenServices.tiles'), description: t('craftsmenServices.tilesDesc') },
-    { emoji: '🚪', title: t('craftsmenServices.aluminum'), description: t('craftsmenServices.aluminumDesc') },
-    { emoji: '❄️', title: t('craftsmenServices.ac'), description: t('craftsmenServices.acDesc') },
-    { emoji: '🔧', title: t('craftsmenServices.generalMaint'), description: t('craftsmenServices.generalMaintDesc') },
-    { emoji: '🌟', title: t('craftsmenServices.cleaning'), description: t('craftsmenServices.cleaningDesc') },
-    { emoji: '💪', title: t('craftsmenServices.dailyLabor'), description: t('craftsmenServices.dailyLaborDesc') },
+    { icon: Hammer, theme: 'brown', title: t('craftsmenServices.carpentry'), description: t('craftsmenServices.carpentryDesc') },
+    { icon: Droplet, theme: 'blue', title: t('craftsmenServices.plumbing'), description: t('craftsmenServices.plumbingDesc') },
+    { icon: Zap, theme: 'amber', title: t('craftsmenServices.electrical'), description: t('craftsmenServices.electricalDesc') },
+    { icon: Paintbrush, theme: 'pink', title: t('craftsmenServices.painting'), description: t('craftsmenServices.paintingDesc') },
+    { icon: Building2, theme: 'orange', title: t('craftsmenServices.masonry'), description: t('craftsmenServices.masonryDesc') },
+    { icon: Sparkles, theme: 'gold', title: t('craftsmenServices.gypsum'), description: t('craftsmenServices.gypsumDesc') },
+    { icon: LayoutGrid, theme: 'teal', title: t('craftsmenServices.tiles'), description: t('craftsmenServices.tilesDesc') },
+    { icon: HomeIcon, theme: 'indigo', title: t('craftsmenServices.aluminum'), description: t('craftsmenServices.aluminumDesc') },
+    { icon: Wind, theme: 'cyan', title: t('craftsmenServices.ac'), description: t('craftsmenServices.acDesc') },
+    { icon: Wrench, theme: 'green', title: t('craftsmenServices.generalMaint'), description: t('craftsmenServices.generalMaintDesc') },
+    { icon: Sparkles, theme: 'emerald', title: t('craftsmenServices.cleaning'), description: t('craftsmenServices.cleaningDesc') },
+    { icon: User, theme: 'red', title: t('craftsmenServices.dailyLabor'), description: t('craftsmenServices.dailyLaborDesc') },
   ];
+
+  const heroIcon = SERVICE_ICONS['craftsmen'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
       <ServiceSEOHead {...seoData} />
-
-      {/* Back Button */}
       <div className="container mx-auto px-4 pt-4">
         <button onClick={onBack} className="inline-flex items-center gap-2 bg-gradient-to-l from-[#2AA676] to-[#C8A86A] text-white px-6 py-2.5 rounded-xl hover:shadow-lg transition-all" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
           <ArrowRight className="w-5 h-5" /><span>{t('backToHome')}</span>
         </button>
       </div>
-
-      {/* Hero Section */}
       <div className="bg-gradient-to-l from-[#C8A86A]/10 to-white py-8 pt-4">
         <div className="container mx-auto px-4">
           <div className="flex items-start justify-between gap-4 mb-6">
@@ -64,7 +63,9 @@ export function ServiceDetailCraftsmen({ onBack, onNavigate, onOpenSearch }: Ser
               <h1 className="text-3xl md:text-4xl text-[#1F3D2B] mb-3" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('craftsmenServices.title')}</h1>
               <p className="text-gray-600 leading-relaxed max-w-3xl" style={{ fontFamily: 'Cairo, sans-serif' }}>{t('craftsmenServices.description')}</p>
             </div>
-            <div className="text-6xl">👷‍♂️</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -72,7 +73,7 @@ export function ServiceDetailCraftsmen({ onBack, onNavigate, onOpenSearch }: Ser
               <span className="text-[#1F3D2B]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>4.6</span>
               <span className="text-gray-500" style={{ fontFamily: 'Cairo, sans-serif' }}>(2100 {t('reviewsCount')})</span>
             </div>
-            <div className="bg-[#C8A86A] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')} ✓</div>
+            <div className="bg-[#C8A86A] text-white px-4 py-1 rounded-full text-sm" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>{t('certified')}</div>
           </div>
           <button className="bg-gradient-to-l from-[#C8A86A] to-[#1F3D2B] text-white px-8 py-3 rounded-full hover:shadow-lg transition-shadow" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('bookNow')}</button>
         </div>
@@ -93,7 +94,7 @@ export function ServiceDetailCraftsmen({ onBack, onNavigate, onOpenSearch }: Ser
           <div>
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('craftsmenServices.servicesTitle')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
-              {serviceItems.map((item, idx) => <GlassCard key={idx} emoji={item.emoji} title={item.title} description={item.description} />)}
+              {serviceItems.map((item, idx) => <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />)}
             </div>
           </div>
         )}

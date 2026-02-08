@@ -14,12 +14,23 @@ app.use(
   "/*",
   cors({
     origin: "*",
-    allowHeaders: ["Content-Type", "Authorization"],
+    allowHeaders: ["Content-Type", "Authorization", "X-Platform", "X-User-Type"],
     allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
   }),
 );
+
+// ─── Platform Detection Middleware ───
+// Tags each request with platform info for analytics/routing
+app.use('*', async (c, next) => {
+  const platform = c.req.header('X-Platform') || 'unknown';
+  const userType = c.req.header('X-User-Type') || 'unknown';
+  c.set('platform' as any, platform);
+  c.set('userType' as any, userType);
+  console.log(`[Platform: ${platform}] [User: ${userType}] ${c.req.method} ${c.req.path}`);
+  await next();
+});
 
 // ─── Helper: Authenticate user from Authorization header ───
 async function authUser(authHeader: string | undefined) {

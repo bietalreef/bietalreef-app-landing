@@ -1,4 +1,5 @@
 import image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3 from 'figma:asset/1d3f7ac269fcb8922cef991f788ec0c45ba06aa3.png';
+import bietAlreefLogo from 'figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png';
 import { ShoppingCart, Search, Bell, Menu, Mic, Check, CheckCheck, ChevronLeft, X, Clock, Sparkles, MessageSquare, AlertTriangle, Zap } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router';
@@ -9,6 +10,7 @@ import { useSearchStore } from '../../stores/search-store';
 import { WalletWidget } from './WalletWidget';
 import { useShopStore } from './shop/ShopStore';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // ─── Notification Data Types ───
 interface NotificationItem {
@@ -105,6 +107,7 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
   const { t, language, textAlign } = useTranslation('common');
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
+  const { isDark } = useTheme();
 
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState<NotificationItem[]>(INITIAL_NOTIFICATIONS);
@@ -183,21 +186,25 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
   };
 
   return (
-    <div className="bg-white/90 backdrop-blur-md px-3 md:px-6 py-3 sticky top-0 z-40 shadow-sm border-b border-[#F5EEE1]">
+    <div className={`backdrop-blur-md px-3 md:px-6 py-3 sticky top-0 z-40 border-b ${
+      isDark
+        ? 'bg-[var(--bait-glass)] shadow-[0_1px_3px_rgba(0,0,0,0.3)] border-[var(--bait-border)]'
+        : 'bg-white/90 shadow-sm border-[#F5EEE1]'
+    }`}>
       {/* Single Row: Logo | Search | Icons — Layout always RTL */}
       <div className="flex items-center justify-between gap-2 md:gap-4" dir="rtl">
         {/* Right Side (RTL) - Side Drawer Button + Logo */}
         <div className="flex items-center gap-2 flex-shrink-0">
           <button 
             onClick={onOpenDrawer}
-            className="p-2 hover:bg-[#2AA676]/10 rounded-lg transition-colors"
+            className={`p-2 rounded-lg transition-colors ${isDark ? 'hover:bg-[#2AA676]/15' : 'hover:bg-[#2AA676]/10'}`}
             aria-label={isEn ? 'Open menu' : 'فتح القائمة'}
           >
-            <Menu className="w-6 h-6 text-[#1F3D2B]" />
+            <Menu className={`w-6 h-6 ${isDark ? 'text-[var(--bait-text)]' : 'text-[#1F3D2B]'}`} />
           </button>
           <div className="w-10 h-10 md:w-14 md:h-14 flex items-center justify-center flex-shrink-0 overflow-hidden">
             <ImageWithFallback 
-              src={image_1d3f7ac269fcb8922cef991f788ec0c45ba06aa3}
+              src={bietAlreefLogo}
               alt="بيت الريف"
               className="w-full h-full object-contain"
             />
@@ -208,11 +215,15 @@ export function TopNav({ onOpenDrawer, onOpenNotificationsCenter, showCart = fal
         <div className="flex-1 min-w-0 max-w-xl mx-2 md:mx-4">
           <button
             onClick={openSearch}
-            className="w-full bg-gradient-to-r from-[#F5EEE1] to-[#E5DED1] rounded-2xl px-3 md:px-4 py-2 md:py-2.5 flex items-center gap-2 md:gap-3 hover:shadow-md transition-all border border-[#4A90E2]/20 h-9 md:h-11"
+            className={`w-full rounded-2xl px-3 md:px-4 py-2 md:py-2.5 flex items-center gap-2 md:gap-3 hover:shadow-md transition-all border h-9 md:h-11 ${
+              isDark
+                ? 'bg-white/5 border-white/10 hover:border-[#2AA676]/30'
+                : 'bg-gradient-to-r from-[#F5EEE1] to-[#E5DED1] border-[#4A90E2]/20'
+            }`}
           >
             <Search className="w-4 h-4 md:w-5 md:h-5 text-[#4A90E2] flex-shrink-0" />
             <span 
-              className="flex-1 text-[#1F3D2B]/60 text-xs md:text-sm truncate block" 
+              className={`flex-1 text-xs md:text-sm truncate block ${isDark ? 'text-white/50' : 'text-[#1F3D2B]/60'}`}
               style={{ fontFamily, fontWeight: 600, textAlign }}
             >
               {getPlaceholder()}

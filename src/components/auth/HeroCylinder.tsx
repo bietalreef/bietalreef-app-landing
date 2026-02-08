@@ -198,7 +198,7 @@ export function HeroCylinder({ isEn = false }: HeroCylinderProps) {
     <div
       ref={containerRef}
       className="relative w-full overflow-hidden"
-      style={{ height: 280, perspective: '1000px', perspectiveOrigin: '50% 50%' }}
+      style={{ height: 200, perspective: '1000px', perspectiveOrigin: '50% 50%' }}
       onMouseDown={(e) => handleDragStart(e.clientX)}
       onMouseMove={(e) => handleDragMove(e.clientX)}
       onMouseUp={handleDragEnd}

@@ -36,7 +36,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       meta.setAttribute('name', 'theme-color');
       document.head.appendChild(meta);
     }
-    meta.setAttribute('content', theme === 'dark' ? '#111318' : '#F5EEE1');
+    meta.setAttribute('content', theme === 'dark' ? '#3B5BFE' : '#F5EEE1');
   }, [theme]);
 
   const setTheme = (t: Theme) => setThemeState(t);

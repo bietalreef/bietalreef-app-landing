@@ -1,10 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
+  Zap, ClipboardCopy, Share2, RotateCcw, AlertTriangle, Building2,
+} from 'lucide-react';
+import {
   SimpleToolShell, InputCard, SliderInput, OptionSelector,
   ActionButton, Divider, formatAED,
 } from './SimpleToolShell';
 import { calculateCostEstimate, CostEstimateResult } from './logic/AllCalculators';
+import { useLanguage } from '../../../contexts/LanguageContext';
 
 export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
   const [area, setArea] = useState(200);
@@ -34,8 +38,10 @@ export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell
       title="مقدّر تكلفة البناء"
+      titleEn="Construction Cost Estimator"
       subtitle="تقدير شامل لميزانية مشروعك"
-      icon="💰"
+      subtitleEn="Complete budget estimate for your project"
+      toolId="cost"
       gradientFrom="#0F766E"
       gradientTo="#14B8A6"
       onBack={onBack}
@@ -105,10 +111,10 @@ export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
             <button
               key={opt.id}
               onClick={() => setFinishLevel(opt.id)}
-              className={`w-full flex items-start gap-3 p-4 rounded-xl border-2 transition-all text-right ${
+              className={`w-full flex items-start gap-3 p-4 rounded-xl border-[4px] transition-all text-right ${
                 finishLevel === opt.id
                   ? 'border-teal-500 bg-teal-50/50 shadow-sm'
-                  : 'border-gray-200 bg-white hover:border-gray-300'
+                  : 'border-gray-200/60 bg-white hover:border-gray-300'
               }`}
             >
               <span className="text-2xl mt-0.5">{opt.icon}</span>
@@ -211,7 +217,7 @@ export function CostEstimatorTool({ onBack }: { onBack: () => void }) {
           </InputCard>
 
           {/* Disclaimer */}
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+          <div className="bg-amber-50 border-[4px] border-amber-200/60 rounded-2xl p-4 mb-4">
             <p className="text-amber-800 text-xs font-cairo leading-relaxed">
               ⚠️ التقدير مبني على متوسط أسعار السوق الإماراتي لعام 2025. الأسعار الفعلية تعتمد على تفاصيل المشروع والمقاول المنفّذ. يُنصح بطلب عروض أسعار تفصيلية.
             </p>

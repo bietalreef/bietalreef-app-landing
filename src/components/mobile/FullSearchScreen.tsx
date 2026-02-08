@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Search, X, MapPin, Clock, TrendingUp, Map, ChevronLeft, Mic, Filter, Star, DollarSign, CheckCircle, Zap, SlidersHorizontal, ChevronRight, Building2, Package, Wrench } from 'lucide-react';
+import { Search, X, MapPin, Clock, TrendingUp, Map, ChevronLeft, Mic, Filter, Star, DollarSign, CheckCircle, Zap, SlidersHorizontal, ChevronRight, Building2, Package, Wrench, HardHat } from 'lucide-react';
 import { 
   searchAll, 
   SearchResult, 
@@ -488,8 +488,14 @@ export function FullSearchScreen({ onClose, context: propContext, onNavigate }: 
                       {/* Meta Info */}
                       <div className="flex items-center gap-3 flex-wrap">
                         {/* Type Badge */}
-                        <span className="px-2 py-1 bg-[#F5EEE1] rounded-lg text-xs" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                          {result.type === 'service' ? '🔧 خدمة' : result.type === 'provider' ? '👷 مزود' : '📦 منتج'}
+                        <span className="px-2 py-1 bg-[#F5EEE1] rounded-lg text-xs flex items-center gap-1" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
+                          {result.type === 'service' ? (
+                            <><Wrench className="w-3 h-3 text-[#4A90E2]" /> خدمة</>
+                          ) : result.type === 'provider' ? (
+                            <><HardHat className="w-3 h-3 text-[#2AA676]" /> مزود</>
+                          ) : (
+                            <><Package className="w-3 h-3 text-[#F2994A]" /> منتج</>
+                          )}
                         </span>
 
                         {/* Rating */}
@@ -526,15 +532,10 @@ export function FullSearchScreen({ onClose, context: propContext, onNavigate }: 
 
                         {/* Verified */}
                         {result.verified && (
-                          <CheckCircle className="w-4 h-4 text-green-500" />
-                        )}
-
-                        {/* Availability */}
-                        {result.availability === 'online' && (
                           <div className="flex items-center gap-1">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            <span className="text-xs text-green-600" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 600 }}>
-                              متاح الآن
+                            <CheckCircle className="w-4 h-4 text-[#4A90E2]" />
+                            <span className="text-xs text-[#4A90E2]" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>
+                              موثق
                             </span>
                           </div>
                         )}

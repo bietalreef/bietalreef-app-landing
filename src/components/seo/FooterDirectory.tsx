@@ -1,7 +1,11 @@
-import { Link } from 'react-router';
+import { Icon3D, SERVICE_ICONS, TOOL_ICONS } from '../ui/Icon3D';
+import { Bot, Home as HomeIcon } from 'lucide-react';
+import bietAlreefLogo from 'figma:asset/67fe2af1d169e9257cfb304dda040baf67b4e599.png';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { Link } from 'react-router';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   SITE_NAME_AR,
   SITE_NAME_EN,
@@ -54,12 +58,17 @@ function CollapsibleFooterSection({
 
 export function FooterDirectory() {
   const { language } = useTranslation('common');
+  const { isDark } = useTheme();
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif';
 
   return (
     <footer
-      className="bg-[#F5EEE1] border-t border-[#E6DCC8] text-[#1F3D2B] mt-0"
+      className={`border-t mt-0 ${
+        isDark
+          ? 'bg-[var(--bait-bg-alt)] border-[var(--bait-border)] text-[var(--bait-text)]'
+          : 'bg-[#F5EEE1] border-[#E6DCC8] text-[#1F3D2B]'
+      }`}
       dir="rtl"
       role="contentinfo"
       aria-label={isEn ? 'Site directory and links' : 'دليل الموقع والروابط'}
@@ -79,9 +88,18 @@ export function FooterDirectory() {
                 <Link
                   key={service.slug}
                   to={generateServiceUrl(service.slug)}
-                  className="group flex items-center gap-2 bg-white hover:bg-white rounded-xl p-3 transition-all border border-[#E6DCC8] hover:border-[#2AA676]/40 shadow-sm hover:shadow-md"
+                  className="group flex items-center gap-2.5 bg-white hover:bg-white rounded-xl p-3 transition-all border border-[#E6DCC8] hover:border-[#2AA676]/40 shadow-sm hover:shadow-md"
                 >
-                  <span className="text-xl flex-shrink-0">{service.icon}</span>
+                  {SERVICE_ICONS[service.slug] ? (
+                    <Icon3D
+                      icon={SERVICE_ICONS[service.slug].icon}
+                      theme={SERVICE_ICONS[service.slug].theme}
+                      size="xs"
+                      hoverable={false}
+                    />
+                  ) : (
+                    <span className="text-xl flex-shrink-0">{service.icon}</span>
+                  )}
                   <span className="text-[#1F3D2B]/70 group-hover:text-[#2AA676] text-xs font-semibold transition-colors" style={{ fontFamily }}>
                     {isEn ? service.nameEn : service.nameAr}
                   </span>
@@ -214,7 +232,7 @@ export function FooterDirectory() {
                 { to: '/projects', ar: 'المشاريع', en: 'Projects' },
                 { to: '/rfq', ar: 'طلب عرض سعر', en: 'Request Quote' },
                 { to: '/platform', ar: 'مميزات المنصة', en: 'Platform Features' },
-                { to: '/wallet', ar: 'محفظة ريف', en: 'Reef Wallet' },
+                { to: '/wallet', ar: 'محفظة الدار', en: 'Dar Wallet' },
                 { to: '/offers', ar: 'العروض', en: 'Offers' },
                 { to: '/recommendations', ar: 'التوصيات', en: 'Recommendations' },
               ].map((link) => (
@@ -238,9 +256,7 @@ export function FooterDirectory() {
             className="block bg-white rounded-2xl p-4 border border-[#E6DCC8] shadow-sm hover:shadow-md transition-all group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
-                <span className="text-xl">🤖</span>
-              </div>
+              <Icon3D icon={Bot} theme="emerald" size="md" hoverable={false} />
               <div className="flex-1">
                 <h3 className="text-[#1F3D2B] font-bold text-sm group-hover:text-[#2AA676] transition-colors" style={{ fontFamily }}>
                   {isEn ? 'Weyaak – Smart Assistant' : 'وياك - المساعد الذكي'}
@@ -258,13 +274,16 @@ export function FooterDirectory() {
         <div className="border-t border-[#E6DCC8] pt-6 mt-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             {/* Logo & tagline */}
-            <div className="text-center md:text-right">
-              <h2 className="text-xl font-black text-[#1F3D2B] mb-1" style={{ fontFamily }}>
-                🏠 {isEn ? SITE_NAME_EN : SITE_NAME_AR}
-              </h2>
-              <p className="text-[#1F3D2B]/40 text-xs" style={{ fontFamily }}>
-                {isEn ? SITE_TAGLINE_EN : SITE_TAGLINE_AR}
-              </p>
+            <div className="text-center md:text-right flex items-center gap-3">
+              <img src={bietAlreefLogo} alt="بيت الريف" className="w-14 h-14 object-contain flex-shrink-0" />
+              <div>
+                <h2 className="text-xl font-black text-[#1F3D2B] mb-0.5" style={{ fontFamily }}>
+                  {isEn ? SITE_NAME_EN : SITE_NAME_AR}
+                </h2>
+                <p className="text-[#1F3D2B]/40 text-xs" style={{ fontFamily }}>
+                  {isEn ? SITE_TAGLINE_EN : SITE_TAGLINE_AR}
+                </p>
+              </div>
             </div>
 
             {/* Coverage note — important for Google */}

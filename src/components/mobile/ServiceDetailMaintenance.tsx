@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ArrowRight, Star, Wrench, Droplet, Zap, Wind, Paintbrush, Settings } from 'lucide-react';
+import { ArrowRight, Star, Wrench, Droplet, Zap, Wind, Paintbrush, Settings, Hammer, Home as HomeIcon, Clock, CheckCircle, Shield } from 'lucide-react';
 import { ServiceSEOHead } from '../SEOHead';
 import { GlassCard } from './GlassCard';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { Icon3D, SERVICE_ICONS } from '../ui/Icon3D';
 
 interface ServiceDetailMaintenanceProps {
   onBack: () => void;
@@ -20,7 +21,7 @@ export function ServiceDetailMaintenance({ onBack, onNavigate, onOpenSearch }: S
     serviceId: 'SRV-MAIN-003',
     serviceName: t('maintenanceServices.title'),
     serviceType: t('maintenanceServices.description'),
-    priceRange: '200 - 50000 د.إ',
+    priceRange: '200 - 50000 AED',
     rating: 4.7,
     reviewCount: 1250,
     imageUrl: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1200',
@@ -31,19 +32,20 @@ export function ServiceDetailMaintenance({ onBack, onNavigate, onOpenSearch }: S
   };
 
   const serviceItems = [
-    { icon: Droplet, title: t('maintenanceServices.plumbingMaintenance') || 'Plumbing Maintenance', description: t('maintenanceServices.plumbingMaintenanceDesc') || 'Leak repair and installations' },
-    { icon: Zap, title: t('maintenanceServices.electricalMaintenance') || 'Electrical Maintenance', description: t('maintenanceServices.electricalMaintenanceDesc') || 'Electrical faults and installations' },
-    { icon: Wind, title: t('maintenanceServices.acMaintenance') || 'AC Maintenance', description: t('maintenanceServices.acMaintenanceDesc') || 'Cleaning and repairing AC units' },
-    { icon: Paintbrush, title: t('maintenanceServices.painting') || 'Painting Works', description: t('maintenanceServices.paintingDesc') || 'Interior and exterior painting' },
-    { emoji: '🚪', title: t('maintenanceServices.doorsWindows') || 'Doors & Windows Maintenance', description: t('maintenanceServices.doorsWindowsDesc') || 'Installation and repair' },
-    { emoji: '🔨', title: t('maintenanceServices.carpentry') || 'Carpentry Works', description: t('maintenanceServices.carpentryDesc') || 'Wood maintenance' },
-    { icon: Settings, title: t('maintenanceServices.generalMaintenance') || 'General Maintenance', description: t('maintenanceServices.generalMaintenanceDesc') || 'All maintenance works' },
-    { emoji: '🏠', title: t('maintenanceServices.periodic') || 'Periodic Maintenance', description: t('maintenanceServices.periodicDesc') || 'Complete maintenance contracts' },
-    { emoji: '⚡', title: t('maintenanceServices.emergency') || '24/7 Emergency Service', description: t('maintenanceServices.emergencyDesc') || 'Available 24/7' },
-    { emoji: '✅', title: t('maintenanceServices.inspection') || 'Complete Inspection', description: t('maintenanceServices.inspectionDesc') || 'Fault detection and diagnosis' },
-    { icon: Wrench, title: t('maintenanceServices.quickRepair') || 'Quick Repairs', description: t('maintenanceServices.quickRepairDesc') || 'Fast and guaranteed service' },
-    { emoji: '💰', title: t('maintenanceServices.competitive') || 'Competitive Prices', description: t('maintenanceServices.competitiveDesc') || 'Special offers and packages' },
+    { icon: Droplet, theme: 'blue', title: t('maintenanceServices.plumbingMaintenance') || 'Plumbing Maintenance', description: t('maintenanceServices.plumbingMaintenanceDesc') || 'Leak repair and installations' },
+    { icon: Zap, theme: 'amber', title: t('maintenanceServices.electricalMaintenance') || 'Electrical Maintenance', description: t('maintenanceServices.electricalMaintenanceDesc') || 'Electrical faults and installations' },
+    { icon: Wind, theme: 'cyan', title: t('maintenanceServices.acMaintenance') || 'AC Maintenance', description: t('maintenanceServices.acMaintenanceDesc') || 'Cleaning and repairing AC units' },
+    { icon: Paintbrush, theme: 'pink', title: t('maintenanceServices.painting') || 'Painting Works', description: t('maintenanceServices.paintingDesc') || 'Interior and exterior painting' },
+    { icon: Hammer, theme: 'orange', title: t('maintenanceServices.carpentry') || 'Carpentry Works', description: t('maintenanceServices.carpentryDesc') || 'Wood maintenance' },
+    { icon: Settings, theme: 'teal', title: t('maintenanceServices.generalMaintenance') || 'General Maintenance', description: t('maintenanceServices.generalMaintenanceDesc') || 'All maintenance works' },
+    { icon: HomeIcon, theme: 'green', title: t('maintenanceServices.periodic') || 'Periodic Maintenance', description: t('maintenanceServices.periodicDesc') || 'Complete maintenance contracts' },
+    { icon: Zap, theme: 'red', title: t('maintenanceServices.emergency') || '24/7 Emergency Service', description: t('maintenanceServices.emergencyDesc') || 'Available 24/7' },
+    { icon: CheckCircle, theme: 'emerald', title: t('maintenanceServices.inspection') || 'Complete Inspection', description: t('maintenanceServices.inspectionDesc') || 'Fault detection and diagnosis' },
+    { icon: Wrench, theme: 'indigo', title: t('maintenanceServices.quickRepair') || 'Quick Repairs', description: t('maintenanceServices.quickRepairDesc') || 'Fast and guaranteed service' },
+    { icon: Shield, theme: 'gold', title: t('maintenanceServices.competitive') || 'Competitive Prices', description: t('maintenanceServices.competitiveDesc') || 'Special offers and packages' },
   ];
+
+  const heroIcon = SERVICE_ICONS['maintenance-companies'];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#F5EEE1] to-white pb-24" dir={dir}>
@@ -68,7 +70,9 @@ export function ServiceDetailMaintenance({ onBack, onNavigate, onOpenSearch }: S
                 {t('maintenanceServices.description')}
               </p>
             </div>
-            <div className="text-6xl">🔧</div>
+            {heroIcon && (
+              <Icon3D icon={heroIcon.icon} theme={heroIcon.theme} size="xl" hoverable={false} />
+            )}
           </div>
           <div className="flex items-center gap-6 mb-4">
             <div className="flex items-center gap-2">
@@ -102,7 +106,7 @@ export function ServiceDetailMaintenance({ onBack, onNavigate, onOpenSearch }: S
             <h2 className="text-2xl text-[#1F3D2B] mb-6" style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700 }}>{t('maintenanceServices.servicesTitle') || t('maintenanceServices.title')}</h2>
             <div className="grid md:grid-cols-2 gap-4">
               {serviceItems.map((item, idx) => (
-                <GlassCard key={idx} icon={item.icon} emoji={item.emoji} title={item.title} description={item.description} />
+                <GlassCard key={idx} icon={item.icon} theme={item.theme} title={item.title} description={item.description} />
               ))}
             </div>
           </div>

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Camera, BookOpen, MessageCircle, Briefcase, Smile, Flame, Settings, MapPin, Sparkles } from 'lucide-react';
 import {
   SimpleToolShell, InputCard, InputField, OptionSelector,
   ActionButton, Divider,
@@ -56,14 +56,16 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell
       title="مولّد المحتوى التسويقي"
+      titleEn="Marketing Content Generator"
       subtitle="أنشئ منشورات جاهزة لمنصات التواصل"
-      icon="📱"
-      gradientFrom="#BE185D"
-      gradientTo="#EC4899"
+      subtitleEn="Create ready-to-publish social media posts"
+      toolId="marketing"
+      gradientFrom="#DB2777"
+      gradientTo="#F472B6"
       onBack={onBack}
     >
       {/* Service Type */}
-      <InputCard title="🔧 نوع الخدمة">
+      <InputCard title="نوع الخدمة">
         <div className="flex flex-wrap gap-2">
           {SERVICE_TYPES.map((s) => (
             <button
@@ -85,23 +87,23 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
             value={serviceType}
             onChange={(e) => setServiceType(e.target.value)}
             placeholder="أو اكتب نوع الخدمة يدوياً..."
-            className="w-full mt-3 p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm font-cairo outline-none focus:border-pink-400"
+            className="w-full mt-3 p-3 bg-gray-50 rounded-xl border-[4px] border-gray-200/60 text-sm font-cairo outline-none focus:border-pink-400"
           />
         )}
       </InputCard>
 
       {/* Features */}
-      <InputCard title="✨ مميزات الخدمة">
+      <InputCard title="مميزات الخدمة">
         <textarea
           value={features}
           onChange={(e) => setFeatures(e.target.value)}
           placeholder="اكتب مميزات خدمتك (كل ميزة في سطر أو افصل بفاصلة)&#10;مثال: خبرة 10 سنوات، ضمان سنة، أسعار منافسة"
-          className="w-full p-3.5 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-pink-400 font-cairo h-24 resize-none"
+          className="w-full p-3.5 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-pink-400 font-cairo h-24 resize-none"
         />
       </InputCard>
 
       {/* City */}
-      <InputCard title="📍 المدينة المستهدفة">
+      <InputCard title="المدينة المستهدفة">
         <div className="flex flex-wrap gap-2">
           {CITIES.map((c) => (
             <button
@@ -120,14 +122,14 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
       </InputCard>
 
       {/* Platform & Tone */}
-      <InputCard title="⚙️ إعدادات المنشور">
+      <InputCard title="إعدادات المنشور">
         <OptionSelector
           label="المنصة"
           options={[
-            { id: 'instagram', label: 'انستغرام', icon: '📸' },
-            { id: 'facebook', label: 'فيسبوك', icon: '📘' },
-            { id: 'twitter', label: 'تويتر', icon: '🐦' },
-            { id: 'whatsapp', label: 'واتساب', icon: '💬' },
+            { id: 'instagram', label: 'انستغرام', icon: <Camera className="w-4 h-4 text-pink-500" /> },
+            { id: 'facebook', label: 'فيسبوك', icon: <BookOpen className="w-4 h-4 text-blue-600" /> },
+            { id: 'twitter', label: 'تويتر', icon: <MessageCircle className="w-4 h-4 text-gray-700" /> },
+            { id: 'whatsapp', label: 'واتساب', icon: <MessageCircle className="w-4 h-4 text-green-500" /> },
           ]}
           value={platform}
           onChange={setPlatform}
@@ -135,9 +137,9 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
         <OptionSelector
           label="نبرة الخطاب"
           options={[
-            { id: 'professional', label: 'احترافي', icon: '👔' },
-            { id: 'friendly', label: 'ودّي', icon: '😊' },
-            { id: 'promotional', label: 'ترويجي', icon: '🔥' },
+            { id: 'professional', label: 'احترافي', icon: <Briefcase className="w-4 h-4 text-blue-500" /> },
+            { id: 'friendly', label: 'ودّي', icon: <Smile className="w-4 h-4 text-amber-500" /> },
+            { id: 'promotional', label: 'ترويجي', icon: <Flame className="w-4 h-4 text-red-500" /> },
           ]}
           value={tone}
           onChange={setTone}
@@ -146,7 +148,7 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
 
       {/* Generate Button */}
       <div className="mb-4">
-        <ActionButton onClick={handleGenerate} text="أنشئ المنشور" icon="✨" loading={loading} />
+        <ActionButton onClick={handleGenerate} text="أنشئ المنشور" loading={loading} />
       </div>
 
       {/* Results */}
@@ -160,7 +162,7 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
           <Divider text="المحتوى الجاهز" />
 
           {/* Post Text */}
-          <div className="bg-white rounded-[20px] p-5 shadow-sm border border-gray-100 mb-4">
+          <div className="bg-white rounded-[20px] p-5 shadow-sm border-[4px] border-gray-100/60 mb-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-bold font-cairo text-sm text-[#1A1A1A]">📝 نص المنشور</h4>
               <button
@@ -173,13 +175,13 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
                 {copied === 'post' ? 'تم النسخ!' : 'نسخ'}
               </button>
             </div>
-            <div className="bg-gray-50 rounded-xl p-4 text-sm font-cairo text-gray-800 leading-relaxed whitespace-pre-line border border-gray-100">
+            <div className="bg-gray-50 rounded-xl p-4 text-sm font-cairo text-gray-800 leading-relaxed whitespace-pre-line border-[4px] border-gray-100/60">
               {result.postText}
             </div>
           </div>
 
           {/* Hashtags */}
-          <div className="bg-white rounded-[20px] p-5 shadow-sm border border-gray-100 mb-4">
+          <div className="bg-white rounded-[20px] p-5 shadow-sm border-[4px] border-gray-100/60 mb-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-bold font-cairo text-sm text-[#1A1A1A]"># هاشتاغات</h4>
               <button
@@ -198,7 +200,7 @@ export function MarketingContentTool({ onBack }: { onBack: () => void }) {
           </div>
 
           {/* Call to Action */}
-          <div className="bg-white rounded-[20px] p-5 shadow-sm border border-gray-100 mb-4">
+          <div className="bg-white rounded-[20px] p-5 shadow-sm border-[4px] border-gray-100/60 mb-4">
             <div className="flex items-center justify-between mb-3">
               <h4 className="font-bold font-cairo text-sm text-[#1A1A1A]">📞 دعوة للإجراء</h4>
               <button

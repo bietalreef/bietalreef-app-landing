@@ -332,17 +332,16 @@ export function Design3DTool({ onBack }: { onBack: () => void }) {
       title={isEn ? '3D Room Visualizer' : 'عارض الغرف ثلاثي الأبعاد'}
       subtitle={isEn ? 'Visualize rooms & furniture in 3D' : 'تصوّر الغرف والأثاث بشكل ثلاثي الأبعاد'}
       onBack={onBack}
-      icon="🧊"
+      toolId="design-3d"
       gradientFrom="#8B5CF6"
       gradientTo="#6D28D9"
-      backLabel={isEn ? 'Back' : 'رجوع'}
     >
       <div className="space-y-3 p-3" dir="rtl">
         {/* Templates */}
         <div className="flex gap-2 flex-wrap">
           {TEMPLATES.map(t => (
             <button key={t.id} onClick={() => loadTemplate(t)}
-              className="bg-white border border-gray-200 px-3 py-1.5 rounded-xl text-[10px] font-bold text-[#1F3D2B] hover:bg-purple-50 hover:border-purple-300 transition-all"
+              className="bg-white border-[4px] border-gray-200/60 px-3 py-1.5 rounded-xl text-[10px] font-bold text-[#1F3D2B] hover:bg-purple-50 hover:border-purple-300 transition-all"
               style={{ fontFamily: fontCairo }}>
               {isEn ? t.en : t.ar}
             </button>
@@ -350,12 +349,12 @@ export function Design3DTool({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Canvas */}
-        <div className="bg-[#111318] rounded-2xl border border-gray-700 shadow-lg overflow-hidden">
+        <div className="bg-[#111318] rounded-2xl border-[4px] border-gray-700/60 shadow-lg overflow-hidden">
           <canvas ref={canvasRef} width={360} height={280} className="w-full" />
         </div>
 
         {/* Rotation */}
-        <div className="space-y-2 bg-white rounded-xl p-3 border border-gray-100">
+        <div className="space-y-2 bg-white rounded-xl p-3 border-[4px] border-gray-100/60">
           <div className="flex items-center gap-3">
             <span className="text-[10px] font-bold text-gray-500 w-14" style={{ fontFamily: fontCairo }}>{isEn ? 'Rotate' : 'دوران'} Y</span>
             <input type="range" min={0} max={360} value={rotY} onChange={e => setRotY(Number(e.target.value))}
@@ -373,14 +372,14 @@ export function Design3DTool({ onBack }: { onBack: () => void }) {
         </div>
 
         {/* Add Furniture */}
-        <div className="bg-white rounded-xl p-3 border border-gray-100">
+        <div className="bg-white rounded-xl p-3 border-[4px] border-gray-100/60">
           <h4 className="text-[11px] font-bold text-[#1F3D2B] mb-2" style={{ fontFamily: fontCairo }}>
             {isEn ? 'Add Furniture' : 'إضافة أثاث'}
           </h4>
           <div className="grid grid-cols-4 gap-1.5">
             {EXTRA_FURNITURE.map(ef => (
               <button key={ef.id} onClick={() => addFurniture(ef)}
-                className="bg-gray-50 border border-gray-200 rounded-lg p-1.5 text-center hover:border-purple-300 transition-all active:scale-95">
+                className="bg-gray-50 border-[4px] border-gray-200/60 rounded-lg p-1.5 text-center hover:border-purple-300 transition-all active:scale-95">
                 <div className="w-4 h-4 rounded mx-auto mb-0.5" style={{ backgroundColor: ef.color }} />
                 <span className="text-[8px] font-bold text-gray-600 leading-tight block" style={{ fontFamily: fontCairo }}>
                   {isEn ? ef.en : ef.ar}

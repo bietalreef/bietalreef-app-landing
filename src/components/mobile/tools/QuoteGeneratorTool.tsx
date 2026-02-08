@@ -259,7 +259,8 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
   // Labels
   const L = {
     title: isEn ? 'Quotation Generator' : 'مولّد عروض الأسعار',
-    subtitle: isEn ? 'Create a professional A4 PDF quotation' : 'أنشئ عرض سعر احترافي يطابق نموذج A4 PDF',
+    subtitle: isEn ? 'Professional A4 quotation ready to print' : 'عرض سعر احترافي A4 جاهز للطباعة',
+    toolId: 'quote',
     companyData: isEn ? 'Company / Provider Info' : 'بيانات الشركة / المزود',
     companyLogo: isEn ? 'Company Logo' : 'شعار الشركة',
     uploadLogo: isEn ? 'Upload' : 'رفع شعار',
@@ -277,7 +278,7 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
     clientEmail: isEn ? 'Client Email' : 'بريد العميل',
     clientLocation: isEn ? 'Client / Project Location' : 'موقع العميل / عنوان المشروع',
     projectName: isEn ? 'Project Name (optional)' : 'اسم المشروع (اختياري)',
-    items: isEn ? '📦 Quotation Items' : '📦 بنود عرض السعر',
+    items: isEn ? 'Quotation Items' : 'بنود عرض السعر',
     itemNum: isEn ? 'Item' : 'بند',
     unit: isEn ? 'Unit' : 'الوحدة',
     qty: isEn ? 'Quantity' : 'الكمية',
@@ -346,14 +347,14 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
 
   return (
     <SimpleToolShell
-      title={L.title}
-      subtitle={L.subtitle}
-      icon="📄"
+      title={isEn ? 'Quotation Generator' : 'مولّد عروض الأسعار'}
+      subtitle={isEn ? 'Professional A4 quotation ready to print' : 'عرض سعر احترافي A4 جاهز للطباعة'}
+      toolId="quote"
       gradientFrom="#1E40AF"
       gradientTo="#3B82F6"
       onBack={onBack}
     >
-      {/* ═══════════ 1. بيانات الشركة ═══════════ */}
+      {/* ═══════════ 1. بيانات الشركة ══════════ */}
       <CollapsibleSection
         isOpen={!!expandedSections.company}
         onToggle={() => toggleSection('company')}
@@ -364,7 +365,7 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
         <div className="mb-4">
           <label className="block text-sm font-bold text-gray-500 mb-2 font-cairo">{L.companyLogo}</label>
           <div className="flex items-center gap-3">
-            <button onClick={() => logoInputRef.current?.click()} className="relative w-20 h-20 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50/50 transition-all overflow-hidden group">
+            <button onClick={() => logoInputRef.current?.click()} className="relative w-20 h-20 rounded-2xl border-[4px] border-dashed border-gray-300/60 bg-gray-50 flex flex-col items-center justify-center gap-1 hover:border-blue-400 hover:bg-blue-50/50 transition-all overflow-hidden group">
               {companyLogo ? (
                 <>
                   <img src={companyLogo} alt="" className="w-full h-full object-contain p-1" />
@@ -384,22 +385,22 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
         </div>
         <InputField label={L.companyName} value={providerName} onChange={setProviderName} type="text" placeholder={isEn ? 'e.g. Al Aman Maintenance Co.' : 'مثال: شركة الأمان للصيانة'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.mainPhone}</label><input type="tel" value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.secPhone}</label><input type="tel" value={companyPhone2} onChange={(e) => setCompanyPhone2(e.target.value)} placeholder={L.optional} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.mainPhone}</label><input type="tel" value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.secPhone}</label><input type="tel" value={companyPhone2} onChange={(e) => setCompanyPhone2(e.target.value)} placeholder={L.optional} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
         </div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={companyEmail} onChange={(e) => setCompanyEmail(e.target.value)} placeholder="info@company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={companyWebsite} onChange={(e) => setCompanyWebsite(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.companyAddr}</label><input type="text" value={companyAddress} onChange={(e) => setCompanyAddress(e.target.value)} placeholder={isEn ? 'e.g. Dubai - Al Qusais - Baghdad St.' : 'مثال: دبي - القصيص - شارع بغداد'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={companyEmail} onChange={(e) => setCompanyEmail(e.target.value)} placeholder="info@company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={companyWebsite} onChange={(e) => setCompanyWebsite(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.companyAddr}</label><input type="text" value={companyAddress} onChange={(e) => setCompanyAddress(e.target.value)} placeholder={isEn ? 'e.g. Dubai - Al Qusais - Baghdad St.' : 'مثال: دبي - القصيص - شارع بغداد'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" /></div>
       </CollapsibleSection>
 
       {/* ═══════════ 2. بيانات العميل ═══════════ */}
       <CollapsibleSection isOpen={!!expandedSections.client} onToggle={() => toggleSection('client')} title={L.clientData} icon={<User className="w-4 h-4 text-green-500" />}>
         <InputField label={L.clientName} value={clientName} onChange={setClientName} type="text" placeholder={isEn ? 'e.g. Ahmed Mohammed' : 'مثال: أحمد محمد'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.clientPhone}</label><input type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.clientEmail}</label><input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.clientPhone}</label><input type="tel" value={clientPhone} onChange={(e) => setClientPhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.clientEmail}</label><input type="email" value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
         </div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.clientLocation}</label><input type="text" value={clientLocation} onChange={(e) => setClientLocation(e.target.value)} placeholder={isEn ? 'e.g. Abu Dhabi - Corniche St. - Bldg 42' : 'مثال: أبوظبي - شارع الكورنيش - بناية 42'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.clientLocation}</label><input type="text" value={clientLocation} onChange={(e) => setClientLocation(e.target.value)} placeholder={isEn ? 'e.g. Abu Dhabi - Corniche St. - Bldg 42' : 'مثال: أبوظبي - شارع الكورنيش - بناية 42'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" /></div>
         <div className="mt-3"><InputField label={L.projectName} value={projectName} onChange={setProjectName} type="text" placeholder={isEn ? 'e.g. Al Nakheel Villa Maintenance' : 'مثال: صيانة فيلا النخيل'} /></div>
       </CollapsibleSection>
 
@@ -407,48 +408,48 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
       <InputCard title={L.items}>
         <div className="space-y-4">
           {items.map((item, index) => (
-            <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50/80 rounded-xl p-4 relative border border-gray-100">
+            <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="bg-gray-50/80 rounded-xl p-4 relative border-[4px] border-gray-100/60">
               <div className="flex items-center justify-between mb-3">
                 <span className="text-xs font-bold text-gray-400 font-cairo">{L.itemNum} #{index + 1}</span>
                 {items.length > 1 && (<button onClick={() => removeItem(item.id)} className="w-7 h-7 rounded-full bg-red-50 text-red-400 flex items-center justify-center hover:bg-red-100 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>)}
               </div>
-              <input type="text" value={item.description} onChange={(e) => updateItem(item.id, 'description', e.target.value)} placeholder={L.descPh} className="w-full p-3 bg-white rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-400 mb-2 font-cairo" />
+              <input type="text" value={item.description} onChange={(e) => updateItem(item.id, 'description', e.target.value)} placeholder={L.descPh} className="w-full p-3 bg-white rounded-lg border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 mb-2 font-cairo" />
               <div className="grid grid-cols-3 gap-2">
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unit}</label><select value={item.unit} onChange={(e) => updateItem(item.id, 'unit', e.target.value)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none">{COMMON_UNITS.map((u) => (<option key={u.id} value={u.id}>{u.label}</option>))}</select></div>
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.qty}</label><input type="number" value={item.quantity || ''} onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={1} /></div>
-                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unitPrice}</label><input type="number" value={item.unitPrice || ''} onChange={(e) => updateItem(item.id, 'unitPrice', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={0} /></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unit}</label><select value={item.unit} onChange={(e) => updateItem(item.id, 'unit', e.target.value)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none">{COMMON_UNITS.map((u) => (<option key={u.id} value={u.id}>{u.label}</option>))}</select></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.qty}</label><input type="number" value={item.quantity || ''} onChange={(e) => updateItem(item.id, 'quantity', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={1} /></div>
+                <div><label className="text-[10px] text-gray-400 font-cairo block mb-1">{L.unitPrice}</label><input type="number" value={item.unitPrice || ''} onChange={(e) => updateItem(item.id, 'unitPrice', Number(e.target.value) || 0)} className="w-full p-2.5 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={0} /></div>
               </div>
               {item.quantity > 0 && item.unitPrice > 0 && (<div className="mt-2 text-left"><span className="text-xs font-bold text-blue-600 font-cairo bg-blue-50 px-2 py-1 rounded-lg">= {formatAED(item.quantity * item.unitPrice)}</span></div>)}
             </motion.div>
           ))}
         </div>
-        <button onClick={addItem} className="w-full mt-3 py-3 border-2 border-dashed border-blue-300 rounded-xl text-blue-500 font-bold font-cairo text-sm flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors"><Plus className="w-4 h-4" />{L.addItem}</button>
+        <button onClick={addItem} className="w-full mt-3 py-3 border-[4px] border-dashed border-blue-300 rounded-xl text-blue-500 font-bold font-cairo text-sm flex items-center justify-center gap-2 hover:bg-blue-50 transition-colors"><Plus className="w-4 h-4" />{L.addItem}</button>
         {items.some((i) => i.unitPrice > 0) && (<div className="mt-4 bg-blue-50 rounded-xl p-3 flex items-center justify-between"><span className="text-sm font-cairo text-gray-600">{L.subtotalLabel}</span><span className="text-lg font-bold font-cairo text-blue-700">{formatAED(items.reduce((s, i) => s + i.quantity * i.unitPrice, 0))}</span></div>)}
       </InputCard>
 
       {/* ═══════════ 4. نظام الدفعات ═══════════ */}
       <CollapsibleSection isOpen={!!expandedSections.payments} onToggle={() => toggleSection('payments')} title={L.payments} icon={<CreditCard className="w-4 h-4 text-purple-500" />} badge={enableInstallments ? L.payCount(installments.length) : undefined}>
-        <button onClick={() => setEnableInstallments(!enableInstallments)} className={`w-full flex items-center justify-between p-3.5 rounded-xl border-2 transition-all mb-4 ${enableInstallments ? 'border-purple-400 bg-purple-50' : 'border-gray-200 bg-white'}`}>
+        <button onClick={() => setEnableInstallments(!enableInstallments)} className={`w-full flex items-center justify-between p-3.5 rounded-xl border-[4px] transition-all mb-4 ${enableInstallments ? 'border-purple-400 bg-purple-50' : 'border-gray-200/60 bg-white'}`}>
           <span className="font-cairo font-bold text-sm text-gray-700">{L.enablePayments}</span>
           <div className={`w-12 h-7 rounded-full relative transition-colors ${enableInstallments ? 'bg-purple-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${enableInstallments ? 'right-0.5' : 'left-0.5'}`} /></div>
         </button>
         {enableInstallments && (<>
           <div className="space-y-3">
             {installments.map((inst, idx) => (
-              <motion.div key={inst.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="bg-purple-50/50 rounded-xl p-3 border border-purple-100">
+              <motion.div key={inst.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="bg-purple-50/50 rounded-xl p-3 border-[4px] border-purple-100/60">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-bold text-purple-600 font-cairo">{L.paymentNum} #{idx + 1}</span>
                   {installments.length > 1 && (<button onClick={() => removeInstallment(inst.id)} className="w-6 h-6 rounded-full bg-red-50 text-red-400 flex items-center justify-center"><Trash2 className="w-3 h-3" /></button>)}
                 </div>
                 <div className="grid grid-cols-12 gap-2">
-                  <input type="text" value={inst.label} onChange={(e) => updateInstallment(inst.id, 'label', e.target.value)} placeholder={isEn ? 'Payment name' : 'اسم الدفعة'} className="col-span-5 p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none" />
-                  <div className="col-span-3 relative"><input type="number" value={inst.percentage || ''} onChange={(e) => updateInstallment(inst.id, 'percentage', Number(e.target.value) || 0)} className="w-full p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={0} max={100} /><span className="absolute left-2 top-2 text-[10px] text-gray-400">%</span></div>
-                  <input type="text" value={inst.description} onChange={(e) => updateInstallment(inst.id, 'description', e.target.value)} placeholder={isEn ? 'When...' : 'عند...'} className="col-span-4 p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none" />
+                  <input type="text" value={inst.label} onChange={(e) => updateInstallment(inst.id, 'label', e.target.value)} placeholder={isEn ? 'Payment name' : 'اسم الدفعة'} className="col-span-5 p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none" />
+                  <div className="col-span-3 relative"><input type="number" value={inst.percentage || ''} onChange={(e) => updateInstallment(inst.id, 'percentage', Number(e.target.value) || 0)} className="w-full p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={0} max={100} /><span className="absolute left-2 top-2 text-[10px] text-gray-400">%</span></div>
+                  <input type="text" value={inst.description} onChange={(e) => updateInstallment(inst.id, 'description', e.target.value)} placeholder={isEn ? 'When...' : 'عند...'} className="col-span-4 p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none" />
                 </div>
               </motion.div>
             ))}
           </div>
-          <button onClick={addInstallment} className="w-full mt-3 py-2.5 border-2 border-dashed border-purple-300 rounded-xl text-purple-500 font-bold font-cairo text-xs flex items-center justify-center gap-2 hover:bg-purple-50 transition-colors"><Plus className="w-3.5 h-3.5" />{L.addPayment}</button>
+          <button onClick={addInstallment} className="w-full mt-3 py-2.5 border-[4px] border-dashed border-purple-300 rounded-xl text-purple-500 font-bold font-cairo text-xs flex items-center justify-center gap-2 hover:bg-purple-50 transition-colors"><Plus className="w-3.5 h-3.5" />{L.addPayment}</button>
           <div className={`mt-3 text-center text-xs font-bold font-cairo py-2 rounded-lg ${Math.abs(totalInstallmentPct - 100) < 0.01 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{L.pctTotal}: {totalInstallmentPct}% {Math.abs(totalInstallmentPct - 100) >= 0.01 && L.pctMust100}</div>
         </>)}
       </CollapsibleSection>
@@ -457,7 +458,7 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
       <CollapsibleSection isOpen={!!expandedSections.terms} onToggle={() => toggleSection('terms')} title={L.termsTitle} icon={<Shield className="w-4 h-4 text-amber-500" />} badge={L.termCount(terms.length)}>
         <div className="space-y-2 mb-3">
           {terms.map((term, idx) => (
-            <div key={idx} className="flex items-start gap-2 bg-amber-50/50 rounded-lg p-2.5 border border-amber-100">
+            <div key={idx} className="flex items-start gap-2 bg-amber-50/50 rounded-lg p-2.5 border-[4px] border-amber-100/60">
               <span className="text-[10px] font-bold text-amber-600 font-cairo mt-0.5 shrink-0">{idx + 1}.</span>
               <p className="text-xs text-gray-700 font-cairo flex-1 leading-relaxed">{term}</p>
               <button onClick={() => removeTerm(idx)} className="w-5 h-5 rounded-full bg-red-50 text-red-400 flex items-center justify-center shrink-0 mt-0.5"><X className="w-3 h-3" /></button>
@@ -465,7 +466,7 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
           ))}
         </div>
         <div className="flex gap-2">
-          <input type="text" value={newTerm} onChange={(e) => setNewTerm(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addTerm()} placeholder={L.addTermPh} className="flex-1 p-2.5 bg-gray-50 rounded-xl border border-gray-200 text-xs outline-none focus:border-amber-400 font-cairo" />
+          <input type="text" value={newTerm} onChange={(e) => setNewTerm(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && addTerm()} placeholder={L.addTermPh} className="flex-1 p-2.5 bg-gray-50 rounded-xl border-[4px] border-gray-200/60 text-xs outline-none focus:border-amber-400 font-cairo" />
           <button onClick={addTerm} className="px-4 bg-amber-500 text-white rounded-xl text-xs font-bold font-cairo hover:bg-amber-600 transition-colors">{L.addBtn}</button>
         </div>
       </CollapsibleSection>
@@ -474,17 +475,17 @@ ${isEn ? 'Total' : 'الإجمالي'}: ${formatAED(result.total)}
       <CollapsibleSection isOpen={!!expandedSections.responsible} onToggle={() => toggleSection('responsible')} title={L.responsible} icon={<User className="w-4 h-4 text-teal-500" />}>
         <InputField label={L.respName} value={responsibleName} onChange={setResponsibleName} type="text" placeholder={isEn ? 'e.g. Eng. Khalid Al Ali' : 'مثال: م. خالد العلي'} />
         <InputField label={L.respTitle} value={responsibleTitle} onChange={setResponsibleTitle} type="text" placeholder={isEn ? 'e.g. Project Manager' : 'مثال: مدير المشاريع'} />
-        <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.respPhone}</label><input type="tel" value={responsiblePhone} onChange={(e) => setResponsiblePhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
+        <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.respPhone}</label><input type="tel" value={responsiblePhone} onChange={(e) => setResponsiblePhone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo" dir="ltr" /></div>
       </CollapsibleSection>
 
       {/* ═══════════ 7. خيارات إضافية ═══════════ */}
       <CollapsibleSection isOpen={!!expandedSections.options} onToggle={() => toggleSection('options')} title={L.options} icon={<FileText className="w-4 h-4 text-gray-500" />}>
-        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3.5 rounded-xl border-2 transition-all mb-3 ${includeVAT ? 'border-blue-400 bg-blue-50' : 'border-gray-200 bg-white'}`}>
+        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3.5 rounded-xl border-[4px] transition-all mb-3 ${includeVAT ? 'border-blue-400 bg-blue-50' : 'border-gray-200/60 bg-white'}`}>
           <span className="font-cairo font-bold text-sm text-gray-700">{L.vatToggle}</span>
           <div className={`w-12 h-7 rounded-full relative transition-colors ${includeVAT ? 'bg-blue-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${includeVAT ? 'right-0.5' : 'left-0.5'}`} /></div>
         </button>
         <InputField label={L.validityLabel} value={validityDays} onChange={setValidityDays} type="number" placeholder="15" />
-        <div><label className="text-sm font-bold text-gray-500 font-cairo block mb-1.5">{L.notesLabel}</label><textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={isEn ? 'Additional notes (optional)...' : 'ملاحظات إضافية (اختياري)...'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-blue-400 font-cairo h-20 resize-none" /></div>
+        <div><label className="text-sm font-bold text-gray-500 font-cairo block mb-1.5">{L.notesLabel}</label><textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder={isEn ? 'Additional notes (optional)...' : 'ملاحظات إضافية (اختياري)...'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-blue-400 font-cairo h-20 resize-none" /></div>
       </CollapsibleSection>
 
       {/* ═══════════ زر الإنشاء ═══════════ */}
