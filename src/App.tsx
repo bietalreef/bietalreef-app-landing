@@ -49,6 +49,7 @@ import { PlatformShowcase } from './components/mobile/PlatformShowcase';
 import { DesignStudio } from './components/browser/DesignStudio';
 import { ProfileScreen } from './components/mobile/ProfileScreen';
 import { WalletScreen } from './components/mobile/WalletScreen';
+import ATSDashboard from './components/mobile/ATSDashboard';
 
 // App-Only gate (for verified-only routes)
 import { AppOnlyPage } from './components/browser/GuestGuard';
@@ -115,7 +116,10 @@ function AppInner() {
             <Routes>
               {/* Design Studio — Full screen, no BrowserLayout */}
               <Route path="/design" element={<DesignStudio />} />
-
+              
+              {/* ATS Dashboard — Full screen, no BrowserLayout */}
+              <Route path="/ats" element={<ATSDashboard />} />
+              
               {/* Main Browser App Layout */}
               <Route element={<BrowserLayout />}>
                 <Route path="/" element={<Navigate to="/home" replace />} />
