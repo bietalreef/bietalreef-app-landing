@@ -96,8 +96,6 @@ export const realEstate = {
   // Status
   forSale: "للبيع",
   forRent: "للإيجار",
-  featured: "مميز",
-  verified: "موثق",
   
   // View Modes
   gridView: "عرض شبكي",

@@ -96,8 +96,6 @@ export const realEstate = {
   // Status
   forSale: "For Sale",
   forRent: "For Rent",
-  featured: "Featured",
-  verified: "Verified",
   
   // View Modes
   gridView: "Grid View",
