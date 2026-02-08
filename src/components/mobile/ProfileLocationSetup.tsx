@@ -45,7 +45,7 @@ import { useGoogleMaps } from '../../components/providers/GoogleMapsLoader';
 
 // ====================================
 // 🎨 Profile Location Setup Component
-// ====================================
+// =====================================
 
 export function ProfileLocationSetup({
   userType,
