@@ -15,6 +15,8 @@ import { GuestGateButton } from '../browser/GuestGuard';
 import { PlatformShowcaseBanner } from './PlatformShowcaseBanner';
 import { useNavigate } from 'react-router';
 import { InquiryFormModal, RFQFormModal } from './InquiryRFQModals';
+import { useTheme } from '../../contexts/ThemeContext';
+import { Icon3D } from '../ui/Icon3D';
 
 const fontCairo = 'Cairo, sans-serif';
 
@@ -22,6 +24,7 @@ export function NewHomeContent() {
   const { t, language } = useTranslation('home');
   const session = useBrowserSession();
   const navigate = useNavigate();
+  const { isDark } = useTheme();
   const isEn = language === 'en';
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
   const [showScrollTop, setShowScrollTop] = useState(false);
@@ -159,6 +162,7 @@ export function NewHomeContent() {
       badge: isEn ? 'Ending Soon' : 'ينتهي قريباً',
       color: 'from-red-500 to-orange-500',
       icon: Percent,
+      icon3dTheme: 'red' as const,
     },
     {
       id: 'o2',
@@ -169,6 +173,7 @@ export function NewHomeContent() {
       badge: isEn ? 'Most Requested' : 'الأكثر طلباً',
       color: 'from-blue-500 to-indigo-500',
       icon: Tag,
+      icon3dTheme: 'blue' as const,
     },
     {
       id: 'o3',
@@ -179,6 +184,7 @@ export function NewHomeContent() {
       badge: isEn ? 'New' : 'جديد',
       color: 'from-green-500 to-emerald-500',
       icon: Sparkles,
+      icon3dTheme: 'green' as const,
     },
     {
       id: 'o4',
@@ -189,6 +195,7 @@ export function NewHomeContent() {
       badge: isEn ? 'Exclusive' : 'حصري',
       color: 'from-purple-500 to-pink-500',
       icon: Clock,
+      icon3dTheme: 'purple' as const,
     },
   ];
 
@@ -252,7 +259,7 @@ export function NewHomeContent() {
       userName: isEn ? 'Al Noor Company' : 'شركة النور للمقاولات',
       role: isEn ? 'Enterprise Partner' : 'شريك مؤسسي',
       avatar: 'https://images.unsplash.com/photo-1726796065558-aeb93a8709cd?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=200',
-      text: isEn ? 'Infrastructure project in Sharjah successfully completed: roads & drainage systems.' : 'مشروع بنية تحتية في الشارقة — تنفيذ شبكات الطر�� والصرف.',
+      text: isEn ? 'Infrastructure project in Sharjah successfully completed: roads & drainage systems.' : 'مشروع بنية تحتية في الشارقة — تنفيذ شبكات الطر والصرف.',
       image: 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?auto=format&fit=crop&q=80&w=800',
       likes: 189, comments: 15,
       tags: isEn ? ['infrastructure','sharjah'] : ['بنية_تحتية','الشارقة'],
@@ -273,7 +280,7 @@ export function NewHomeContent() {
      RENDER
   ═══════════════════════════════════════════ */
   return (
-    <div ref={scrollRef} className="flex-1 bg-[#F5EEE1] overflow-y-auto relative">
+    <div ref={scrollRef} className={`flex-1 overflow-y-auto relative ${isDark ? 'bg-[var(--bait-bg)]' : 'bg-[#F5EEE1]'}`}>
       
       {/* ── HERO CAROUSEL ─────────────────── */}
       <div className="relative h-[280px] overflow-hidden">
@@ -332,7 +339,7 @@ export function NewHomeContent() {
         </button>
         <button 
           onClick={() => setCurrentHeroSlide((prev) => (prev + 1) % heroSlides.length)}
-          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center z-10"
+          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center z-10 text-[20px]"
         >
           <ChevronLeft className="w-5 h-5 text-white" />
         </button>
@@ -615,9 +622,12 @@ export function NewHomeContent() {
       {/* ── OFFERS SLIDER ─────────────────── */}
       <div className="py-4">
         <div className="flex items-center justify-between px-4 mb-3">
-          <h2 className="text-[#1A1A1A] text-xl font-bold" style={{ fontFamily: fontCairo }}>
-            {isEn ? 'Special Offers' : 'العروض والخصومات'}
-          </h2>
+          <div className="flex items-center gap-2">
+            <Icon3D icon={Tag} theme="gold" size="xs" hoverable={false} />
+            <h2 className={`text-xl font-bold ${isDark ? 'text-white' : 'text-[#1A1A1A]'}`} style={{ fontFamily: fontCairo }}>
+              {isEn ? 'Special Offers' : 'العروض والخصومات'}
+            </h2>
+          </div>
           <button
             onClick={() => navigate('/offers')}
             className="text-sm font-bold text-[#C8A86A]"
@@ -628,68 +638,109 @@ export function NewHomeContent() {
         </div>
 
         <div className="flex gap-3 overflow-x-auto pb-3 px-4 scrollbar-hide snap-x snap-mandatory">
-          {offers.map((offer) => {
-            const OfferIcon = offer.icon;
-            return (
-              <div
-                key={offer.id}
-                className="min-w-[260px] max-w-[280px] snap-center rounded-2xl overflow-hidden shadow-lg flex-shrink-0"
-              >
-                {/* Top gradient bar */}
-                <div className={`bg-gradient-to-l ${offer.color} p-4 relative`}>
-                  <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2 py-0.5 rounded-full">
-                    {offer.badge}
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white/80 text-[10px] mb-1" style={{ fontFamily: fontCairo }}>{offer.provider}</p>
-                      <h3 className="text-white text-sm font-bold leading-tight" style={{ fontFamily: fontCairo }}>
-                        {offer.title}
-                      </h3>
-                    </div>
-                    <div className="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center">
-                      <span className="text-white text-xl font-black">{offer.discount}</span>
-                    </div>
-                  </div>
+          {offers.map((offer, offerIdx) => (
+            <motion.div
+              key={offer.id}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: offerIdx * 0.1 }}
+              className={`min-w-[270px] max-w-[290px] snap-center rounded-2xl overflow-hidden shadow-lg flex-shrink-0 border-[4px] ${
+                isDark ? 'border-gray-700/60' : 'border-gray-200/60'
+              }`}
+            >
+              {/* Top gradient bar */}
+              <div className={`bg-gradient-to-l ${offer.color} p-4 relative`}>
+                <div className="absolute top-2 left-2 bg-white/20 backdrop-blur-sm text-white text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <Zap className="w-2.5 h-2.5" />
+                  {offer.badge}
                 </div>
-                {/* Bottom info */}
-                <div className="bg-white p-3 flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-gray-400">
-                    <Clock className="w-3 h-3" />
-                    <span className="text-[10px]" style={{ fontFamily: fontCairo }}>{isEn ? 'Valid until' : 'صالح حتى'} {offer.validUntil}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-white/80 text-[10px] mb-1" style={{ fontFamily: fontCairo }}>{offer.provider}</p>
+                    <h3 className="text-white text-sm font-bold leading-tight" style={{ fontFamily: fontCairo }}>
+                      {offer.title}
+                    </h3>
                   </div>
-                  <button className="text-[#2AA676] text-[11px] font-bold" style={{ fontFamily: fontCairo }}>
-                    {isEn ? 'Claim' : 'حصل عليه'}
-                  </button>
+                  <div className="flex flex-col items-center gap-1">
+                    <Icon3D icon={offer.icon} theme={offer.icon3dTheme} size="sm" hoverable={false} />
+                    <span className="text-white text-lg font-black drop-shadow-md">{offer.discount}</span>
+                  </div>
                 </div>
               </div>
-            );
-          })}
+              {/* Bottom info */}
+              <div className={`p-3 flex items-center justify-between ${isDark ? 'bg-[#1a1d24]' : 'bg-white'}`}>
+                <div className="flex items-center gap-1.5 text-gray-400">
+                  <Clock className="w-3 h-3" />
+                  <span className="text-[10px]" style={{ fontFamily: fontCairo }}>{isEn ? 'Valid until' : 'صالح حتى'} {offer.validUntil}</span>
+                </div>
+                <button className="bg-[#2AA676]/10 text-[#2AA676] text-[11px] font-bold px-3 py-1 rounded-full hover:bg-[#2AA676]/20 transition-colors" style={{ fontFamily: fontCairo }}>
+                  {isEn ? 'Claim' : 'احصل عليه'}
+                </button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
 
       {/* ── SPECIAL OFFER BANNER ─────────────────── */}
       <div className="px-4 py-3">
-        <div className="relative bg-white rounded-2xl p-5 shadow-sm overflow-hidden border border-[#E6DCC8]">
-          <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#2AA676]/6 rounded-full blur-3xl" />
-          <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#C8A86A]/6 rounded-full blur-3xl" />
+        <div className={`relative rounded-2xl overflow-hidden shadow-md border-[4px] ${
+          isDark ? 'border-gray-700/60' : 'border-gray-200/60'
+        }`}>
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-bl from-[#1C1710] via-[#181510] to-[#0F0D08]" />
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#D4AF37]/15 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#C8A86A]/10 rounded-full blur-3xl" />
+          {/* Gold accent line */}
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-l from-[#D4AF37] via-[#FFD700] to-[#D4AF37]" />
           
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#2AA676] to-[#1F3D2B] rounded-lg flex items-center justify-center shadow-md">
-                <Award className="w-5 h-5 text-white" />
+          <div className="relative z-10 p-5">
+            <div className="flex items-start gap-4">
+              {/* Left: Icon + Content */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2.5 mb-3">
+                  <Icon3D icon={Award} theme="gold" size="md" hoverable={false} />
+                  <div>
+                    <h3 className="text-white" style={{ fontFamily: fontCairo, fontWeight: 800, fontSize: '18px' }}>
+                      {t('specialOffersTitle')}
+                    </h3>
+                    <div className="flex items-center gap-1 mt-0.5">
+                      <Crown className="w-3 h-3 text-[#D4AF37]" />
+                      <span className="text-[#D4AF37] text-[10px] font-bold" style={{ fontFamily: fontCairo }}>
+                        {isEn ? 'Exclusive for first 100 clients' : 'حصري لأول 100 عميل'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-white/50 mb-4" style={{ fontFamily: fontCairo, fontWeight: 600, fontSize: '13px', lineHeight: 1.7 }}>
+                  {t('specialOffersDescription')}
+                </p>
+
+                {/* Mini offer highlights */}
+                <div className="flex gap-2 mb-4">
+                  {[
+                    { icon: Percent, theme: 'red', label: isEn ? '20% Off' : 'خصم 20%' },
+                    { icon: Sparkles, theme: 'cyan', label: isEn ? 'Free Consult' : 'استشارة مجانية' },
+                    { icon: Award, theme: 'amber', label: isEn ? 'VIP Perks' : 'مزايا VIP' },
+                  ].map((item, idx) => (
+                    <div key={idx} className="bg-white/[0.07] backdrop-blur-sm border border-white/[0.08] rounded-xl px-2.5 py-1.5 flex items-center gap-1.5">
+                      <Icon3D icon={item.icon} theme={item.theme} size="xs" hoverable={false} />
+                      <span className="text-white/70 text-[9px] font-bold" style={{ fontFamily: fontCairo }}>{item.label}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button 
+                  onClick={() => navigate('/offers')}
+                  className="bg-gradient-to-l from-[#D4AF37] to-[#B8940E] text-white px-5 py-2.5 rounded-xl shadow-lg shadow-[#D4AF37]/20 flex items-center gap-2 hover:shadow-xl transition-all" 
+                  style={{ fontFamily: fontCairo, fontWeight: 800, fontSize: '13px' }}
+                >
+                  <Zap className="w-4 h-4" />
+                  <span>{t('bookNow')}</span>
+                </button>
               </div>
-              <h3 className="text-[#1F3D2B]" style={{ fontFamily: fontCairo, fontWeight: 800, fontSize: '20px' }}>
-                {t('specialOffersTitle')}
-              </h3>
             </div>
-            <p className="text-[#1F3D2B]/60 mb-4" style={{ fontFamily: fontCairo, fontWeight: 600, fontSize: '14px', lineHeight: 1.6 }}>
-              {t('specialOffersDescription')}
-            </p>
-            <button className="bg-gradient-to-l from-[#2AA676] to-[#1F3D2B] text-white px-5 py-2.5 rounded-xl shadow-lg flex items-center gap-2" style={{ fontFamily: fontCairo, fontWeight: 800, fontSize: '14px' }}>
-              <Zap className="w-4 h-4" />
-              <span>{t('bookNow')}</span>
-            </button>
           </div>
         </div>
       </div>

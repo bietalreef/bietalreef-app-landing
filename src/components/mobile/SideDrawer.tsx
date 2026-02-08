@@ -84,7 +84,9 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
 
       {/* Drawer */}
       <div
-        className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-hidden flex flex-col"
+        className={`fixed top-0 right-0 h-full w-80 shadow-2xl z-50 transform transition-transform duration-300 ease-out overflow-hidden flex flex-col ${
+          theme.isDark ? 'bg-[var(--bait-surface)]' : 'bg-white'
+        }`}
         dir="rtl"
       >
         {/* ═══ APP CTA OVERLAY ═══ */}
@@ -361,6 +363,8 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
                 className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
                   currentRoute === section.route
                     ? 'bg-[#2AA676]/10 border-r-4 border-[#2AA676] text-[#2AA676]'
+                    : theme.isDark
+                    ? 'hover:bg-white/5 text-[var(--bait-text-secondary)]'
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
@@ -393,7 +397,9 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
         </div>
 
         {/* Footer — Download App + Theme Toggle next to Branding */}
-        <div className="border-t border-gray-200 p-4 bg-[#F5EEE1]/30">
+        <div className={`border-t p-4 ${
+          theme.isDark ? 'border-[var(--bait-border-strong)] bg-[var(--bait-bg-alt)]' : 'border-gray-200 bg-[#F5EEE1]/30'
+        }`}>
           {/* Download App CTA */}
           <button
             onClick={() => setShowAppCTA(true)}
@@ -410,17 +416,19 @@ export function SideDrawer({ isOpen, onClose, onNavigate, currentRoute }: SideDr
             <div className="flex items-center gap-2.5 flex-1 min-w-0">
               <img src={bietAlreefLogo} alt="بيت الريف" className="w-11 h-11 object-contain shrink-0" />
               <div className="min-w-0">
-                <p className="font-bold text-sm text-[#1F3D2B] truncate" style={{ fontFamily }}>
+                <p className={`font-bold text-sm truncate ${theme.isDark ? 'text-[var(--bait-text)]' : 'text-[#1F3D2B]'}`} style={{ fontFamily }}>
                   {isEn ? 'Beit Al Reef' : 'بيت الريف'}
                 </p>
-                <p className="text-[10px] text-gray-500 truncate" style={{ fontFamily }}>
+                <p className={`text-[10px] truncate ${theme.isDark ? 'text-[var(--bait-text-muted)]' : 'text-gray-500'}`} style={{ fontFamily }}>
                   {isEn ? 'Smart Building Platform' : 'منصة البناء الذكي'}
                 </p>
               </div>
             </div>
 
             {/* Compact Theme Toggle */}
-            <div className="flex items-center bg-white/80 border border-[#E6DCC8] rounded-full p-0.5 shadow-sm shrink-0">
+            <div className={`flex items-center rounded-full p-0.5 shadow-sm shrink-0 ${
+              theme.isDark ? 'bg-white/5 border border-white/10' : 'bg-white/80 border border-[#E6DCC8]'
+            }`}>
               <button
                 onClick={() => { if (theme.theme !== 'light') theme.toggleTheme(); }}
                 className={`flex items-center gap-1 px-2.5 py-1.5 rounded-full text-[10px] font-bold transition-all duration-200 ${

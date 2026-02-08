@@ -104,7 +104,7 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
                 key={r.id}
                 onClick={() => { setRoomType(r.id); setSelected([]); setShowResult(false); }}
                 className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                  roomType === r.id ? 'bg-indigo-500 text-white shadow-md' : 'bg-white text-[#1F3D2B] border border-gray-200'
+                  roomType === r.id ? 'bg-indigo-500 text-white shadow-md' : 'bg-white text-[#1F3D2B] border-[4px] border-gray-200/60'
                 }`}
                 style={{ fontFamily: fontCairo }}
               >
@@ -122,7 +122,8 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
             </label>
             <input type="number" value={length} onChange={e => { setLength(e.target.value); setShowResult(false); }}
               placeholder="5" dir="ltr"
-              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-indigo-400"
+              className="w-full bg-white border-[4px] border-gray-200/60 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-indigo-400"
+              style={{ fontFamily: fontCairo }}
             />
           </div>
           <div>
@@ -131,7 +132,8 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
             </label>
             <input type="number" value={width} onChange={e => { setWidth(e.target.value); setShowResult(false); }}
               placeholder="4" dir="ltr"
-              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-indigo-400"
+              className="w-full bg-white border-[4px] border-gray-200/60 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-indigo-400"
+              style={{ fontFamily: fontCairo }}
             />
           </div>
         </div>
@@ -156,8 +158,8 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
                   onClick={() => toggleItem(item.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-xl text-right transition-all ${
                     selected.includes(item.id)
-                      ? 'bg-indigo-100 border-2 border-indigo-400'
-                      : 'bg-white border border-gray-200'
+                      ? 'bg-indigo-100 border-[4px] border-indigo-400'
+                      : 'bg-white border-[4px] border-gray-200/60'
                   }`}
                 >
                   <span className="text-xl">{item.icon}</span>
@@ -169,7 +171,7 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
                       {isEn ? `Needs ${item.minArea} sqm` : `يحتاج ${item.minArea} م²`}
                     </p>
                   </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  <div className={`w-6 h-6 rounded-full border-[4px] flex items-center justify-center ${
                     selected.includes(item.id) ? 'bg-indigo-500 border-indigo-500 text-white' : 'border-gray-300'
                   }`}>
                     {selected.includes(item.id) && <span className="text-xs">✓</span>}
@@ -194,7 +196,7 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
         {/* Result */}
         {showResult && (
           <div className="space-y-3">
-            <div className={`rounded-2xl p-4 ${fits ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'}`}>
+            <div className={`rounded-2xl p-4 ${fits ? 'bg-green-50 border-[4px] border-green-200/60' : 'bg-red-50 border-[4px] border-red-200/60'}`}>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-2xl">{fits ? '✅' : '⚠️'}</span>
                 <h4 className={`font-bold text-sm ${fits ? 'text-green-700' : 'text-red-700'}`} style={{ fontFamily: fontCairo }}>
@@ -229,7 +231,7 @@ export function RoomLayoutTool({ onBack }: { onBack: () => void }) {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border-[4px] border-gray-100/60">
               <h4 className="font-bold text-sm text-[#1F3D2B] mb-2" style={{ fontFamily: fontCairo }}>
                 {isEn ? 'Selected Items' : 'العناصر المختارة'}
               </h4>

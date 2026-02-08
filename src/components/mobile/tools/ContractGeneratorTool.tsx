@@ -4,6 +4,7 @@ import {
   Plus, X, Trash2, Upload, Eye, Copy, Share2,
   Building2, Globe, Phone, Mail, MapPin, User,
   FileText, CreditCard, Shield, Printer, Calendar, Download,
+  Wrench, Paintbrush, HardHat, Sparkles, Compass, Package,
 } from 'lucide-react';
 import {
   SimpleToolShell, InputCard, InputField, ActionButton,
@@ -12,25 +13,26 @@ import {
 import { CollapsibleSection } from './CollapsibleSection';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { downloadPdfFromElement } from './pdfExport';
+import { Icon3D } from '../../ui/Icon3D';
 
 /* ── أنواع العقود ── */
 type ContractType = 'maintenance' | 'renovation' | 'construction' | 'cleaning' | 'consulting' | 'supply';
 
-const CONTRACT_TYPES_AR: { id: ContractType; label: string; icon: string; desc: string }[] = [
-  { id: 'maintenance', label: 'صيانة', icon: '🔧', desc: 'عقد صيانة منزلية' },
-  { id: 'renovation', label: 'تجديد', icon: '🎨', desc: 'عقد تجديد وترميم' },
-  { id: 'construction', label: 'بناء', icon: '🏗️', desc: 'عقد مقاولات بناء' },
-  { id: 'cleaning', label: 'تنظيف', icon: '✨', desc: 'عقد خدمات تنظيف' },
-  { id: 'consulting', label: 'استشارات', icon: '📐', desc: 'عقد استشارات هندسية' },
-  { id: 'supply', label: 'توريد', icon: '📦', desc: 'عقد توريد مواد' },
+const CONTRACT_TYPES_AR: { id: ContractType; label: string; icon: React.ReactNode; desc: string }[] = [
+  { id: 'maintenance', label: 'صيانة', icon: <Icon3D icon={Wrench} theme="green" size="xs" hoverable={false} />, desc: 'عقد صيانة منزلية' },
+  { id: 'renovation', label: 'تجديد', icon: <Icon3D icon={Paintbrush} theme="pink" size="xs" hoverable={false} />, desc: 'عقد تجديد وترميم' },
+  { id: 'construction', label: 'بناء', icon: <Icon3D icon={HardHat} theme="orange" size="xs" hoverable={false} />, desc: 'عقد مقاولات بناء' },
+  { id: 'cleaning', label: 'تنظيف', icon: <Icon3D icon={Sparkles} theme="cyan" size="xs" hoverable={false} />, desc: 'عقد خدمات تنظيف' },
+  { id: 'consulting', label: 'استشارات', icon: <Icon3D icon={Compass} theme="blue" size="xs" hoverable={false} />, desc: 'عقد استشارات هندسية' },
+  { id: 'supply', label: 'توريد', icon: <Icon3D icon={Package} theme="brown" size="xs" hoverable={false} />, desc: 'عقد توريد مواد' },
 ];
-const CONTRACT_TYPES_EN: { id: ContractType; label: string; icon: string; desc: string }[] = [
-  { id: 'maintenance', label: 'Maintenance', icon: '🔧', desc: 'Home maintenance' },
-  { id: 'renovation', label: 'Renovation', icon: '🎨', desc: 'Renovation & restoration' },
-  { id: 'construction', label: 'Construction', icon: '🏗️', desc: 'Construction contracting' },
-  { id: 'cleaning', label: 'Cleaning', icon: '✨', desc: 'Cleaning services' },
-  { id: 'consulting', label: 'Consulting', icon: '📐', desc: 'Engineering consulting' },
-  { id: 'supply', label: 'Supply', icon: '📦', desc: 'Material supply' },
+const CONTRACT_TYPES_EN: { id: ContractType; label: string; icon: React.ReactNode; desc: string }[] = [
+  { id: 'maintenance', label: 'Maintenance', icon: <Icon3D icon={Wrench} theme="green" size="xs" hoverable={false} />, desc: 'Home maintenance' },
+  { id: 'renovation', label: 'Renovation', icon: <Icon3D icon={Paintbrush} theme="pink" size="xs" hoverable={false} />, desc: 'Renovation & restoration' },
+  { id: 'construction', label: 'Construction', icon: <Icon3D icon={HardHat} theme="orange" size="xs" hoverable={false} />, desc: 'Construction contracting' },
+  { id: 'cleaning', label: 'Cleaning', icon: <Icon3D icon={Sparkles} theme="cyan" size="xs" hoverable={false} />, desc: 'Cleaning services' },
+  { id: 'consulting', label: 'Consulting', icon: <Icon3D icon={Compass} theme="blue" size="xs" hoverable={false} />, desc: 'Engineering consulting' },
+  { id: 'supply', label: 'Supply', icon: <Icon3D icon={Package} theme="brown" size="xs" hoverable={false} />, desc: 'Material supply' },
 ];
 
 /* ── بنود العقد ── */
@@ -208,7 +210,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
     scopeOfWork: isEn ? 'Scope of Work' : 'وصف الأعمال',
     location: isEn ? 'Project Location' : 'موقع المشروع',
     startDate: isEn ? 'Start Date' : 'تاريخ البدء',
-    durationDays: isEn ? 'Duration (days)' : 'مدة التنفيذ (أيام)',
+    durationDays: isEn ? 'Duration (days)' : 'مدة التنفيذ (يام)',
     totalValue: isEn ? 'Total Value (AED)' : 'القيمة الإجمالية (د.إ)',
     addVat: isEn ? 'Add VAT (5%)' : 'إضافة الضريبة (5%)',
     warrantyLabel: isEn ? 'Warranty Period' : 'فترة الضمان',
@@ -233,7 +235,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       contract: isEn ? 'SERVICE CONTRACT' : 'عقد خدمة',
       contractSub: isEn ? '' : 'SERVICE CONTRACT',
       contractNum: isEn ? 'Contract No.' : 'رقم العقد',
-      party1: isEn ? 'FIRST PARTY (CLIENT)' : 'الطرف الأول (العميل)',
+      party1: isEn ? 'FIRST PARTY (CLIENT)' : '��لطرف الأول (العميل)',
       party2: isEn ? 'SECOND PARTY (PROVIDER)' : 'الطرف الثاني (المزود)',
       scope: isEn ? '📋 Scope of Work' : '📋 نطاق العمل',
       financial: isEn ? '💰 Financial Terms' : '💰 الشروط المالية',
@@ -242,7 +244,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       grandTotal: isEn ? 'Grand Total' : 'الإجمالي',
       duration: isEn ? 'Duration' : 'المدة',
       days: isEn ? 'days' : 'يوم',
-      warranty: isEn ? 'Warranty' : '��لضمان',
+      warranty: isEn ? 'Warranty' : 'لضمان',
       months: isEn ? 'months' : 'أشهر',
       penalty: isEn ? 'Delay Penalty' : 'غرامة التأخير',
       daily: isEn ? '/ day' : '/ يوم',
@@ -262,7 +264,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
   return (
     <SimpleToolShell title={L.title} subtitle={L.subtitle} toolId="contract" gradientFrom="#7C3AED" gradientTo="#A78BFA" onBack={onBack}>
       {/* 1. نوع العقد */}
-      <InputCard title={`📋 ${L.contractType}`}>
+      <InputCard title={isEn ? 'Contract Type' : 'نوع العقد'}>
         <OptionSelector label={L.selectType} options={CONTRACT_TYPES} value={contractType} onChange={(v) => setContractType(v as ContractType)} />
       </InputCard>
 
@@ -270,11 +272,11 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       <CollapsibleSection isOpen={!!expandedSections.party1} onToggle={() => toggleSection('party1')} title={L.party1} icon={<User className="w-4 h-4 text-green-500" />}>
         <InputField label={L.name} value={party1Name} onChange={setParty1Name} type="text" placeholder={isEn ? 'Client full name' : 'اسم العميل الكامل'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={party1Phone} onChange={e => setParty1Phone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={party1Email} onChange={e => setParty1Email(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={party1Phone} onChange={e => setParty1Phone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={party1Email} onChange={e => setParty1Email(e.target.value)} placeholder="client@email.com" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
         </div>
         <div className="mt-3"><InputField label={L.idNum} value={party1ID} onChange={setParty1ID} type="text" placeholder={isEn ? '784-XXXX-XXXXXXX-X' : '784-XXXX-XXXXXXX-X'} /></div>
-        <div className="mt-1"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={party1Address} onChange={e => setParty1Address(e.target.value)} placeholder={isEn ? 'Client address' : 'عنوان العميل'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
+        <div className="mt-1"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={party1Address} onChange={e => setParty1Address(e.target.value)} placeholder={isEn ? 'Client address' : 'عنوان العميل'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
       </CollapsibleSection>
 
       {/* 3. الطرف الثاني */}
@@ -283,7 +285,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
         <div className="mb-4">
           <label className="block text-sm font-bold text-gray-500 mb-2 font-cairo">{L.logo}</label>
           <div className="flex items-center gap-3">
-            <button onClick={() => logoInputRef.current?.click()} className="relative w-16 h-16 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 flex flex-col items-center justify-center hover:border-purple-400 transition-all overflow-hidden group">
+            <button onClick={() => logoInputRef.current?.click()} className="relative w-16 h-16 rounded-2xl border-[4px] border-dashed border-gray-300/60 bg-gray-50 flex flex-col items-center justify-center hover:border-purple-400 transition-all overflow-hidden group">
               {companyLogo ? (<><img src={companyLogo} alt="" className="w-full h-full object-contain p-1" /><div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><Upload className="w-4 h-4 text-white" /></div></>) : (<><Upload className="w-4 h-4 text-gray-400" /><span className="text-[8px] text-gray-400 font-cairo">{L.uploadLogo}</span></>)}
             </button>
             <input ref={logoInputRef} type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
@@ -292,30 +294,30 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
         </div>
         <InputField label={L.name} value={party2Name} onChange={setParty2Name} type="text" placeholder={isEn ? 'Company / Provider name' : 'اسم الشركة / المقاول'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={party2Phone} onChange={e => setParty2Phone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={party2Email} onChange={e => setParty2Email(e.target.value)} placeholder="info@company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Phone className="w-3 h-3 inline ml-1" />{L.phone}</label><input type="tel" value={party2Phone} onChange={e => setParty2Phone(e.target.value)} placeholder="05X XXX XXXX" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Mail className="w-3 h-3 inline ml-1" />{L.email}</label><input type="email" value={party2Email} onChange={e => setParty2Email(e.target.value)} placeholder="info@company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
         </div>
         <div className="mt-3"><InputField label={L.license} value={party2License} onChange={setParty2License} type="text" placeholder={isEn ? 'License number' : 'رقم الرخصة'} /></div>
-        <div className="mt-1"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={party2Website} onChange={e => setParty2Website(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
-        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={party2Address} onChange={e => setParty2Address(e.target.value)} placeholder={isEn ? 'Company address' : 'عنوان الشركة'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
+        <div className="mt-1"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Globe className="w-3 h-3 inline ml-1" />{L.website}</label><input type="url" value={party2Website} onChange={e => setParty2Website(e.target.value)} placeholder="www.company.ae" className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" dir="ltr" /></div>
+        <div className="mt-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><MapPin className="w-3 h-3 inline ml-1" />{L.address}</label><input type="text" value={party2Address} onChange={e => setParty2Address(e.target.value)} placeholder={isEn ? 'Company address' : 'عنوان الشركة'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
       </CollapsibleSection>
 
       {/* 4. تفاصيل المشروع */}
       <CollapsibleSection isOpen={!!expandedSections.project} onToggle={() => toggleSection('project')} title={L.projectDetails} icon={<FileText className="w-4 h-4 text-blue-500" />}>
-        <div className="mb-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.scopeOfWork}</label><textarea value={projectDesc} onChange={e => setProjectDesc(e.target.value)} placeholder={isEn ? 'Describe the work in detail...' : 'صف الأعمال المطلوبة بالتفصيل...'} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo h-28 resize-none" /></div>
+        <div className="mb-3"><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo">{L.scopeOfWork}</label><textarea value={projectDesc} onChange={e => setProjectDesc(e.target.value)} placeholder={isEn ? 'Describe the work in detail...' : 'صف الأعمال المطلوبة بالتفصيل...'} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo h-28 resize-none" /></div>
         <InputField label={L.location} value={projectLocation} onChange={setProjectLocation} type="text" placeholder={isEn ? 'e.g. Dubai - Al Barsha' : 'مثال: دبي - البرشاء'} />
         <div className="grid grid-cols-2 gap-3">
-          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Calendar className="w-3 h-3 inline ml-1" />{L.startDate}</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border border-gray-200 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
+          <div><label className="block text-sm font-bold text-gray-500 mb-1.5 font-cairo"><Calendar className="w-3 h-3 inline ml-1" />{L.startDate}</label><input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} className="w-full p-3 bg-gray-50/80 rounded-xl border-[4px] border-gray-200/60 text-sm outline-none focus:border-purple-400 font-cairo" /></div>
           <InputField label={L.durationDays} value={duration} onChange={setDuration} type="number" placeholder="30" suffix={isEn ? 'days' : 'يوم'} />
         </div>
         <InputField label={L.totalValue} value={totalAmount} onChange={setTotalAmount} type="number" placeholder="0" suffix={isEn ? 'AED' : 'د.إ'} />
-        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3 rounded-xl border-2 transition-all mb-3 ${includeVAT ? 'border-purple-400 bg-purple-50' : 'border-gray-200 bg-white'}`}>
+        <button onClick={() => setIncludeVAT(!includeVAT)} className={`w-full flex items-center justify-between p-3 rounded-xl border-[4px] transition-all mb-3 ${includeVAT ? 'border-purple-400 bg-purple-50' : 'border-gray-200/60 bg-white'}`}>
           <span className="font-cairo font-bold text-sm text-gray-700">{L.addVat}</span>
           <div className={`w-12 h-7 rounded-full relative transition-colors ${includeVAT ? 'bg-purple-500' : 'bg-gray-300'}`}><div className={`absolute top-0.5 w-6 h-6 bg-white rounded-full shadow transition-all ${includeVAT ? 'right-0.5' : 'left-0.5'}`} /></div>
         </button>
         {total > 0 && (<div className="bg-purple-50 rounded-xl p-3"><div className="flex justify-between text-sm font-cairo mb-1"><span className="text-gray-500">{isEn ? 'Subtotal' : 'المجموع'}</span><span className="font-bold">{formatAED(total)}</span></div>{includeVAT && <div className="flex justify-between text-sm font-cairo mb-1"><span className="text-gray-500">{isEn ? 'VAT 5%' : 'ضريبة 5%'}</span><span className="font-bold">{formatAED(vat)}</span></div>}<div className="flex justify-between text-sm font-cairo font-bold border-t border-purple-200 pt-1"><span>{isEn ? 'Total' : 'الإجمالي'}</span><span className="text-purple-700">{formatAED(grandTotal)}</span></div></div>)}
         <div className="grid grid-cols-2 gap-3 mt-3">
-          <OptionSelector label={L.warrantyLabel} options={[{ id: '0', label: isEn ? 'None' : 'بدون', icon: '❌' }, { id: '3', label: isEn ? '3 Mo' : '3 أشهر', icon: '📅' }, { id: '6', label: isEn ? '6 Mo' : '6 أشهر', icon: '📅' }, { id: '12', label: isEn ? '1 Year' : 'سنة', icon: '📅' }]} value={warranty} onChange={setWarranty} />
+          <OptionSelector label={L.warrantyLabel} options={[{ id: '0', label: isEn ? 'None' : 'بدون' }, { id: '3', label: isEn ? '3 Mo' : '3 أشهر' }, { id: '6', label: isEn ? '6 Mo' : '6 أشهر' }, { id: '12', label: isEn ? '1 Year' : 'سنة' }]} value={warranty} onChange={setWarranty} />
           <InputField label={L.penaltyLabel} value={penalty} onChange={setPenalty} type="number" placeholder="0.5" suffix="%" />
         </div>
       </CollapsibleSection>
@@ -324,20 +326,20 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       <CollapsibleSection isOpen={!!expandedSections.payments} onToggle={() => toggleSection('payments')} title={L.paymentsTitle} icon={<CreditCard className="w-4 h-4 text-amber-500" />} badge={`${payments.length} ${isEn ? 'payments' : 'دفعات'}`}>
         <div className="space-y-3">
           {payments.map((p, idx) => (
-            <motion.div key={p.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="bg-amber-50/50 rounded-xl p-3 border border-amber-100">
+            <motion.div key={p.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="bg-amber-50/50 rounded-xl p-3 border-[4px] border-amber-100/60">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-amber-600 font-cairo">{L.paymentNum} #{idx + 1}</span>
                 {payments.length > 1 && <button onClick={() => removePayment(p.id)} className="w-6 h-6 rounded-full bg-red-50 text-red-400 flex items-center justify-center"><Trash2 className="w-3 h-3" /></button>}
               </div>
               <div className="grid grid-cols-12 gap-2">
-                <input type="text" value={p.label} onChange={e => updatePayment(p.id, 'label', e.target.value)} className="col-span-4 p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none" />
-                <div className="col-span-3 relative"><input type="number" value={p.percentage || ''} onChange={e => updatePayment(p.id, 'percentage', Number(e.target.value) || 0)} className="w-full p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none text-center" min={0} max={100} /><span className="absolute left-2 top-2 text-[10px] text-gray-400">%</span></div>
-                <input type="text" value={p.milestone} onChange={e => updatePayment(p.id, 'milestone', e.target.value)} placeholder={isEn ? 'Milestone...' : 'عند...'} className="col-span-5 p-2 bg-white rounded-lg border border-gray-200 text-xs font-cairo outline-none" />
+                <input type="text" value={p.label} onChange={e => updatePayment(p.id, 'label', e.target.value)} className="col-span-4 p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none" />
+                <div className="col-span-3 relative"><input type="number" value={p.percentage || ''} onChange={e => updatePayment(p.id, 'percentage', Number(e.target.value) || 0)} className="w-full p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none text-center" min={0} max={100} /><span className="absolute left-2 top-2 text-[10px] text-gray-400">%</span></div>
+                <input type="text" value={p.milestone} onChange={e => updatePayment(p.id, 'milestone', e.target.value)} placeholder={isEn ? 'Milestone...' : 'عند...'} className="col-span-5 p-2 bg-white rounded-lg border-[4px] border-gray-200/60 text-xs font-cairo outline-none" />
               </div>
             </motion.div>
           ))}
         </div>
-        <button onClick={addPayment} className="w-full mt-3 py-2.5 border-2 border-dashed border-amber-300 rounded-xl text-amber-600 font-bold font-cairo text-xs flex items-center justify-center gap-2 hover:bg-amber-50 transition-colors"><Plus className="w-3.5 h-3.5" />{L.addPayment}</button>
+        <button onClick={addPayment} className="w-full mt-3 py-2.5 border-[4px] border-dashed border-amber-300 rounded-xl text-amber-600 font-bold font-cairo text-xs flex items-center justify-center gap-2 hover:bg-amber-50 transition-colors"><Plus className="w-3.5 h-3.5" />{L.addPayment}</button>
         <div className={`mt-3 text-center text-xs font-bold font-cairo py-2 rounded-lg ${Math.abs(totalPaymentPct - 100) < 0.01 ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}`}>{L.pctTotal}: {totalPaymentPct}% {Math.abs(totalPaymentPct - 100) >= 0.01 && L.must100}</div>
       </CollapsibleSection>
 
@@ -345,7 +347,7 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
       <CollapsibleSection isOpen={!!expandedSections.clauses} onToggle={() => toggleSection('clauses')} title={L.clausesTitle} icon={<Shield className="w-4 h-4 text-teal-500" />} badge={`${clauses.length} ${isEn ? 'clauses' : 'بند'}`}>
         <div className="space-y-2 mb-3 max-h-60 overflow-y-auto">
           {clauses.map((c, idx) => (
-            <div key={c.id} className="flex items-start gap-2 bg-teal-50/50 rounded-lg p-2.5 border border-teal-100">
+            <div key={c.id} className="flex items-start gap-2 bg-teal-50/50 rounded-lg p-2.5 border-[4px] border-teal-100/60">
               <span className="text-[10px] font-bold text-teal-600 font-cairo mt-0.5 shrink-0">{idx + 1}.</span>
               <div className="flex-1 min-w-0"><p className="text-xs font-bold text-gray-800 font-cairo">{c.title}</p><p className="text-[11px] text-gray-600 font-cairo leading-relaxed">{c.content}</p></div>
               <button onClick={() => removeClause(c.id)} className="w-5 h-5 rounded-full bg-red-50 text-red-400 flex items-center justify-center shrink-0 mt-0.5"><X className="w-3 h-3" /></button>
@@ -353,14 +355,14 @@ export function ContractGeneratorTool({ onBack }: { onBack: () => void }) {
           ))}
         </div>
         <div className="space-y-2">
-          <input type="text" value={newClauseTitle} onChange={e => setNewClauseTitle(e.target.value)} placeholder={L.clauseTitlePh} className="w-full p-2.5 bg-gray-50 rounded-xl border border-gray-200 text-xs outline-none focus:border-teal-400 font-cairo" />
-          <textarea value={newClauseContent} onChange={e => setNewClauseContent(e.target.value)} placeholder={L.clauseContentPh} className="w-full p-2.5 bg-gray-50 rounded-xl border border-gray-200 text-xs outline-none focus:border-teal-400 font-cairo h-16 resize-none" />
+          <input type="text" value={newClauseTitle} onChange={e => setNewClauseTitle(e.target.value)} placeholder={L.clauseTitlePh} className="w-full p-2.5 bg-gray-50 rounded-xl border-[4px] border-gray-200/60 text-xs outline-none focus:border-teal-400 font-cairo" />
+          <textarea value={newClauseContent} onChange={e => setNewClauseContent(e.target.value)} placeholder={L.clauseContentPh} className="w-full p-2.5 bg-gray-50 rounded-xl border-[4px] border-gray-200/60 text-xs outline-none focus:border-teal-400 font-cairo h-16 resize-none" />
           <button onClick={addClause} className="w-full py-2 bg-teal-500 text-white rounded-xl text-xs font-bold font-cairo hover:bg-teal-600 transition-colors">{L.addClause}</button>
         </div>
       </CollapsibleSection>
 
       {/* Generate */}
-      <div className="mb-4"><ActionButton onClick={handleGenerate} text={L.generate} icon="📝" /></div>
+      <div className="mb-4"><ActionButton onClick={handleGenerate} text={L.generate} /></div>
 
       {/* ═══════════ A4 Preview ═══════════ */}
       <AnimatePresence>

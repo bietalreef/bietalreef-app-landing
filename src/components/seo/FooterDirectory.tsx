@@ -5,6 +5,7 @@ import { useTranslation } from '../../contexts/LanguageContext';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { Link } from 'react-router';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   SITE_NAME_AR,
   SITE_NAME_EN,
@@ -57,12 +58,17 @@ function CollapsibleFooterSection({
 
 export function FooterDirectory() {
   const { language } = useTranslation('common');
+  const { isDark } = useTheme();
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, sans-serif' : 'Cairo, sans-serif';
 
   return (
     <footer
-      className="bg-[#F5EEE1] border-t border-[#E6DCC8] text-[#1F3D2B] mt-0"
+      className={`border-t mt-0 ${
+        isDark
+          ? 'bg-[var(--bait-bg-alt)] border-[var(--bait-border)] text-[var(--bait-text)]'
+          : 'bg-[#F5EEE1] border-[#E6DCC8] text-[#1F3D2B]'
+      }`}
       dir="rtl"
       role="contentinfo"
       aria-label={isEn ? 'Site directory and links' : 'دليل الموقع والروابط'}

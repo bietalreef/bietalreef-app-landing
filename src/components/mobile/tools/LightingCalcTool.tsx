@@ -78,7 +78,7 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
                 className={`py-2.5 rounded-xl text-xs font-bold transition-all ${
                   roomType === room.id
                     ? 'bg-amber-500 text-white shadow-md'
-                    : 'bg-white text-[#1F3D2B] border border-gray-200'
+                    : 'bg-white text-[#1F3D2B] border-[4px] border-gray-200/60'
                 }`}
                 style={{ fontFamily: fontCairo }}
               >
@@ -99,7 +99,7 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
               value={length}
               onChange={e => setLength(e.target.value)}
               placeholder="5"
-              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-amber-400"
+              className="w-full bg-white border-[4px] border-gray-200/60 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-amber-400"
               style={{ fontFamily: fontCairo }}
               dir="ltr"
             />
@@ -113,7 +113,7 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
               value={width}
               onChange={e => setWidth(e.target.value)}
               placeholder="4"
-              className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-amber-400"
+              className="w-full bg-white border-[4px] border-gray-200/60 rounded-xl px-3 py-2.5 text-sm text-[#1F3D2B] outline-none focus:border-amber-400"
               style={{ fontFamily: fontCairo }}
               dir="ltr"
             />
@@ -145,7 +145,7 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
               {isEn ? 'Lighting Requirements' : 'متطلبات الإضاءة'}
             </h3>
 
-            <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border-[4px] border-gray-100/60 space-y-3">
               {[
                 { label: isEn ? 'Room Area' : 'مساحة الغرفة', value: `${(parseFloat(length) * parseFloat(width)).toFixed(1)} ${isEn ? 'sqm' : 'م²'}` },
                 { label: isEn ? 'Total Lumens Needed' : 'إجمالي اللومن المطلوب', value: result.totalLumens.toLocaleString() + (isEn ? ' lm' : ' لومن') },
@@ -160,7 +160,7 @@ export function LightingCalcTool({ onBack }: { onBack: () => void }) {
               ))}
             </div>
 
-            <div className="bg-gradient-to-l from-amber-500 to-yellow-600 rounded-2xl p-4 text-white">
+            <div className="bg-gradient-to-l from-amber-500 to-yellow-600 rounded-2xl p-4 text-white border-[4px] border-amber-400/30">
               <p className="text-xs opacity-80 mb-1" style={{ fontFamily: fontCairo }}>
                 {isEn ? 'Estimated Cost (LED fixtures)' : 'التكلفة التقديرية (تجهيزات LED)'}
               </p>

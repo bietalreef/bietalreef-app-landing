@@ -262,7 +262,7 @@ export function OptionSelector({
 }: {
   label: string;
   labelEn?: string;
-  options: { id: string; label: string; labelEn?: string; icon?: string; desc?: string; descEn?: string }[];
+  options: { id: string; label: string; labelEn?: string; icon?: React.ReactNode; desc?: string; descEn?: string }[];
   value: string;
   onChange: (val: string) => void;
 }) {
@@ -288,7 +288,7 @@ export function OptionSelector({
                 : 'border-gray-200/60 bg-white hover:border-gray-300'
             }`}
           >
-            {opt.icon && <div className="text-xl mb-1">{opt.icon}</div>}
+            {opt.icon && <div className="text-xl mb-1 flex items-center justify-center">{opt.icon}</div>}
             <div
               className={`text-xs font-bold font-cairo ${
                 value === opt.id ? 'text-[#2AA676]' : 'text-gray-600'

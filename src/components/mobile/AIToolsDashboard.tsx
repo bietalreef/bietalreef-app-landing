@@ -104,11 +104,13 @@ const ALL_TOOLS: ToolDef[] = [
   },
   {
     id: 'paint',
-    titleAr: 'حاسبة الدهانات والأرضيات',
-    titleEn: 'Paint & Flooring Calculator',
-    subtitleAr: 'دهان + بلاط + نعلات بدقة',
-    subtitleEn: 'Paint + tiles + skirting accurately',
+    titleAr: 'حاسبة الدهانات التفاعلية',
+    titleEn: 'Interactive Paint Calculator',
+    subtitleAr: 'ارسم غرفتك وأضف الأبواب والنوافذ بصرياً',
+    subtitleEn: 'Draw rooms & add doors/windows visually',
     category: 'calculators',
+    badgeAr: 'تفاعلي',
+    badgeEn: 'Interactive',
   },
   {
     id: 'lighting',
@@ -473,6 +475,7 @@ export function AIToolsDashboard({ onFullscreenToggle, onBack }: AIToolsDashboar
                                 badge === 'جديد' || badge === 'New' ? 'bg-emerald-100 text-emerald-700' :
                                 badge === 'الأكثر استخداماً' || badge === 'Most Used' ? 'bg-amber-100 text-amber-700' :
                                 badge === 'مطوّر' || badge === 'Enhanced' ? 'bg-blue-100 text-blue-700' :
+                                badge === 'تفاعلي' || badge === 'Interactive' ? 'bg-purple-100 text-purple-700' :
                                 'bg-gray-100 text-gray-600'
                               }`} style={{ fontFamily: 'Cairo, sans-serif' }}>
                                 {badge}

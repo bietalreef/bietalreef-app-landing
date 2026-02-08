@@ -2,15 +2,19 @@ import { Menu, Bell, ShoppingCart, Home, Briefcase, Bot, Folder, User, Search } 
 import { useState } from 'react';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { motion } from 'motion/react';
 
 interface NewTopHeaderProps {
   isScrolled: boolean;
   onOpenNotificationsCenter?: (category?: 'platform' | 'weyaak' | 'crm' | 'user' | 'alerts' | 'offers' | 'all') => void;
   onOpenSearch?: () => void;
+  notificationCount?: number;
 }
 
-export function NewTopHeader({ isScrolled, onOpenNotificationsCenter, onOpenSearch }: NewTopHeaderProps) {
+export function NewTopHeader({ isScrolled, onOpenNotificationsCenter, onOpenSearch, notificationCount = 3 }: NewTopHeaderProps) {
   const { t, dir } = useTranslation('common');
+  const { isDark } = useTheme();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
@@ -31,10 +35,12 @@ export function NewTopHeader({ isScrolled, onOpenNotificationsCenter, onOpenSear
   return (
     <div 
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-sm' : 'bg-white shadow-sm'
+        isDark
+          ? 'bg-[var(--bait-surface)] shadow-[0_1px_3px_rgba(0,0,0,0.3)]'
+          : 'bg-white shadow-sm'
       }`}
     >
-      {/* Main Header Container: Reduced padding on mobile (px-3) and reduced gap (gap-2) */}
+      {/* Main Header Container */}
       <div className="px-3 md:px-6 py-3 flex items-center justify-between gap-2 md:gap-4" dir="rtl">
         
         {/* RIGHT SECTION: Menu + Logo */}
@@ -43,19 +49,27 @@ export function NewTopHeader({ isScrolled, onOpenNotificationsCenter, onOpenSear
           <div className="relative">
             <button 
               onClick={() => setShowMenu(!showMenu)}
-              className="p-2 hover:bg-gray-50 rounded-full transition-colors"
+              className={`p-2 rounded-full transition-colors ${
+                isDark ? 'hover:bg-white/10' : 'hover:bg-gray-50'
+              }`}
             >
-              <Menu className="w-6 h-6 text-[#1A1A1A]" />
+              <Menu className={`w-6 h-6 ${isDark ? 'text-[var(--bait-text)]' : 'text-[#1A1A1A]'}`} />
             </button>
              {/* Desktop Menu Dropdown */}
              {showMenu && (
-                <div className="hidden md:block absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl shadow-xl p-2 border border-gray-100 z-50">
+                <div className={`hidden md:block absolute right-0 top-full mt-2 w-64 rounded-2xl shadow-xl p-2 border z-50 ${
+                  isDark
+                    ? 'bg-[var(--bait-surface)] border-[var(--bait-border-strong)]'
+                    : 'bg-white border-gray-100'
+                }`}>
                   {menuItems.map((item, idx) => {
                     const Icon = item.icon;
                     return (
-                      <button key={idx} className="w-full flex items-center gap-3 p-3 hover:bg-blue-50 rounded-xl transition-colors text-right">
+                      <button key={idx} className={`w-full flex items-center gap-3 p-3 rounded-xl transition-colors text-right ${
+                        isDark ? 'hover:bg-white/5' : 'hover:bg-blue-50'
+                      }`}>
                         <Icon className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm font-bold text-gray-700 font-cairo">{item.title}</span>
+                        <span className={`text-sm font-bold font-cairo ${isDark ? 'text-[var(--bait-text)]' : 'text-gray-700'}`}>{item.title}</span>
                       </button>
                     );
                   })}
@@ -74,36 +88,64 @@ export function NewTopHeader({ isScrolled, onOpenNotificationsCenter, onOpenSear
         </div>
 
         {/* CENTER SECTION: Search Bar */}
-        {/* Added min-w-0 to allow flex child to shrink properly below its content size */}
         <div className="flex-1 max-w-md min-w-0">
           <button 
             onClick={onOpenSearch}
-            className="w-full h-9 md:h-10 bg-[#F3F4F6] rounded-full flex items-center px-3 md:px-4 gap-2 hover:bg-[#E5E7EB] transition-colors group border border-transparent hover:border-blue-200"
+            className={`w-full h-9 md:h-10 rounded-full flex items-center px-3 md:px-4 gap-2 transition-colors group border ${
+              isDark
+                ? 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-[#2AA676]/30'
+                : 'bg-[#F3F4F6] border-transparent hover:bg-[#E5E7EB] hover:border-blue-200'
+            }`}
           >
-            <Search className="w-4 h-4 text-gray-400 group-hover:text-blue-500 flex-shrink-0" />
-            <span className="text-xs text-gray-400 font-cairo truncate text-right flex-1 group-hover:text-gray-600 block">
+            <Search className={`w-4 h-4 flex-shrink-0 ${isDark ? 'text-white/40 group-hover:text-[#2AA676]' : 'text-gray-400 group-hover:text-blue-500'}`} />
+            <span className={`text-xs font-cairo truncate text-right flex-1 block ${
+              isDark ? 'text-white/40 group-hover:text-white/60' : 'text-gray-400 group-hover:text-gray-600'
+            }`}>
               {dir === 'rtl' ? 'بحث...' : 'Search...'}
             </span>
           </button>
         </div>
 
         {/* LEFT SECTION: Language + Icons */}
-        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0" dir="ltr">
+        <div className="flex items-center gap-1.5 md:gap-2 flex-shrink-0" dir="ltr">
            {/* Language Switch */}
            <button 
              onClick={toggleLanguage}
-             className="w-8 h-8 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-[10px] font-bold font-cairo text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+             className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold font-cairo transition-colors ${
+               isDark
+                 ? 'bg-white/5 border border-white/10 text-white/60 hover:bg-[#2AA676]/20 hover:text-[#2AA676]'
+                 : 'bg-gray-50 border border-gray-100 text-gray-600 hover:bg-blue-50 hover:text-blue-600'
+             }`}
            >
              {dir === 'rtl' ? 'EN' : 'AR'}
            </button>
 
-           {/* Notification */}
+           {/* Notification Bell - Enhanced */}
            <button 
              onClick={() => onOpenNotificationsCenter && onOpenNotificationsCenter()}
-             className="w-9 h-9 rounded-full hover:bg-gray-50 flex items-center justify-center relative transition-colors"
+             className={`w-9 h-9 rounded-full flex items-center justify-center relative transition-all hover:shadow-md hover:scale-105 active:scale-95 group ${
+               isDark
+                 ? 'bg-gradient-to-br from-white/5 to-white/10 border border-white/10'
+                 : 'bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200/80'
+             }`}
            >
-             <Bell className="w-5 h-5 text-gray-700" />
-             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
+             <Bell className={`w-[18px] h-[18px] transition-colors ${
+               isDark
+                 ? 'text-white/70 group-hover:text-[#2AA676]'
+                 : 'text-gray-700 group-hover:text-[#2AA676]'
+             }`} />
+             {notificationCount > 0 && (
+               <motion.span
+                 initial={{ scale: 0 }}
+                 animate={{ scale: 1 }}
+                 transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+                 className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-gradient-to-br from-red-500 to-red-600 rounded-full ring-2 ring-white flex items-center justify-center px-1 shadow-sm"
+               >
+                 <span className="text-[9px] font-bold text-white leading-none">
+                   {notificationCount > 9 ? '9+' : notificationCount}
+                 </span>
+               </motion.span>
+             )}
            </button>
         </div>
 

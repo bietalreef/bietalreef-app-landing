@@ -185,7 +185,7 @@ export function MaterialCalculatorV2({ onBack }: { onBack: () => void }) {
           </InputCard>
 
           {/* Disclaimer */}
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4">
+          <div className="bg-amber-50 border-[4px] border-amber-200/60 rounded-2xl p-4 mb-4">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
               <p className="text-amber-800 text-xs font-cairo leading-relaxed">

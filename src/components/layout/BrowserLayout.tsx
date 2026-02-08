@@ -14,6 +14,7 @@ import { NotificationsCenter } from '../mobile/NotificationsCenter';
 import { FooterDirectory } from '../seo/FooterDirectory';
 import { useSearchStore } from '../../stores/search-store';
 import { useTranslation } from '../../contexts/LanguageContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   X, Wrench, ShoppingCart, Hammer, MapPin, MessageSquareText,
   Store, Star, Flame, Ruler, Smartphone, User, Wallet,
@@ -66,6 +67,7 @@ export function BrowserLayout() {
   const location = useLocation();
   const { isOpen: isSearchOpen, setOpen: setSearchOpen } = useSearchStore();
   const { language } = useTranslation('common');
+  const { isDark } = useTheme();
   const isEn = language === 'en';
   const fontFamily = isEn ? 'Inter, Segoe UI, sans-serif' : 'Cairo, sans-serif';
   const mainRef = useRef<HTMLElement>(null);
@@ -102,7 +104,7 @@ export function BrowserLayout() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-background flex flex-col">
+    <div className={`relative w-full min-h-screen flex flex-col ${isDark ? 'bg-[var(--bait-bg)]' : 'bg-background'}`}>
       {/* Side Drawer */}
       <SideDrawer 
         isOpen={isSideDrawerOpen}
@@ -122,7 +124,11 @@ export function BrowserLayout() {
       {!isHome && pageInfo && (() => {
         const { Icon, iconColor } = pageInfo;
         return (
-          <div className="bg-white/80 backdrop-blur-sm border-b border-[#F5EEE1] px-4 py-2.5 flex items-center justify-between sticky top-0 z-30">
+          <div className={`backdrop-blur-sm border-b px-4 py-2.5 flex items-center justify-between sticky top-0 z-30 ${
+            isDark
+              ? 'bg-[var(--bait-glass)] border-[var(--bait-border)]'
+              : 'bg-white/80 border-[#F5EEE1]'
+          }`}>
             {/* Page Title with Lucide Icon */}
             <div className="flex items-center gap-2.5">
               <div
@@ -132,7 +138,7 @@ export function BrowserLayout() {
                 <Icon className="w-4 h-4" style={{ color: iconColor }} />
               </div>
               <h2 
-                className="text-sm font-bold text-[#1F3D2B]"
+                className={`text-sm font-bold ${isDark ? 'text-[var(--bait-text)]' : 'text-[#1F3D2B]'}`}
                 style={{ fontFamily }}
               >
                 {isEn ? pageInfo.en : pageInfo.ar}
@@ -142,7 +148,11 @@ export function BrowserLayout() {
             {/* Close Button X */}
             <button
               onClick={() => navigate('/home')}
-              className="flex items-center gap-1.5 bg-[#1F3D2B]/8 hover:bg-red-50 hover:text-red-600 text-[#1F3D2B]/70 px-3 py-1.5 rounded-xl transition-all duration-200 group"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all duration-200 group ${
+                isDark
+                  ? 'bg-white/5 hover:bg-red-500/20 text-white/50 hover:text-red-400'
+                  : 'bg-[#1F3D2B]/8 hover:bg-red-50 hover:text-red-600 text-[#1F3D2B]/70'
+              }`}
               aria-label={isEn ? 'Close page' : 'إغلاق الصفحة'}
             >
               <span 

@@ -6,6 +6,19 @@ import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { useTranslation } from '../../contexts/LanguageContext';
 import { useNavigate } from 'react-router';
 import { Sparkles, ChevronLeft, Crown, Shield, Video, FolderKanban, Wallet as WalletIcon } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useTheme } from '../../contexts/ThemeContext';
+
+/* ═══════════════════════════════════════════════
+   WhatsApp Helper
+   ═══════════════════════════════════════════════ */
+function openWhatsApp(phone: string, providerName: string, isEn: boolean) {
+  const cleanPhone = phone.replace(/[\s\-()]/g, '');
+  const message = isEn
+    ? `Hello ${providerName}, I found you on Beit Al Reef platform and I'm interested in your services. Can we discuss the details?`
+    : `مرحباً ${providerName}، وجدتك عبر منصة بيت الريف وأنا مهتم بخدماتك. هل يمكننا مناقشة التفاصيل؟`;
+  window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`, '_blank');
+}
 
 interface ServicesContentProps {
   onServiceClick?: (serviceId: string) => void;
@@ -17,6 +30,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
   const [activeFilter, setActiveFilter] = useState<'recommended' | 'offers' | 'nearby' | 'cheapest' | 'toprated'>('recommended');
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   // 9 Services - Categories
   const services = [
@@ -311,6 +325,7 @@ export function ServicesContent({ onServiceClick, onOpenFullSearch }: ServicesCo
                     <button 
                       className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-[#2AA676] to-[#6FCF97] text-white py-2.5 rounded-[14px] shadow-md hover:shadow-lg transition-all active:scale-95"
                       style={{ fontFamily: 'Cairo, sans-serif', fontWeight: 700, fontSize: '13px' }}
+                      onClick={() => openWhatsApp('+971501234567', provider.full_name, language === 'en')}
                     >
                       <Phone className="w-4 h-4" />
                       <span>{language === 'ar' ? 'تواصل الآن' : 'Contact Now'}</span>

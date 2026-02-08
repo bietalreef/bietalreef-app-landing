@@ -1147,7 +1147,7 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
           <div className="flex items-center gap-1 px-1.5 shrink-0">
             <span className="text-[9px] text-gray-400" style={{ fontFamily: f }}>{isEn ? 'T:' : 'س:'}</span>
             <select value={wallThick} onChange={e => setWallThick(+e.target.value)}
-              className="text-[10px] bg-gray-50 border border-gray-200 rounded px-1 py-0.5 text-[#1F3D2B] font-bold">
+              className="text-[10px] bg-gray-50 border-[4px] border-gray-200/60 rounded px-1 py-0.5 text-[#1F3D2B] font-bold">
               {[100, 150, 200, 250, 300].map(v => <option key={v} value={v}>{v}mm</option>)}
             </select>
           </div>
@@ -1271,10 +1271,10 @@ export function Design2DTool({ onBack }: { onBack: () => void }) {
                       </div>
                     </div>
                     <div className="flex gap-1">
-                      <button onClick={flipDoor} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                      <button onClick={flipDoor} className="flex-1 py-1 bg-gray-50 border-[4px] border-gray-200/60 rounded text-[9px] font-bold text-gray-600">
                         {isEn ? 'Flip Side' : 'عكس الجانب'}
                       </button>
-                      <button onClick={flipDoorSwing} className="flex-1 py-1 bg-gray-50 border border-gray-200 rounded text-[9px] font-bold text-gray-600">
+                      <button onClick={flipDoorSwing} className="flex-1 py-1 bg-gray-50 border-[4px] border-gray-200/60 rounded text-[9px] font-bold text-gray-600">
                         {isEn ? 'Flip Swing' : 'عكس الفتح'}
                       </button>
                     </div>

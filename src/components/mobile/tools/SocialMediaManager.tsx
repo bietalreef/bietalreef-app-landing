@@ -6,11 +6,35 @@ import {
   BarChart3, Users, Heart, TrendingUp, Globe, Shield,
   ChevronDown, ChevronUp, X,
   Video, Image, Send, Clock, Lock, MessageSquareOff, Loader2,
+  Camera, Music, Play, Briefcase, Ghost, MessageCircle,
+  Megaphone, MapPin, Target,
 } from 'lucide-react';
 import { useLanguage } from '../../../contexts/LanguageContext';
 import { supabase } from '../../../utils/supabase/client';
 import { projectId, publicAnonKey } from '../../../utils/supabase/info';
 import { toast } from 'sonner@2.0.3';
+import { Icon3D } from '../../ui/Icon3D';
+
+/* ═══════════════════════════════════════════════
+   Platform Lucide Icons Map (بدل الإيموجي)
+   ═══════════════════════════════════════════════ */
+const PLATFORM_LUCIDE_ICONS: Record<string, any> = {
+  instagram: Camera,
+  facebook: Users,
+  tiktok: Music,
+  x: MessageCircle,
+  youtube: Play,
+  linkedin: Briefcase,
+  snapchat: Ghost,
+  whatsapp: MessageCircle,
+  'google-ads': Target,
+  'google-maps': MapPin,
+};
+
+function PlatformIcon({ platformId, color, size = 20, className = '' }: { platformId: string; color: string; size?: number; className?: string }) {
+  const IconComp = PLATFORM_LUCIDE_ICONS[platformId] || Globe;
+  return <IconComp size={size} className={className} style={{ color: '#fff' }} />;
+}
 
 /* ═══════════════════════════════════════════════
    Toggle مكوّن مستقل
@@ -21,7 +45,7 @@ function SettingToggle({ label, desc, defaultValue, fontFamily }: { label: strin
   return (
     <button
       onClick={() => setEnabled(!enabled)}
-      className="w-full flex items-center justify-between p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors"
+      className="w-full flex items-center justify-between p-3 rounded-xl border-[4px] border-gray-100/60 hover:bg-gray-50 transition-colors"
     >
       <div className="text-right">
         <span className="text-sm font-bold text-[#1A1A1A] block" style={{ fontFamily }}>{label}</span>
@@ -44,7 +68,6 @@ interface SocialPlatform {
   nameEn: string;
   descAr: string;
   descEn: string;
-  icon: string;
   color: string;
   lightBg: string;
   gradient: string;
@@ -78,7 +101,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'Instagram',
     descAr: 'منصة للصور والفيديوهات القصيرة',
     descEn: 'Platform for photos and short videos',
-    icon: '📸',
     color: '#E4405F',
     lightBg: '#FCAF45',
     gradient: 'from-[#833AB4] via-[#E4405F] to-[#FCAF45]',
@@ -96,7 +118,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'Facebook',
     descAr: 'منصة التواصل الاجتماعي الشهيرة',
     descEn: 'Popular social networking platform',
-    icon: '👤',
     color: '#1877F2',
     lightBg: '#0C5DC7',
     gradient: 'from-[#1877F2] to-[#0C5DC7]',
@@ -114,7 +135,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'TikTok',
     descAr: 'منصة الفيديوهات القصيرة الشهيرة',
     descEn: 'Popular short video platform',
-    icon: '🎵',
     color: '#000000',
     lightBg: '#FE2C55',
     gradient: 'from-[#25F4EE] via-[#000000] to-[#FE2C55]',
@@ -133,7 +153,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'X (Twitter)',
     descAr: 'منصة التواصل الاجتماعي الشهيرة',
     descEn: 'Popular social networking platform',
-    icon: '𝕏',
     color: '#000000',
     lightBg: '#657786',
     gradient: 'from-[#14171A] to-[#657786]',
@@ -151,7 +170,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'YouTube',
     descAr: 'منصة الفيديوهات الشهيرة',
     descEn: 'Popular video platform',
-    icon: '▶️',
     color: '#FF0000',
     lightBg: '#CC0000',
     gradient: 'from-[#FF0000] to-[#CC0000]',
@@ -169,7 +187,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'LinkedIn',
     descAr: 'منصة الشبكات المهنية',
     descEn: 'Professional networking platform',
-    icon: '💼',
     color: '#0A66C2',
     lightBg: '#004182',
     gradient: 'from-[#0A66C2] to-[#004182]',
@@ -187,7 +204,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'Snapchat',
     descAr: 'منصة التواصل الاجتماعي الفورية',
     descEn: 'Instant messaging and sharing platform',
-    icon: '👻',
     color: '#FFFC00',
     lightBg: '#F5E600',
     gradient: 'from-[#FFFC00] to-[#F5E600]',
@@ -205,7 +221,6 @@ const PLATFORMS: SocialPlatform[] = [
     nameEn: 'WhatsApp Business',
     descAr: 'منصة التواصل الاجتماعي للأعمال',
     descEn: 'Business messaging platform',
-    icon: '💬',
     color: '#25D366',
     lightBg: '#128C7E',
     gradient: 'from-[#25D366] to-[#128C7E]',
@@ -215,6 +230,42 @@ const PLATFORMS: SocialPlatform[] = [
       { ar: 'إحصائيات الرسائل', en: 'Message analytics' },
       { ar: 'كتالوج المنتجات', en: 'Product catalog' },
       { ar: 'ردود تلقائية', en: 'Auto-replies' },
+    ],
+  },
+  {
+    id: 'google-ads',
+    nameAr: 'إعلانات جوجل',
+    nameEn: 'Google Ads',
+    descAr: 'منصة إعلانات جوجل للأعمال',
+    descEn: 'Google advertising platform for businesses',
+    color: '#4285F4',
+    lightBg: '#34A853',
+    gradient: 'from-[#4285F4] via-[#EA4335] to-[#FBBC05]',
+    authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+    scopes: ['https://www.googleapis.com/auth/adwords'],
+    features: [
+      { ar: 'إدارة الحملات الإعلانية', en: 'Campaign management' },
+      { ar: 'إحصائيات الإعلانات والنقرات', en: 'Ad & click analytics' },
+      { ar: 'تتبع التحويلات والعائد', en: 'Conversion & ROI tracking' },
+      { ar: 'تقارير الأداء التفصيلية', en: 'Detailed performance reports' },
+    ],
+  },
+  {
+    id: 'google-maps',
+    nameAr: 'خرائط جوجل',
+    nameEn: 'Google Maps',
+    descAr: 'ملف نشاطك التجاري على جوجل',
+    descEn: 'Google Business Profile & Maps',
+    color: '#34A853',
+    lightBg: '#4285F4',
+    gradient: 'from-[#34A853] via-[#4285F4] to-[#EA4335]',
+    authUrl: 'https://accounts.google.com/o/oauth2/v2/auth',
+    scopes: ['https://www.googleapis.com/auth/business.manage'],
+    features: [
+      { ar: 'إدارة ملف النشاط التجاري', en: 'Business profile management' },
+      { ar: 'الرد على تقييمات العملاء', en: 'Respond to customer reviews' },
+      { ar: 'تحديث ساعات العمل والموقع', en: 'Update hours & location' },
+      { ar: 'إحصائيات البحث والزيارات', en: 'Search & visit analytics' },
     ],
   },
 ];
@@ -246,7 +297,7 @@ function formatNumber(n?: number): string {
 
 /* ═══════════════════════════════════════════════
    المكوّن الرئيسي
-   ═══════════════════════════════════════════════ */
+   ════════��══════════════════════════════════════ */
 
 export function SocialMediaManager({ onBack }: { onBack: () => void }) {
   const { language } = useLanguage();
@@ -283,9 +334,9 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
     totalPosts: isEn ? 'Total Posts' : 'إجمالي المنشورات',
     avgEngagement: isEn ? 'Avg Engagement' : 'متوسط التفاعل',
     platforms: isEn ? 'Platforms' : 'المنصات',
-    followers: isEn ? 'Followers' : 'المتابعون',
+    followers: isEn ? 'Followers' : 'المتابعين',
     following: isEn ? 'Following' : 'المتابَعون',
-    posts: isEn ? 'Posts' : 'المنشورات',
+    posts: isEn ? 'Posts' : 'المنشوات',
     engagement: isEn ? 'Engagement' : 'التفاعل',
     lastSync: isEn ? 'Last Sync' : 'آخر تحديث',
     sync: isEn ? 'Sync' : 'تحديث',
@@ -539,7 +590,7 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
             </button>
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl shadow-inner">
-                {platform.icon}
+                <PlatformIcon platformId={platform.id} color={platform.color} size={30} />
               </div>
               <div className="flex-1">
                 <h1 className="text-white text-xl leading-tight" style={{ fontFamily, fontWeight: 800 }}>
@@ -669,7 +720,9 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
         <div className="px-4 mt-4">
           {availablePlatforms.length === 0 ? (
             <div className="bg-white rounded-2xl p-8 text-center shadow-sm border border-gray-100">
-              <div className="text-4xl mb-3">🎉</div>
+              <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <CheckCircle className="w-8 h-8 text-green-500" />
+              </div>
               <h3 className="font-bold text-lg text-[#1A1A1A] mb-1" style={{ fontFamily }}>
                 {isEn ? 'All platforms connected!' : 'تم ربط جميع المنصات!'}
               </h3>
@@ -693,7 +746,7 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
                       className="w-11 h-11 rounded-full flex items-center justify-center text-xl flex-shrink-0 shadow-sm"
                       style={{ backgroundColor: platform.color === '#000000' ? '#1A1A1A' : platform.color }}
                     >
-                      <span className="text-white text-lg leading-none">{platform.icon}</span>
+                      <PlatformIcon platformId={platform.id} color={platform.color} size={18} />
                     </div>
 
                     {/* Name + Description */}
@@ -790,8 +843,8 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 bg-gradient-to-br ${platform.gradient} rounded-xl flex items-center justify-center text-lg`}>
-                  {platform.icon}
+                <div className={`w-10 h-10 bg-gradient-to-br ${platform.gradient} rounded-xl flex items-center justify-center`}>
+                  <PlatformIcon platformId={platform.id} color={platform.color} size={18} />
                 </div>
                 <div>
                   <h3 className="font-bold text-sm text-[#1A1A1A]" style={{ fontFamily }}>{L.settingsTitle}</h3>
@@ -842,7 +895,7 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
             <span>{L.back}</span>
           </button>
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl shadow-inner">📱</div>
+            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center text-3xl shadow-inner"><Icon3D icon={Users} theme="indigo" size="lg" hoverable={false} /></div>
             <div className="flex-1">
               <h1 className="text-white text-xl leading-tight" style={{ fontFamily, fontWeight: 800 }}>{L.title}</h1>
               <p className="text-white/80 text-sm mt-0.5" style={{ fontFamily }}>{L.subtitle}</p>
@@ -869,8 +922,8 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
             <div className="mt-8 grid grid-cols-4 gap-4">
               {PLATFORMS.slice(0, 8).map(p => (
                 <div key={p.id} className="flex flex-col items-center gap-1.5">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${p.gradient} rounded-2xl flex items-center justify-center text-xl shadow-md`}>
-                    {p.icon}
+                  <div className={`w-12 h-12 bg-gradient-to-br ${p.gradient} rounded-2xl flex items-center justify-center shadow-md`}>
+                    <PlatformIcon platformId={p.id} color={p.color} size={20} />
                   </div>
                   <span className="text-[10px] text-gray-400 font-bold" style={{ fontFamily }}>
                     {isEn ? p.nameEn : p.nameAr}
@@ -922,8 +975,8 @@ export function SocialMediaManager({ onBack }: { onBack: () => void }) {
                   >
                     <div className="p-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 bg-gradient-to-br ${platform.gradient} rounded-2xl flex items-center justify-center text-xl shadow-md flex-shrink-0`}>
-                          {platform.icon}
+                        <div className={`w-12 h-12 bg-gradient-to-br ${platform.gradient} rounded-2xl flex items-center justify-center shadow-md flex-shrink-0`}>
+                          <PlatformIcon platformId={platform.id} color={platform.color} size={22} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
